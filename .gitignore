@@ -1,0 +1,11 @@
+composer.lock
+/vendor/
+
+# Code indexing and editor tools
+.ac-php-conf.json
+.tern-port
+.php_cs.cache
+
+# Auto-generated files
+.log/
+npm-debug.log

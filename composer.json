@@ -1,0 +1,39 @@
+{
+    "name": "tromsfylkestrafikk/laravel-siri",
+    "description": "Handle incoming SIRI ET and VM in your Laravel project",
+    "type": "library",
+    "keywords": [
+        "laravel",
+        "siri",
+        "routedata"
+    ],
+    "require": {
+        "php": "^7.3|^8.0",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "illuminate/support": "^8.0",
+        "illuminate/console": "^8.0",
+        "illuminate/database": "^8.0"
+    },
+    "require-dev": {},
+    "autoload": {
+        "psr-4": {
+            "TromsFylkestrafikk\\Siri\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "TromsFylkestrafikk\\Siri\\SiriServiceProvider"
+            ]
+        }
+    },
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Kåre Slettnes",
+            "email": "kaare.slettnes@tffk.no"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
