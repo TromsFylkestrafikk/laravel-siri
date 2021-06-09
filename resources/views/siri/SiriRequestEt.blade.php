@@ -16,8 +16,8 @@
     </AE:SubscriptionContext>
 
     <AE:EstimatedTimetableSubscriptionRequest>
-      <AE:SubscriberRef>{{ $subscription->subscriber_ref }}</AE:SubscriberRef>
-      <AE:SubscriptionIdentifier>{{ $subscription->subscription_id }}</AE:SubscriptionIdentifier>
+      <AE:SubscriberRef>{{ $subscription->requestor_ref }}</AE:SubscriberRef>
+      <AE:SubscriptionIdentifier>{{ $subscription->id }}</AE:SubscriptionIdentifier>
       <AE:InitialTerminationTime>2100-01-01T00:00:00.0</AE:InitialTerminationTime>
 
       <AE:EstimatedTimetableRequest version="1.4">
