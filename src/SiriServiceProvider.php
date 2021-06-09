@@ -4,6 +4,7 @@ namespace TromsFylkestrafikk\Siri;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Log;
+use TromsFylkestrafikk\Siri\Console\CreateSubscription;
 
 class SiriServiceProvider extends ServiceProvider
 {
@@ -11,6 +12,7 @@ class SiriServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishConfig();
+        $this->setupMigrations();
         $this->setupConsoleCommands();
     }
 
@@ -24,13 +26,21 @@ class SiriServiceProvider extends ServiceProvider
     }
 
     /**
+     * Setup migrations
+     */
+    protected function setupMigrations()
+    {
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+    }
+
+    /**
      * Setup Artisan console commands.
      */
     protected function setupConsoleCommands()
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                //
+                CreateSubscription::class,
             ]);
         }
     }
