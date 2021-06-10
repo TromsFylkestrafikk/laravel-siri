@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use DatePeriod;
 use Ramsey\Uuid\Uuid;
+use TromsFylkestrafikk\Siri\Subscriber;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 
 class CreateSubscription extends Command
@@ -18,10 +19,10 @@ class CreateSubscription extends Command
      */
     protected $signature = 'siri:subscribe
                            { url : SIRI service to subscribe to }
-                           { type : Either \'ET\' or \'VM\' }
+                           { channel : Either \'ET\' or \'VM\' }
                            { --H|heartbeat-interval= : Period between heartbeats from service }
                            { --r|requestor-ref= : Identifies client consuming siri data }
-                           { --f|force : Create new subscription even if it exists for given type and service }';
+                           { --f|force : Create new subscription even if it exists for given channel and service }';
 
     /**
      * The console command description.
@@ -47,15 +48,19 @@ class CreateSubscription extends Command
      */
     public function handle()
     {
+        $channel = $this->getChannel();
+        if (!$channel) {
+            return 1;
+        }
         $exists = SiriSubscription::firstWhere([
-            ['type', $this->argument('type')],
+            ['channel', $channel],
             ['subscription_address', $this->argument('url')]
         ]);
         if (
             $exists
             && !$this->option('force')
             && !$this->confirm(sprintf(
-                "A previous subscription exists for this service and type with ID: %s\n Do you still want to create a new?",
+                "A previous subscription exists for this service and channel with ID: %s\n Do you still want to create a new?",
                 $exists->id
             ), false)
         ) {
@@ -64,14 +69,31 @@ class CreateSubscription extends Command
         $subscription = new SiriSubscription();
         $subscription->id = Uuid::uuid4();
         $subscription->fill([
-            'type' => $this->argument('type'),
-            'heartbeat_interval' => $this->getOptionOrConfig('heartbeat_interval'),
+            'channel' => $channel,
             'active' => true,
-            'requestor_ref' => $this->getOptionOrConfig('requestor_ref'),
             'subscription_address' => $this->argument('url'),
+            'heartbeat_interval' => $this->getOptionOrConfig('heartbeat_interval'),
+            'requestor_ref' => $this->getOptionOrConfig('requestor_ref'),
         ]);
         $subscription->save();
         return 0;
+    }
+
+    /**
+     * Get SIRI channel
+     */
+    protected function getChannel()
+    {
+        $channel = $this->argument('channel');
+        if (! in_array($channel, ['et', 'vm'])) {
+            $this->error(sprintf(
+                "Unknown SIRI channel (%s). Must be one of: %s",
+                $channel,
+                implode(', ', Subscriber::CHANNELS)
+            ));
+            return false;
+        }
+        return $channel;
     }
 
     protected function getOptionOrConfig($key)

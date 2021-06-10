@@ -15,7 +15,7 @@ class SiriDatabaseTables extends Migration
     {
         Schema::create('siri_subscriptions', function (Blueprint $table) {
             $table->char('id', 48)->primary();
-            $table->char('type', 4);
+            $table->char('channel', 4);
             $table->char('heartbeat_interval', 16);
             $table->dateTime('last_communication')->useCurrent();
             $table->boolean('active')->default(true);
