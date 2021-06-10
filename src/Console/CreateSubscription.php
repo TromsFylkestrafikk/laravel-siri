@@ -2,10 +2,11 @@
 
 namespace TromsFylkestrafikk\Siri\Console;
 
+use Closure;
+use DateInterval;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
-use DatePeriod;
 use Ramsey\Uuid\Uuid;
 use TromsFylkestrafikk\Siri\Subscriber;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
@@ -19,8 +20,8 @@ class CreateSubscription extends Command
      */
     protected $signature = 'siri:subscribe
                            { url : SIRI service to subscribe to }
-                           { channel : Either \'ET\' or \'VM\' }
-                           { --H|heartbeat-interval= : Period between heartbeats from service }
+                           { channel : SIRI functional service. E.g. \'SX\' or \'VM\' }
+                           { --H|heartbeat-interval= : Period (ISO 8601) between heartbeats from service }
                            { --r|requestor-ref= : Identifies client consuming siri data }
                            { --f|force : Create new subscription even if it exists for given channel and service }';
 
@@ -72,7 +73,7 @@ class CreateSubscription extends Command
             'channel' => $channel,
             'active' => true,
             'subscription_address' => $this->argument('url'),
-            'heartbeat_interval' => $this->getOptionOrConfig('heartbeat_interval'),
+            'heartbeat_interval' => $this->getHeartbeatInterval(),
             'requestor_ref' => $this->getOptionOrConfig('requestor_ref'),
         ]);
         $subscription->save();
@@ -84,8 +85,8 @@ class CreateSubscription extends Command
      */
     protected function getChannel()
     {
-        $channel = $this->argument('channel');
-        if (! in_array($channel, ['et', 'vm'])) {
+        $channel = strtoupper($this->argument('channel'));
+        if (! in_array($channel, Subscriber::CHANNELS)) {
             $this->error(sprintf(
                 "Unknown SIRI channel (%s). Must be one of: %s",
                 $channel,
@@ -96,12 +97,34 @@ class CreateSubscription extends Command
         return $channel;
     }
 
-    protected function getOptionOrConfig($key)
+    protected function getHeartbeatInterval()
+    {
+        return $this->getOptionOrConfig('heartbeat_interval', function ($interval) {
+            new DateInterval($interval);
+        });
+    }
+
+    /**
+     * Get value from either command line option or from config.
+     *
+     * The key must match, though the format on command line is 'snake-case', vs
+     * i config is 'kebab_case'.
+     *
+     * @param string $key  Name of option to get value for.
+     * @param Closure $validate  Custom callback for validating user input.
+     *                           This function should throw an exception on
+     *                           input error, and the given error message will
+     *                           be the user feedback.
+     * @return mixed
+     */
+    protected function getOptionOrConfig($key, Closure $validate = null)
     {
         $camelKey = Str::camel($key);
         $value = $this->option(Str::kebab($camelKey));
         if ($value === null) {
             $value = config('siri.subscription.' . Str::snake($camelKey));
+        } elseif ($validate) {
+            $validate($value);
         }
         return $value;
     }
