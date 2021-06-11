@@ -10,7 +10,7 @@ class EtRequest extends SiriRequestBase implements SiriRequestContract
     public function getViewData()
     {
         return array_merge(parent::getViewData(), [
-            'changes_before_update' => 20,
+            'change_before_updates' => 20,
         ]);
     }
 }

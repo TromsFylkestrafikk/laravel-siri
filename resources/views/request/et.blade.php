@@ -26,7 +26,7 @@
       </AE:EstimatedTimetableRequest>
 
       <AE:IncrementalUpdates>{{ $is_incremental }}</AE:IncrementalUpdates>
-      <AE:ChangeBeforeUpdates>{{ $changes_before_updates }}</AE:ChangeBeforeUpdates>
+      <AE:ChangeBeforeUpdates>{{ $change_before_updates }}</AE:ChangeBeforeUpdates>
     </AE:EstimatedTimetableSubscriptionRequest>
   </AE:SubscriptionRequest>
 </AE:Siri>

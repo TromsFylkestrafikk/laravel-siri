@@ -81,17 +81,15 @@ class SiriRequestBase
         if ($dryRun) {
             return 200;
         }
-        Log::debug("Not sending actual request");
-        return 200;
-
         $client = new HttpClient();
-        $response = $client->post($this->subscription->subscription_address, [
+        $response = $client->post($this->subscription->subscription_url, [
             'body' => $dom->saveXml(),
             'connect_timeout' => 10,
             'headers' => [ 'Content-Type' => 'text/xml' ],
             'timeout' => 30,
         ]);
-        if (($statusCode = $response->getStatusCode()) !== 200) {
+        $statusCode = $response->getStatusCode();
+        if ($statusCode !== 200) {
             Log::warning(sprintf(
                 "SiriRequest [%s]: Unexpected response status %d: %s",
                 $this->subscription->subscriber_ref,
@@ -108,13 +106,29 @@ class SiriRequestBase
     {
         // @var \SimpleXMLElement $xml
         $xml = simplexml_load_string($xmlStr);
+        if (!$xml) {
+            Log::error("Subscription response is not valid XML.");
+            $this->dumpResponseXml($xmlStr);
+            return false;
+        }
         $sirins = array_search(self::NAMESPACE_SIRI, $xml->getNamespaces());
+        if (!$sirins) {
+            Log::error("Siri subscription failed. SIRI namespace not found");
+            $this->dumpResponseXml($xmlStr);
+            return false;
+        }
         $status = $xml->xpath("/$sirins:Siri[1]/$sirins:SubscriptionResponse[1]/$sirins:ResponseStatus[1]/$sirins:Status[1]");
         if (trim((string) $status[0]) === 'true') {
             return true;
         }
 
-        $logMsg = "Siri subscription response XML error: ";
+        Log::warning("Success status code not found.");
+        $this->dumpResponseXml($xmlStr);
+        return false;
+    }
+
+    protected function dumpResponseXml($xmlStr)
+    {
         $filename = sprintf(
             "Siri-%s-subscription-ERROR-%s.xml",
             $this->subscription->types->abbrevation,
@@ -122,8 +136,6 @@ class SiriRequestBase
         );
         $disk = config('siri.disk');
         Storage::disk($disk)->put($filename, $xmlStr);
-        $logMsg .= sprintf("Response XML saved to disk '%s' as '%s'.", $disk, $filename);
-        Log::error($logMsg);
-        return false;
+        Log::error(sprintf("Response XML saved to disk '%s' as '%s'.", $disk, $filename));
     }
 }
