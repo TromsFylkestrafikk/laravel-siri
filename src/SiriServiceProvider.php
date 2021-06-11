@@ -14,6 +14,8 @@ class SiriServiceProvider extends ServiceProvider
         $this->publishConfig();
         $this->setupMigrations();
         $this->setupConsoleCommands();
+        $this->setupRoutes();
+        $this->setupViews();
     }
 
     protected function publishConfig()
@@ -43,5 +45,15 @@ class SiriServiceProvider extends ServiceProvider
                 CreateSubscription::class,
             ]);
         }
+    }
+
+    protected function setupRoutes()
+    {
+        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+    }
+
+    protected function setupViews()
+    {
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'siri');
     }
 }

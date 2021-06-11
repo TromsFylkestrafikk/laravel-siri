@@ -1,6 +1,6 @@
-<?xml version='1.0' encoding='us-ascii'?>
+<?xml version="1.0" encoding="utf-8"?>
 <AE:Siri version="1.4"
-	 xmlns:AB="http://www.ifopt.org.uk/ifopt"
+         xmlns:AB="http://www.ifopt.org.uk/ifopt"
          xmlns:AC="http://datex2.eu/schema/1_0/1_0"
          xmlns:AD="http://www.ifopt.org.uk/acsb"
          xmlns:AE="http://www.siri.org.uk/siri"
@@ -8,25 +8,22 @@
   <AE:SubscriptionRequest>
     <AE:RequestTimestamp>{{ $request_date }}</AE:RequestTimestamp>
     <AE:RequestorRef>{{ $subscription->requestor_ref }}</AE:RequestorRef>
-    <AE:MessageIdentifier>RequestorMsg</AE:MessageIdentifier>
+    <AE:MessageIdentifier>{{ $message_identifier }}</AE:MessageIdentifier>
     <AE:ConsumerAddress>{{ $consumer_address }}</AE:ConsumerAddress>
 
     <AE:SubscriptionContext>
       <AE:HeartbeatInterval>{{ $subscription->heartbeat_interval }}</AE:HeartbeatInterval>
     </AE:SubscriptionContext>
 
-    <AE:EstimatedTimetableSubscriptionRequest>
+    <AE:VehicleMonitoringSubscriptionRequest>
       <AE:SubscriberRef>{{ $subscription->requestor_ref }}</AE:SubscriberRef>
       <AE:SubscriptionIdentifier>{{ $subscription->id }}</AE:SubscriptionIdentifier>
-      <AE:InitialTerminationTime>2100-01-01T00:00:00.0</AE:InitialTerminationTime>
+      <AE:InitialTerminationTime>{{ $subscription_ttl }}</AE:InitialTerminationTime>
 
-      <AE:EstimatedTimetableRequest version="1.4">
+      <AE:VehicleMonitoringRequest version="1.4">
         <AE:RequestTimestamp>{{ $request_date }}</AE:RequestTimestamp>
-        <AE:PreviewInterval>PT24H</AE:PreviewInterval>
-      </AE:EstimatedTimetableRequest>
+      </AE:VehicleMonitoringRequest>
 
-      <AE:IncrementalUpdates>{{ $is_incremental }}</AE:IncrementalUpdates>
-      <AE:ChangeBeforeUpdates>{{ $changes_before_updates }}</AE:ChangeBeforeUpdates>
-    </AE:EstimatedTimetableSubscriptionRequest>
+    </AE:VehicleMonitoringSubscriptionRequest>
   </AE:SubscriptionRequest>
 </AE:Siri>

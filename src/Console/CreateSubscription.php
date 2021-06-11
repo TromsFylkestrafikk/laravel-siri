@@ -5,10 +5,11 @@ namespace TromsFylkestrafikk\Siri\Console;
 use Closure;
 use DateInterval;
 use Illuminate\Console\Command;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Ramsey\Uuid\Uuid;
-use TromsFylkestrafikk\Siri\Subscriber;
+use TromsFylkestrafikk\Siri\Subscription\Subscriber;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 
 class CreateSubscription extends Command
@@ -19,7 +20,7 @@ class CreateSubscription extends Command
      * @var string
      */
     protected $signature = 'siri:subscribe
-                           { url : SIRI service to subscribe to }
+                           { url : SIRI service subscription URL }
                            { channel : SIRI functional service. E.g. \'SX\' or \'VM\' }
                            { --H|heartbeat-interval= : Period (ISO 8601) between heartbeats from service }
                            { --r|requestor-ref= : Identifies client consuming siri data }
@@ -55,7 +56,7 @@ class CreateSubscription extends Command
         }
         $exists = SiriSubscription::firstWhere([
             ['channel', $channel],
-            ['subscription_address', $this->argument('url')]
+            ['subscription_url', $this->argument('url')]
         ]);
         if (
             $exists
@@ -72,11 +73,14 @@ class CreateSubscription extends Command
         $subscription->fill([
             'channel' => $channel,
             'active' => true,
-            'subscription_address' => $this->argument('url'),
+            'subscription_url' => $this->argument('url'),
             'heartbeat_interval' => $this->getHeartbeatInterval(),
             'requestor_ref' => $this->getOptionOrConfig('requestor_ref'),
         ]);
-        $subscription->save();
+        $response = Subscriber::subscribe($subscription);
+        if ($response === Response::HTTP_OK) {
+            $subscription->save();
+        }
         return 0;
     }
 

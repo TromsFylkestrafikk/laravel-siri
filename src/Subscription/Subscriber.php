@@ -1,11 +1,12 @@
 <?php
 
-namespace TromsFylkestrafikk\Siri;
+namespace TromsFylkestrafikk\Siri\Subscription;
 
+use Illuminate\Support\Str;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 
 /**
- * Perform SIRI subscriptions
+ * Perform SIRI subscription requests.
  */
 class Subscriber
 {
@@ -22,6 +23,9 @@ class Subscriber
      */
     public static function subscribe(SiriSubscription $subscription)
     {
-
+        $requestClass = "\\TromsFylkestrafikk\\Siri\\Subscription\\" . Str::of($subscription->channel)->lower()->studly() .  "Request";
+        // @var SiriRequestBase $request;
+        $request = new $requestClass($subscription);
+        $statusCode = $request->sendRequest();
     }
 }

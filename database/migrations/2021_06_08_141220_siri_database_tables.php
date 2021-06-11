@@ -17,10 +17,10 @@ class SiriDatabaseTables extends Migration
             $table->char('id', 48)->primary();
             $table->char('channel', 4);
             $table->char('heartbeat_interval', 16);
-            $table->dateTime('last_communication')->useCurrent();
+            $table->dateTime('last_communication')->nullable();
             $table->boolean('active')->default(true);
             $table->string('requestor_ref', 64);
-            $table->string('subscription_address', 128);
+            $table->string('subscription_url', 128);
             $table->timestamps();
         });
     }
