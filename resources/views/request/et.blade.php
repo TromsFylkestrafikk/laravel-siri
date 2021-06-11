@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AE:Siri version="1.4"
-	 xmlns:AB="http://www.ifopt.org.uk/ifopt"
+         xmlns:AB="http://www.ifopt.org.uk/ifopt"
          xmlns:AC="http://datex2.eu/schema/1_0/1_0"
          xmlns:AD="http://www.ifopt.org.uk/acsb"
          xmlns:AE="http://www.siri.org.uk/siri"

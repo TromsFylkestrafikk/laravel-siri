@@ -72,13 +72,13 @@ class SiriRequestBase
     /**
      * @implements SiriRequestContract::sendRequest.
      */
-    public function sendRequest(bool $dry_run = false)
+    public function sendRequest(bool $dryRun = false)
     {
         $dom = new DOMDocument();
         $dom->preserveWhiteSpace = false;
         $dom->loadXML($this->generateRequestXml());
         $dom->formatOutput = true;
-        if ($dry_run) {
+        if ($dryRun) {
             return 200;
         }
         Log::debug("Not sending actual request");
@@ -91,46 +91,39 @@ class SiriRequestBase
             'headers' => [ 'Content-Type' => 'text/xml' ],
             'timeout' => 30,
         ]);
-        if (($status_code = $response->getStatusCode()) !== 200) {
+        if (($statusCode = $response->getStatusCode()) !== 200) {
             Log::warning(sprintf(
                 "SiriRequest [%s]: Unexpected response status %d: %s",
                 $this->subscription->subscriber_ref,
-                $status_code,
+                $statusCode,
                 $response->getReasonPhrase()
             ));
         } elseif (! $this->parseResponseXml($response->getBody())) {
             return 500;
         }
-        return $status_code;
+        return $statusCode;
     }
 
-    protected function parseResponseXml($xml_str)
+    protected function parseResponseXml($xmlStr)
     {
         // @var \SimpleXMLElement $xml
-        $xml = simplexml_load_string($xml_str);
+        $xml = simplexml_load_string($xmlStr);
         $sirins = array_search(self::NAMESPACE_SIRI, $xml->getNamespaces());
-        if (
-            ($status = $xml->xpath("/$sirins:Siri[1]/$sirins:SubscriptionResponse[1]/$sirins:ResponseStatus[1]/$sirins:Status[1]")) &&
-            (trim((string) $status[0]) === 'true')
-        ) {
+        $status = $xml->xpath("/$sirins:Siri[1]/$sirins:SubscriptionResponse[1]/$sirins:ResponseStatus[1]/$sirins:Status[1]");
+        if (trim((string) $status[0]) === 'true') {
             return true;
         }
 
-        $log_msg = "Siri subscription response XML error: ";
-        if (
-            $this->subscription->partners->name === 'Consat' &&
-            ($errors = $xml->xpath("/$sirins:Siri[1]/$sirins:Extensions[1]/ITS4mobilityError[1]"))
-        ) {
-            $log_msg .= "\n{$errors[0]}\n";
-        }
+        $logMsg = "Siri subscription response XML error: ";
         $filename = sprintf(
-            "Siri-%s-subscr-ERROR-%s.xml",
+            "Siri-%s-subscription-ERROR-%s.xml",
             $this->subscription->types->abbrevation,
             date('Y-m-d\TH:i:s')
         );
-        Storage::disk('tmp')->put($filename, $xml_str);
-        $log_msg .= "Response XML saved to [TMP]/$filename";
-        Log::error($log_msg);
+        $disk = config('siri.disk');
+        Storage::disk($disk)->put($filename, $xmlStr);
+        $logMsg .= sprintf("Response XML saved to disk '%s' as '%s'.", $disk, $filename);
+        Log::error($logMsg);
         return false;
     }
 }
