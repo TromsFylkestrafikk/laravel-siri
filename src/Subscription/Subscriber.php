@@ -26,6 +26,6 @@ class Subscriber
         $requestClass = "\\TromsFylkestrafikk\\Siri\\Subscription\\" . Str::of($subscription->channel)->lower()->studly() .  "Request";
         // @var SiriRequestBase $request;
         $request = new $requestClass($subscription);
-        $statusCode = $request->sendRequest();
+        return $request->sendRequest();
     }
 }

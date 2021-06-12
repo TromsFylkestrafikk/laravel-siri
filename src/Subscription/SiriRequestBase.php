@@ -4,7 +4,7 @@ namespace TromsFylkestrafikk\Siri\Subscription;
 
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 use DOMDocument;
-use GuzzleHttp\Client as HttpClient;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use LogicException;
@@ -66,7 +66,10 @@ class SiriRequestBase
      */
     public function generateRequestXml()
     {
-        return view('siri::request.' . strtolower($this->subscription->channel), $this->getViewData())->render();
+        return view(
+            'siri::request.' . strtolower($this->subscription->channel),
+            $this->getViewData()
+        )->render();
     }
 
     /**
@@ -81,30 +84,24 @@ class SiriRequestBase
         if ($dryRun) {
             return 200;
         }
-        $client = new HttpClient();
-        $response = $client->post($this->subscription->subscription_url, [
-            'body' => $dom->saveXml(),
-            'connect_timeout' => 10,
-            'headers' => [ 'Content-Type' => 'text/xml' ],
-            'timeout' => 30,
-        ]);
-        $statusCode = $response->getStatusCode();
-        if ($statusCode !== 200) {
+        $response = Http::withBody($dom->saveXML(), 'text/xml')->post($this->subscription->subscription_url);
+        if (!$response->ok()) {
             Log::warning(sprintf(
                 "SiriRequest [%s]: Unexpected response status %d: %s",
                 $this->subscription->subscriber_ref,
-                $statusCode,
-                $response->getReasonPhrase()
+                $response->status(),
+                $response->toPsrResponse()->getReasonPhrase()
             ));
-        } elseif (! $this->parseResponseXml($response->getBody())) {
+        } elseif (! $this->parseResponseXml($response->body())) {
             return 500;
         }
-        return $statusCode;
+        return $response->status();
     }
 
     protected function parseResponseXml($xmlStr)
     {
         // @var \SimpleXMLElement $xml
+        dump($xmlStr);
         $xml = simplexml_load_string($xmlStr);
         if (!$xml) {
             Log::error("Subscription response is not valid XML.");
