@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 
 class SiriDebugController extends Controller
 {
+    /**
+     * Emulate successful subscription request response.
+     */
     public function subscribeOk(Request $request)
     {
         return <<<EOT

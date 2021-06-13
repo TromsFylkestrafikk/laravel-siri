@@ -2,6 +2,6 @@
 
 namespace TromsFylkestrafikk\Siri\Subscription;
 
-class VmRequest extends SiriRequestBase implements SiriRequestContract
+class VmRequest extends RequestBase implements SiriRequestContract
 {
 }

@@ -13,7 +13,7 @@ use SimpleXMLElement;
 /**
  * Base class for all SIRI service channel requests.
  */
-class SiriRequestBase
+class RequestBase
 {
     public const NAMESPACE_SIRI = 'http://www.siri.org.uk/siri';
 
@@ -101,38 +101,42 @@ class SiriRequestBase
     protected function parseResponseXml($xmlStr)
     {
         // @var \SimpleXMLElement $xml
-        dump($xmlStr);
-        $xml = simplexml_load_string($xmlStr);
-        if (!$xml) {
-            Log::error("Subscription response is not valid XML.");
+        $xml = simplexml_load_string($xmlStr, SimpleXMLElement::class, 0, self::NAMESPACE_SIRI);
+        if (
+            !$xml
+            || !$xml->SubscriptionResponse
+            || (string) $xml->SubscriptionResponse->ResponseStatus->Status !== 'true'
+        ) {
+            Log::error(sprintf(
+                "SIRI %s subscription to service '%s' failed. Dumping response XML.",
+                $this->subscription->channel,
+                $this->subscription->subscription_url
+            ));
             $this->dumpResponseXml($xmlStr);
             return false;
         }
-        $sirins = array_search(self::NAMESPACE_SIRI, $xml->getNamespaces());
-        if (!$sirins) {
-            Log::error("Siri subscription failed. SIRI namespace not found");
-            $this->dumpResponseXml($xmlStr);
-            return false;
-        }
-        $status = $xml->xpath("/$sirins:Siri[1]/$sirins:SubscriptionResponse[1]/$sirins:ResponseStatus[1]/$sirins:Status[1]");
-        if (trim((string) $status[0]) === 'true') {
-            return true;
-        }
-
-        Log::warning("Success status code not found.");
-        $this->dumpResponseXml($xmlStr);
-        return false;
+        Log::info(sprintf(
+            "SIRI %s subscription to service '%s' was successfully created",
+            $this->subscription->channel,
+            $this->subscription->subscription_url
+        ));
+        return true;
     }
 
+    /**
+     * Dump response XML to disk.
+     *
+     * @param string $xmlStr the XML string to write.
+     */
     protected function dumpResponseXml($xmlStr)
     {
-        $filename = sprintf(
-            "Siri-%s-subscription-ERROR-%s.xml",
-            $this->subscription->types->abbrevation,
+        $filepath = sprintf(
+            "siri/Siri-%s-subscription-ERROR-%s.xml",
+            $this->subscription->channel,
             date('Y-m-d\TH:i:s')
         );
         $disk = config('siri.disk');
-        Storage::disk($disk)->put($filename, $xmlStr);
-        Log::error(sprintf("Response XML saved to disk '%s' as '%s'.", $disk, $filename));
+        Storage::disk($disk)->put($filepath, $xmlStr);
+        Log::debug(sprintf("Response XML saved to disk '%s' as '%s'.", $disk, $filepath));
     }
 }

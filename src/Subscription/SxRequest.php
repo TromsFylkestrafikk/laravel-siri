@@ -2,7 +2,7 @@
 
 namespace TromsFylkestrafikk\Siri\Subscription;
 
-class SxRequest extends SiriRequestBase implements SiriRequestInterface
+class SxRequest extends RequestBase implements SiriRequestInterface
 {
     /**
      * {@inheritdoc}

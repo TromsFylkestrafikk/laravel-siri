@@ -24,7 +24,7 @@ class Subscriber
     public static function subscribe(SiriSubscription $subscription)
     {
         $requestClass = "\\TromsFylkestrafikk\\Siri\\Subscription\\" . Str::of($subscription->channel)->lower()->studly() .  "Request";
-        // @var SiriRequestBase $request;
+        // @var RequestBase $request;
         $request = new $requestClass($subscription);
         return $request->sendRequest();
     }

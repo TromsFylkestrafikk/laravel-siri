@@ -9,8 +9,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Ramsey\Uuid\Uuid;
-use TromsFylkestrafikk\Siri\Subscription\Subscriber;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
+use TromsFylkestrafikk\Siri\Subscription\Subscriber;
 
 class CreateSubscription extends Command
 {

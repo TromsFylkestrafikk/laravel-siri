@@ -2,7 +2,7 @@
 
 namespace TromsFylkestrafikk\Siri\Subscription;
 
-class EtRequest extends SiriRequestBase implements SiriRequestContract
+class EtRequest extends RequestBase implements SiriRequestContract
 {
     /**
      * {@inheritdoc}
