@@ -5,6 +5,7 @@ namespace TromsFylkestrafikk\Siri;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Log;
 use TromsFylkestrafikk\Siri\Console\CreateSubscription;
+use TromsFylkestrafikk\Siri\Console\ListSubscriptions;
 
 class SiriServiceProvider extends ServiceProvider
 {
@@ -43,6 +44,7 @@ class SiriServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 CreateSubscription::class,
+                ListSubscriptions::class,
             ]);
         }
     }
