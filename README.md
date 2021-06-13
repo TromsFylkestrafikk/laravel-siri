@@ -36,6 +36,6 @@ artisan vendor:publish --provider=TromsFylkestrafikk\\Siri\\SiriServiceProvider
 
 The following artisan commands manages SIRI subscriptions:
 
-- `siri` – Show current SIRI subscriptions and status.
 - `siri:subscribe` – Create new SIRI subscription
-- `siri:drop` – Remove SIRI subscription
+- `siri:list` – Show current SIRI subscriptions and status.
+- `siri:terminate` – Remove SIRI subscription
