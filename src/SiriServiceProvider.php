@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Log;
 use TromsFylkestrafikk\Siri\Console\CreateSubscription;
 use TromsFylkestrafikk\Siri\Console\ListSubscriptions;
+use TromsFylkestrafikk\Siri\Console\TerminateSubscription;
 
 class SiriServiceProvider extends ServiceProvider
 {
@@ -45,6 +46,7 @@ class SiriServiceProvider extends ServiceProvider
             $this->commands([
                 CreateSubscription::class,
                 ListSubscriptions::class,
+                TerminateSubscription::class,
             ]);
         }
     }
