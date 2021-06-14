@@ -27,8 +27,15 @@ then run
 composer require tromsfylkestrafikk/laravel-siri
 ```
 
-If you need to override the default configuration, publish it to your
-config dir:
+Publish the required configuration, then customize it in `config/siri.php`:
 ```shell
 artisan vendor:publish --provider=TromsFylkestrafikk\\Siri\\SiriServiceProvider
 ```
+
+## Usage
+
+The following artisan commands manages SIRI subscriptions:
+
+- `siri:subscribe` – Create new SIRI subscription
+- `siri:list` – Show current SIRI subscriptions and status.
+- `siri:terminate` – Remove SIRI subscription
