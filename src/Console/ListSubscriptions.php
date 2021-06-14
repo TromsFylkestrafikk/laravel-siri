@@ -38,17 +38,23 @@ class ListSubscriptions extends Command
      */
     public function handle()
     {
+        // @var \Illuminate\Database\Eloquent\Collection $subscriptions
+        $subscriptions = SiriSubscription::all();
+        $toPrint = [];
+        foreach ($subscriptions as $subscription) {
+            $toPrint[] = [
+                $subscription->id,
+                $subscription->channel,
+                $subscription->subscription_url,
+                $subscription->isActive,
+                $subscription->received,
+                $subscription->created_at,
+                $subscription->updated_at,
+            ];
+        }
         $this->table(
             ['ID', 'Channel', 'Service URL', 'Active', 'Count', 'Created', 'Last communication'],
-            SiriSubscription::all([
-                'id',
-                'channel',
-                'subscription_url',
-                'active',
-                'received',
-                'created_at',
-                'updated_at',
-            ])->toArray()
+            $toPrint
         );
     }
 }

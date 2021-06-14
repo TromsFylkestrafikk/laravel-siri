@@ -5,7 +5,6 @@ namespace TromsFylkestrafikk\Siri\Console;
 use Closure;
 use DateInterval;
 use Illuminate\Console\Command;
-use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Ramsey\Uuid\Uuid;
@@ -77,9 +76,20 @@ class CreateSubscription extends Command
             'heartbeat_interval' => $this->getHeartbeatInterval(),
             'requestor_ref' => $this->getOptionOrConfig('requestor_ref'),
         ]);
-        $response = Subscriber::subscribe($subscription);
-        if ($response === Response::HTTP_OK) {
+        $success = Subscriber::subscribe($subscription);
+        if ($success) {
             $subscription->save();
+            $this->info(sprintf(
+                "SIRI %s subscription to %s was successfully created with ID: %s",
+                $subscription->channel,
+                $subscription->subscription_url,
+                $subscription->id
+            ));
+        } else {
+            $this->warn(sprintf(
+                "SIRI %s subscription request failed. See log for further details.",
+                $subscription->channel
+            ));
         }
         return 0;
     }

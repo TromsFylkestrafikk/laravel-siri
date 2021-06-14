@@ -2,6 +2,8 @@
 
 namespace TromsFylkestrafikk\Siri\Subscription;
 
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 
@@ -26,6 +28,6 @@ class Subscriber
         $requestClass = "\\TromsFylkestrafikk\\Siri\\Subscription\\" . Str::of($subscription->channel)->lower()->studly() .  "Request";
         // @var RequestBase $request;
         $request = new $requestClass($subscription);
-        return $request->sendRequest();
+        return $request->sendRequest() === Response::HTTP_OK;
     }
 }
