@@ -17,6 +17,10 @@ project. Add something like this in composer.json:
     "repositories": [
         {
             "type": "vcs",
+            "url": "https://github.com/TromsFylkestrafikk/christmas-tree-parser"
+        },
+        {
+            "type": "vcs",
             "url": "https://github.com/TromsFylkestrafikk/laravel-siri"
         }
     ]
