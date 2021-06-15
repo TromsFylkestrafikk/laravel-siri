@@ -37,6 +37,12 @@
             ]
         }
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/TromsFylkestrafikk/christmas-tree-parser"
+        }
+    ],
     "license": "GPL-3.0-or-later",
     "authors": [
         {

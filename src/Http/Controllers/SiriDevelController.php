@@ -1,11 +1,17 @@
 <?php
 
+/**
+ * Development controller
+ *
+ * Logic related to development of this package.
+ */
+
 namespace TromsFylkestrafikk\Siri\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class SiriDebugController extends Controller
+class SiriDevelController extends Controller
 {
     /**
      * Emulate successful subscription request response.
@@ -32,6 +38,9 @@ class SiriDebugController extends Controller
 EOT;
     }
 
+    /**
+     * Emulate subscription response with failure.
+     */
     public function subscribeFailed()
     {
         return response("You're not allowed here", Response::HTTP_FORBIDDEN);

@@ -52,28 +52,41 @@ class SiriServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * Register routes for siri consumption and development.
+     */
     protected function registerRoutes()
     {
-        Route::group($this->getRouteConfig('route'), function () {
-            $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        $enable_dev = config('siri.enable_dev_routes');
+        Route::group($this->getRoutesConfig('routes_api'), function () use ($enable_dev) {
+            $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
+            if ($enable_dev) {
+                $this->loadRoutesFrom(__DIR__ . '/../routes/api-devel.php');
+            }
         });
-        if (config('siri.route_dev.enabled')) {
-            Route::group($this->getRouteConfig('route_dev'), function () {
-                $this->loadRoutesFrom(__DIR__ . '/../routes/devel.php');
+        if ($enable_dev) {
+            Route::group($this->getRoutesConfig('routes_web'), function () {
+                $this->loadRoutesFrom(__DIR__ . '/../routes/web-devel.php');
             });
         }
     }
 
-    protected function registerViews()
-    {
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'siri');
-    }
-
-    protected function getRouteConfig($target = 'route')
+    /**
+     * Get route group configuration for given target.
+     *
+     * @param string $target  'route' or 'route_dev'.  See 'config/siri.php'
+     * @return array
+     */
+    protected function getRoutesConfig($target = 'route')
     {
         return [
             'prefix' => config("siri.{$target}.prefix"),
             'middleware' => config("siri.{$target}.middleware"),
         ];
+    }
+
+    protected function registerViews()
+    {
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'siri');
     }
 }
