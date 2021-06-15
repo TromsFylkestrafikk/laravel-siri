@@ -3,6 +3,7 @@
 namespace TromsFylkestrafikk\Siri\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class SiriDebugController extends Controller
 {
@@ -29,5 +30,10 @@ class SiriDebugController extends Controller
   </AA:SubscriptionResponse>
 </AA:Siri>
 EOT;
+    }
+
+    public function subscribeFailed()
+    {
+        return response("You're not allowed here", Response::HTTP_FORBIDDEN);
     }
 }

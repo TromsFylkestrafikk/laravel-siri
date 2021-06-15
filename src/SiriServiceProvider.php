@@ -4,6 +4,7 @@ namespace TromsFylkestrafikk\Siri;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use TromsFylkestrafikk\Siri\Console\CreateSubscription;
 use TromsFylkestrafikk\Siri\Console\ListSubscriptions;
 use TromsFylkestrafikk\Siri\Console\TerminateSubscription;
@@ -14,10 +15,10 @@ class SiriServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishConfig();
-        $this->setupMigrations();
-        $this->setupConsoleCommands();
-        $this->setupRoutes();
-        $this->setupViews();
+        $this->registerMigrations();
+        $this->registerConsoleCommands();
+        $this->registerRoutes();
+        $this->registerViews();
     }
 
     protected function publishConfig()
@@ -32,7 +33,7 @@ class SiriServiceProvider extends ServiceProvider
     /**
      * Setup migrations
      */
-    protected function setupMigrations()
+    protected function registerMigrations()
     {
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
@@ -40,7 +41,7 @@ class SiriServiceProvider extends ServiceProvider
     /**
      * Setup Artisan console commands.
      */
-    protected function setupConsoleCommands()
+    protected function registerConsoleCommands()
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
@@ -51,13 +52,28 @@ class SiriServiceProvider extends ServiceProvider
         }
     }
 
-    protected function setupRoutes()
+    protected function registerRoutes()
     {
-        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        Route::group($this->getRouteConfig('route'), function () {
+            $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        });
+        if (config('siri.route_dev.enabled')) {
+            Route::group($this->getRouteConfig('route_dev'), function () {
+                $this->loadRoutesFrom(__DIR__ . '/../routes/devel.php');
+            });
+        }
     }
 
-    protected function setupViews()
+    protected function registerViews()
     {
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'siri');
+    }
+
+    protected function getRouteConfig($target = 'route')
+    {
+        return [
+            'prefix' => config("siri.{$target}.prefix"),
+            'middleware' => config("siri.{$target}.middleware"),
+        ];
     }
 }
