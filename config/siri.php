@@ -1,6 +1,32 @@
 <?php
 
 return [
+
+    /*
+    | ------------------------------------------------------------------------
+    | Route prefix and middleware
+    | ------------------------------------------------------------------------
+    |
+    | The prefix sets the global prefix for all requests within this package.
+    | Defaults to 'siri'.
+    |
+    | The middleware lists the middleware this package should consume.
+    |
+    | In addition, the 'route_dev' group has the same meaning, though only
+    | useful during local development. Use 'enabled' to turn on or off this set
+    | of routes.
+    */
+    'route' => [
+        'prefix' => 'siri',
+        'middleware' => ['web'],
+    ],
+
+    'route_dev' => [
+        'enabled' => env('APP_ENV') === 'local',
+        'prefix' => 'siri/devel',
+        'middleware' => ['web'],
+    ],
+
     /*
     | ------------------------------------------------------------------------
     | Default settings for new subscriptions
@@ -17,7 +43,7 @@ return [
 
     /*
     | ------------------------------------------------------------------------
-    | Filesystem disk for SIRI related files.
+    | File system disk for SIRI related files.
     | ------------------------------------------------------------------------
     |
     | Use this storage disk when writing files related to this package.
