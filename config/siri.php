@@ -16,16 +16,21 @@ return [
     | useful during local development. Use 'enabled' to turn on or off this set
     | of routes.
     */
-    'route' => [
+    'routes_api' => [
+        'prefix' => 'api/siri',
+        'middleware' => ['api'],
+    ],
+    'routes_web' => [
         'prefix' => 'siri',
         'middleware' => ['web'],
     ],
 
-    'route_dev' => [
-        'enabled' => env('APP_ENV') === 'local',
-        'prefix' => 'siri/devel',
-        'middleware' => ['web'],
-    ],
+    /*
+    | ------------------------------------------------------------------------
+    | Enable routes used during development.
+    | ------------------------------------------------------------------------
+     */
+    'enable_dev_routes' => env('APP_ENV') === 'local',
 
     /*
     | ------------------------------------------------------------------------
