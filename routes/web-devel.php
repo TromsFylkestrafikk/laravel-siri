@@ -5,7 +5,6 @@
  */
 
 use Illuminate\Support\Facades\Route;
-use TromsFylkestrafikk\Siri\Http\Controllers\SiriDevelController;
+use TromsFylkestrafikk\Siri\Http\Controllers\DevelEmulateClientController;
 
-Route::view('devel/upload', 'upload-xml')->name('siri.upload');
-Route::post('devel/upload', 'SiriController@handleXmlUpload');
+Route::resource('devel/consume', DevelEmulateClientController::class)->only(['create', 'store']);
