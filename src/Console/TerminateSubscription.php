@@ -15,7 +15,7 @@ class TerminateSubscription extends Command
      */
     protected $signature = 'siri:terminate
                             { id : Subscription identifier }
-                            { --f|force : Force termination without confirmation. }';
+                            { --y|yes : Confirm all questions. }';
 
     /**
      * The console command description.
@@ -48,7 +48,8 @@ class TerminateSubscription extends Command
             return 1;
         }
         if (
-            !$this->confirm(sprintf(
+            !$this->option('yes')
+            && !$this->confirm(sprintf(
                 "Really terminate %s subscription on %s?",
                 $subscription->channel,
                 $subscription->subscription_url,
@@ -57,12 +58,14 @@ class TerminateSubscription extends Command
             return 0;
         }
         $subscription->delete();
-        Log::info(sprintf(
+        $msg = sprintf(
             "SIRI %s subscription to %s with ID %s was terminated.",
             $subscription->channel,
             $subscription->subscription_url,
             $subscription->id
-        ));
+        );
+        Log::info($msg);
+        $this->info($msg);
         return 0;
     }
 }
