@@ -7,6 +7,7 @@
     <title>Upload SIRI xml</title>
   </head>
   <body>
+    <h1>Emulate SIRI service delivery</h1>
     <div class="content">
       @if ($errors->any())
         <div class="alert alert-danger">
@@ -24,11 +25,11 @@
           <input type="file" id="siri-xml" name="siri-xml" />
         </div>
         <div class="form-input form-select">
-          <label for="siri-service">Siri request handler type</label> <br />
-          <select id="siri-channel" name="siri_channel">
-            <option value="ET">Estimated Timetable (ET)</option>
-            <option value="VM">Vehicle Monitoring (VM)</option>
-            <option value="SX">Situation Exchange (SX)</option>
+          <label for="siri-subscription">Use this subscription</label> <br />
+          <select id="siri-subscription" name="id">
+            @foreach ($subscriptions as $subscription)
+              <option value="{{ $subscription->id }}">{{ $subscription->channel }} – {{ $subscription->subscription_url }}</option>
+            @endforeach
           </select>
         </div>
         <input type="submit" value="Emulate request" />

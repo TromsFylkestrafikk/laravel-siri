@@ -25,8 +25,9 @@ class DevelEmulateClientController extends Controller
      */
     public function store(Request $request)
     {
-        $channel = $request->input('siri_channel');
-        switch ($channel) {
+        $request->validate(['id' => 'required|exists:siri_subscriptions']);
+        $subscription = SiriSubscription::find($request->input('id'));
+        switch ($subscription->channel) {
             case 'ET':
                 $this->queuedHandling = true;
                 break;
