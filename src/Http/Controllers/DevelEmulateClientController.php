@@ -8,13 +8,13 @@ use Illuminate\Http\Request;
 class DevelEmulateClientController extends Controller
 {
     /**
-     * Show the form for creating a new resource.
+     * Show the XML upload form.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function uploadXml()
     {
-        return view('devel.upload-xml', ['subscriptions' => $this->getSubscriptions()]);
+        return view('siri::devel.upload-xml', ['subscriptions' => $this->getSubscriptions()]);
     }
 
     /**
@@ -23,7 +23,7 @@ class DevelEmulateClientController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function submitXml(Request $request)
     {
         $channel = $request->input('siri_channel');
         switch ($channel) {
