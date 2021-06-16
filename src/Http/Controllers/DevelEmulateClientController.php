@@ -12,7 +12,7 @@ class DevelEmulateClientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function uploadXml()
+    public function create()
     {
         return view('siri::devel.upload-xml', ['subscriptions' => $this->getSubscriptions()]);
     }
@@ -23,7 +23,7 @@ class DevelEmulateClientController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function submitXml(Request $request)
+    public function store(Request $request)
     {
         $channel = $request->input('siri_channel');
         switch ($channel) {
@@ -32,7 +32,7 @@ class DevelEmulateClientController extends Controller
                 break;
         }
         // $result = $this->processorGate(fopen($request->file('siri-xml')->path(), 'r'));
-        return view('devel.upload-xml', $this->getSubscriptions());
+        return view('devel.upload-xml', ['subscriptions' => $this->getSubscriptions()]);
     }
 
     protected function getSubscriptions()

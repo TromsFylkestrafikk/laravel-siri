@@ -17,7 +17,7 @@
           </ul>
         </div>
       @endif
-      <form method="POST" action="{{ route('siri.devel.consume.post') }}" enctype="multipart/form-data">
+      <form method="POST" action="{{ route('emulate.store') }}" enctype="multipart/form-data">
         {{ csrf_field() }}
         <div class="form-input form-file">
           <label for="siri-xml">Valid SIRI XML file.</label> <br />
