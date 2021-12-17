@@ -1,0 +1,25 @@
+{
+    "root": true,
+    "env": {
+        "es2017": true,
+        "browser": true
+    },
+    "extends": [
+        "eslint:recommended"
+    ],
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "rules": {
+        "comma-dangle": [ "warn", {
+            "arrays": "always-multiline",
+            "objects": "always-multiline",
+            "imports": "never",
+            "exports": "never",
+            "functions": "never"
+        }],
+        "indent": ["error", 4],
+        "no-param-reassign": "off",
+        "no-return-assign": "off"
+    }
+}
