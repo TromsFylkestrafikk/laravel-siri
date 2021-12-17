@@ -1,0 +1,35 @@
+{
+    "name": "laravel-siri",
+    "version": "0.0.1-dev",
+    "description": "Laravel SIRI consumer",
+    "author": "Kåre Slettnes <kaare.slettnes@tffk.no>",
+    "license": "GPL-3.0-or-later",
+    "main": "index.js",
+    "scripts": {
+        "test": "test",
+        "prepare": "husky install"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/TromsFylkestrafikk/laravel-siri.git"
+    },
+    "bugs": {
+        "url": "https://github.com/TromsFylkestrafikk/laravel-siri/issues"
+    },
+    "homepage": "https://github.com/TromsFylkestrafikk/laravel-siri#readme",
+    "devDependencies": {
+        "husky": "^7.0.4",
+        "lint-staged": "^12.1.2"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "src/**/*.php": [
+            "./vendor/bin/phpcs -n --colors --standard=phpcs.xml",
+            "./vendor/bin/phpstan analyze"
+        ]
+    }
+}
