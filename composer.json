@@ -2,10 +2,19 @@
     "name": "tromsfylkestrafikk/laravel-siri",
     "description": "Handle incoming SIRI ET and VM in your Laravel project",
     "type": "library",
+    "license": "GPL-3.0-or-later",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "keywords": [
         "laravel",
         "siri",
         "routedata"
+    ],
+    "authors": [
+        {
+            "name": "Kåre Slettnes",
+            "email": "kaare.slettnes@tffk.no"
+        }
     ],
     "require": {
         "php": "^7.3|^8.0",
@@ -42,20 +51,5 @@
                 "TromsFylkestrafikk\\Siri\\SiriServiceProvider"
             ]
         }
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/TromsFylkestrafikk/christmas-tree-parser"
-        }
-    ],
-    "license": "GPL-3.0-or-later",
-    "authors": [
-        {
-            "name": "Kåre Slettnes",
-            "email": "kaare.slettnes@tffk.no"
-        }
-    ],
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }
