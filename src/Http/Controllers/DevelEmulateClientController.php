@@ -10,7 +10,7 @@ class DevelEmulateClientController extends Controller
     /**
      * Show the XML upload form.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|\Illuminate\Contracts\View\View
      */
     public function create()
     {
@@ -18,10 +18,10 @@ class DevelEmulateClientController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Handle uploaded SIRI Xml data as new request to ourselves.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|\Illuminate\Contracts\View\View
      */
     public function store(Request $request)
     {
@@ -29,11 +29,10 @@ class DevelEmulateClientController extends Controller
         $subscription = SiriSubscription::find($request->input('id'));
         switch ($subscription->channel) {
             case 'ET':
-                $this->queuedHandling = true;
                 break;
         }
         // $result = $this->processorGate(fopen($request->file('siri-xml')->path(), 'r'));
-        return view('devel.upload-xml', ['subscriptions' => $this->getSubscriptions()]);
+        return view('siri::devel.upload-xml', ['subscriptions' => $this->getSubscriptions()]);
     }
 
     protected function getSubscriptions()
