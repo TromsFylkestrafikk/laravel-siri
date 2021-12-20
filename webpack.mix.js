@@ -18,4 +18,5 @@ mix.js('resources/js/app.js', 'dist/js')
         'axios',
         'lodash',
         'moment',
+        'vue',
     ]);
