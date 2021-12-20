@@ -7,6 +7,10 @@
     "extends": [
         "eslint:recommended"
     ],
+    "globals": {
+        "Vue": "readonly",
+        "axios": "readonly"
+    },
     "parserOptions": {
         "sourceType": "module"
     },

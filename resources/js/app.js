@@ -1,4 +1,9 @@
+import Vue from 'vue';
 import axios from 'axios';
+import TheApp from './components/TheApp';
 
-alert('o hai thar');
-console.log('We\'re live!');
+window.axios = axios;
+
+window.app = new Vue({
+    render: (h) => h(TheApp),
+}).$mount('#app');

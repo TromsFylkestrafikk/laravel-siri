@@ -1,5 +1,4 @@
 const mix = require('laravel-mix');
-// import mix from 'laravel-mix';
 
 /*
  |--------------------------------------------------------------------------
@@ -13,6 +12,7 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/app.js', 'dist/js')
+    .vue()
     .setPublicPath('dist/js')
     .extract([
         'axios',
