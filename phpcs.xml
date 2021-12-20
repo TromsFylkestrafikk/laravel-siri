@@ -2,7 +2,7 @@
 <ruleset name="PSR12">
   <description>The PSR-12 coding standard.</description>
   <rule ref="PSR12"/>
-  <file>app/</file>
+  <file>src</file>
   <exclude-pattern>database/</exclude-pattern>
   <exclude-pattern>node_modules/</exclude-pattern>
   <exclude-pattern>resources</exclude-pattern>

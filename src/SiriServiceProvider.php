@@ -11,10 +11,10 @@ use TromsFylkestrafikk\Siri\Console\TerminateSubscription;
 
 class SiriServiceProvider extends ServiceProvider
 {
-
     public function boot()
     {
         $this->publishConfig();
+        $this->publishAssets();
         $this->registerMigrations();
         $this->registerConsoleCommands();
         $this->registerRoutes();
@@ -27,6 +27,16 @@ class SiriServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__ . '/../config/siri.php' => config_path('siri.php'),
             ], 'config');
+        }
+    }
+
+    /**
+     * Publish/copy assets to app.
+     */
+    protected function publishAssets()
+    {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([__DIR__ . '/../dist' => public_path('siri')], 'assets');
         }
     }
 
@@ -57,14 +67,14 @@ class SiriServiceProvider extends ServiceProvider
      */
     protected function registerRoutes()
     {
-        $enable_dev = config('siri.enable_dev_routes');
-        Route::group($this->getRoutesConfig('routes_api'), function () use ($enable_dev) {
+        $enableDev = config('siri.enable_dev_routes');
+        Route::group($this->getRoutesConfig('routes_api'), function () use ($enableDev) {
             $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
-            if ($enable_dev) {
+            if ($enableDev) {
                 $this->loadRoutesFrom(__DIR__ . '/../routes/api-devel.php');
             }
         });
-        if ($enable_dev) {
+        if ($enableDev) {
             Route::group($this->getRoutesConfig('routes_web'), function () {
                 $this->loadRoutesFrom(__DIR__ . '/../routes/web-devel.php');
             });

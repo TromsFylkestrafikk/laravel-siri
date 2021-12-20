@@ -5,8 +5,8 @@
     "author": "Kåre Slettnes <kaare.slettnes@tffk.no>",
     "license": "GPL-3.0-or-later",
     "main": "index.js",
+    "homepage": "https://github.com/TromsFylkestrafikk/laravel-siri#readme",
     "scripts": {
-        "test": "test",
         "prepare": "husky install"
     },
     "repository": {
@@ -16,9 +16,12 @@
     "bugs": {
         "url": "https://github.com/TromsFylkestrafikk/laravel-siri/issues"
     },
-    "homepage": "https://github.com/TromsFylkestrafikk/laravel-siri#readme",
+    "dependencies": {
+        "axios": "^0.24.0"
+    },
     "devDependencies": {
         "husky": "^7.0.4",
+        "laravel-mix": "^6.0.39",
         "lint-staged": "^12.1.2"
     },
     "husky": {
