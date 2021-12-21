@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import axios from 'axios';
-import TheApp from './components/TheApp';
+import TheApp from './components/TheApp.vue';
 
 window.axios = axios;
 

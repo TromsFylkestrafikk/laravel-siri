@@ -13,10 +13,12 @@
             v-for="subscription in subscriptions"
             :key="subscription.id"
             :value="subscription.id"
-          >{{ subscription.channel }} – {{ subscription.subscription_url }}</option>
+          >
+            {{ subscription.channel }} – {{ subscription.subscription_url }}
+          </option>
         </select>
       </div>
-      <input type="submit" value="Emulate request" />
+      <input type="submit" value="Emulate request">
     </form>
   </div>
 </template>
