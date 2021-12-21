@@ -24,10 +24,15 @@ export default {
             if (!file.files.length || !this.selectedId) {
                 return;
             }
-            const xml = await file.files[0].text();
+            const data = await file.files[0].text();
             const sub = this.subscriptions[this.selectedId];
             const url = `/siri/consume/${sub.channel}/${sub.id}`;
-            await axios.post(url, xml);
+            await axios({
+                method: 'post',
+                url,
+                data,
+                headers: { 'Content-Type': 'application/xml' },
+            });
         },
     },
 };
