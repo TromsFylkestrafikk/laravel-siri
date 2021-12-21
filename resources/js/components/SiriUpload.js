@@ -26,7 +26,7 @@ export default {
             }
             const data = await file.files[0].text();
             const sub = this.subscriptions[this.selectedId];
-            const url = `/siri/consume/${sub.channel}/${sub.id}`;
+            const url = `/api/siri/consume/${sub.channel}/${sub.id}`;
             await axios({
                 method: 'post',
                 url,
