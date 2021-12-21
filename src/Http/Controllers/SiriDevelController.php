@@ -22,7 +22,9 @@ class SiriDevelController extends Controller
     public function subscriptions()
     {
         return [
-            'subscriptions' => SiriSubscription::whereActive(true)->get(['id', 'channel', 'subscription_url']),
+            'subscriptions' => SiriSubscription::whereActive(true)
+                ->get(['id', 'channel', 'subscription_url'])
+                ->keyBy('id'),
         ];
     }
 

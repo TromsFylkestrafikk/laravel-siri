@@ -10,11 +10,7 @@ export default {
 
     mounted() {
         axios.get('/api/siri/devel/subscriptions').then((result) => {
-            const subs = {};
-            result.data.subscriptions.forEach((sub) => {
-                subs[sub.id] = sub;
-            });
-            this.subscriptions = subs;
+            this.subscriptions = result.data.subscriptions;
         });
     },
 

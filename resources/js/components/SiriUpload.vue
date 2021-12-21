@@ -15,9 +15,9 @@
         <label for="siri-select-channel">Use this subscription</label> <br>
         <select v-model="selectedId" class="siri-channel" name="siri-select-channel">
           <option
-            v-for="subscription in subscriptions"
-            :key="subscription.id"
-            :value="subscription.id"
+            v-for="(subscription, id) in subscriptions"
+            :key="id"
+            :value="id"
           >
             {{ subscription.channel }} – {{ subscription.subscription_url }}
           </option>
