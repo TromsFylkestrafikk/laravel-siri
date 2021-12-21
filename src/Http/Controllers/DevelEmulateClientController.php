@@ -14,7 +14,7 @@ class DevelEmulateClientController extends Controller
      */
     public function create()
     {
-        return view('siri::devel.upload-xml', ['subscriptions' => $this->getSubscriptions()]);
+        return view('siri::devel.upload-xml');
     }
 
     /**

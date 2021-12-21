@@ -8,15 +8,28 @@
 
 namespace TromsFylkestrafikk\Siri\Http\Controllers;
 
+use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class SiriDevelController extends Controller
 {
     /**
+     * Get at list of available, active subscribed channels.
+     *
+     * @return array
+     */
+    public function subscriptions()
+    {
+        return [
+            'subscriptions' => SiriSubscription::whereActive(true)->get(['id', 'channel', 'subscription_url']),
+        ];
+    }
+
+    /**
      * Emulate successful subscription request response.
      */
-    public function subscribeOk(Request $request)
+    public function subscribeOk()
     {
         return <<<EOT
 <?xml version="1.0"?>
