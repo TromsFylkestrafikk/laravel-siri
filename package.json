@@ -30,16 +30,5 @@
     "dependencies": {
         "axios": "^0.24.0",
         "vue": "^2.6.14"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
-    "lint-staged": {
-        "src/**/*.php": [
-            "./vendor/bin/phpcs -n --colors --standard=phpcs.xml",
-            "./vendor/bin/phpstan analyze"
-        ]
     }
 }
