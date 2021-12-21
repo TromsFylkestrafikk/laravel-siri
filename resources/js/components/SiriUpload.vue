@@ -1,5 +1,6 @@
 <template>
   <div class="content">
+    <h2>Simulate SIRI consumer post request</h2>
     <form class="siri-xml-form" @submit.prevent="submitXml">
       <div class="form-input form-file">
         <label for="siri-xml">Valid SIRI XML file.</label> <br />

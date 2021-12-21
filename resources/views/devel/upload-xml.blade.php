@@ -9,7 +9,6 @@
     <title>Upload SIRI xml</title>
   </head>
   <body>
-    <h1>The app, from blade</h1>
     <div id="app"></div>
     <script src="{{ asset('siri/js/app.js')}}"></script>
   </body>
