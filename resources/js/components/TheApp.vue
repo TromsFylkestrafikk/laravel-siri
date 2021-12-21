@@ -8,6 +8,6 @@
 import SiriUpload from './SiriUpload.vue';
 
 export default {
-     components: { SiriUpload },
+    components: { SiriUpload },
 };
 </script>
