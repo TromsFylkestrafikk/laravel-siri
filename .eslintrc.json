@@ -5,7 +5,11 @@
         "browser": true
     },
     "extends": [
-        "eslint:recommended"
+        "airbnb-base",
+        "eslint:recommended",
+        "plugin:vue/essential",
+        "plugin:vue/recommended",
+        "plugin:vue/strongly-recommended"
     ],
     "globals": {
         "Vue": "readonly",
@@ -14,8 +18,11 @@
     "parserOptions": {
         "sourceType": "module"
     },
+    "plugins": [
+        "vue"
+    ],
     "rules": {
-        "comma-dangle": [ "warn", {
+        "comma-dangle": ["warn", {
             "arrays": "always-multiline",
             "objects": "always-multiline",
             "imports": "never",
@@ -24,6 +31,14 @@
         }],
         "indent": ["error", 4],
         "no-param-reassign": "off",
-        "no-return-assign": "off"
+        "no-return-assign": "off",
+        "vue/max-attributes-per-line": ["error", {
+            "singleline": {
+                "max": 3
+            },
+            "multiline": {
+                "max": 1
+            }
+        }]
     }
 }
