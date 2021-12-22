@@ -71,12 +71,12 @@ class SiriServiceProvider extends ServiceProvider
         Route::group($this->getRoutesConfig('routes_api'), function () use ($enableDev) {
             $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
             if ($enableDev) {
-                $this->loadRoutesFrom(__DIR__ . '/../routes/api-devel.php');
+                $this->loadRoutesFrom(__DIR__ . '/../routes/api-dev.php');
             }
         });
         if ($enableDev) {
             Route::group($this->getRoutesConfig('routes_web'), function () {
-                $this->loadRoutesFrom(__DIR__ . '/../routes/web-devel.php');
+                $this->loadRoutesFrom(__DIR__ . '/../routes/web-dev.php');
             });
         }
     }

@@ -12,7 +12,7 @@ use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class SiriDevelController extends Controller
+class SiriDevController extends Controller
 {
     /**
      * Get at list of available, active subscribed channels.
