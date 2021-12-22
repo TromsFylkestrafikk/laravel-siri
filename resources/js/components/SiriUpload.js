@@ -9,7 +9,7 @@ export default {
     },
 
     mounted() {
-        axios.get('/api/siri/devel/subscriptions').then((result) => {
+        axios.get('/api/siri/dev/subscriptions').then((result) => {
             this.subscriptions = result.data.subscriptions;
         });
     },

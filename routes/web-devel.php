@@ -6,4 +6,4 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::view('devel/emulate', 'siri::devel.upload-xml');
+Route::view('emulate', 'siri::devel.upload-xml')->name('siri.emulate');
