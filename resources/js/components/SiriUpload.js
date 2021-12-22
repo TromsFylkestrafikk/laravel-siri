@@ -9,7 +9,7 @@ export default {
     },
 
     mounted() {
-        axios.get('/api/siri/dev/subscriptions').then((result) => {
+        axios.get(route('siri.dev.subscriptions')).then((result) => {
             this.subscriptions = result.data.subscriptions;
         });
     },
@@ -22,10 +22,9 @@ export default {
             }
             const data = await file.files[0].text();
             const sub = this.subscriptions[this.selectedId];
-            const url = `/api/siri/consume/${sub.channel}/${sub.id}`;
             await axios({
                 method: 'post',
-                url,
+                url: route('siri.consume', [sub.channel, sub.id]),
                 data,
                 headers: { 'Content-Type': 'application/xml' },
             });

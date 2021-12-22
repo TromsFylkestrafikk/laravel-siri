@@ -6,6 +6,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="{{ asset('siri/js/manifest.js')}}"></script>
     <script src="{{ asset('siri/js/vendor.js')}}"></script>
+    @env('local')
+    @routes
+    @endenv
     <title>Upload SIRI xml</title>
   </head>
   <body>

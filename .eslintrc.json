@@ -13,7 +13,8 @@
     ],
     "globals": {
         "Vue": "readonly",
-        "axios": "readonly"
+        "axios": "readonly",
+	"route": "readonly"
     },
     "parserOptions": {
         "sourceType": "module"

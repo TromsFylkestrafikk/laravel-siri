@@ -25,7 +25,8 @@
         "illuminate/routing": "^8.0",
         "illuminate/support": "^8.0",
         "ramsey/uuid": "^4.1",
-        "tromsfylkestrafikk/christmas-tree-parser": "dev-master"
+        "tromsfylkestrafikk/christmas-tree-parser": "dev-master",
+        "tightenco/ziggy": "^1.4"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.6",
