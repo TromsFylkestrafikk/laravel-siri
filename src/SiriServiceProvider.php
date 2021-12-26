@@ -26,7 +26,7 @@ class SiriServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/siri.php' => config_path('siri.php'),
-            ], 'config');
+            ], ['siri', 'config', 'siri-config']);
         }
     }
 
@@ -36,7 +36,7 @@ class SiriServiceProvider extends ServiceProvider
     protected function publishAssets()
     {
         if ($this->app->runningInConsole()) {
-            $this->publishes([__DIR__ . '/../dist' => public_path('siri')], 'assets');
+            $this->publishes([__DIR__ . '/../dist' => public_path('siri')], ['siri', 'assets', 'siri-assets']);
         }
     }
 
