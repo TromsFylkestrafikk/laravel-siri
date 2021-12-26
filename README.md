@@ -36,15 +36,7 @@ Publish the required configuration, then customize it in `config/siri.php`:
 artisan vendor:publish --tag=siri-config
 ```
 
-## Usage
-
-The following artisan commands manages SIRI subscriptions:
-
-- `siri:subscribe` – Create new SIRI subscription
-- `siri:list` – Show current SIRI subscriptions and status.
-- `siri:terminate` – Remove SIRI subscription
-
-## Development
+### Emulate published siri updates.
 
 This tool uses a simple upload form to emulate post request from siri
 services.  This uses Vue and Axios to perform the actual request, but
@@ -53,3 +45,12 @@ this has to be mix'ed using Laravel Mix.
 ```shell
 npx mix --mix-config ./vendor/tromsfylkestrafikk/laravel-siri/webpack.mix.js
 ```
+
+## Usage
+
+The following artisan commands manages SIRI subscriptions:
+
+- `siri:subscribe` – Create new SIRI subscription
+- `siri:list` – Show current SIRI subscriptions and status.
+- `siri:terminate` – Remove SIRI subscription
+
