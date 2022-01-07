@@ -1,0 +1,23 @@
+{
+    "extends": [
+        "plugin:vue/essential",
+        "plugin:vue/recommended",
+        "plugin:vue/strongly-recommended"
+    ],
+    "globals": {
+        "Vue": "readonly"
+    },
+    "plugins": [
+        "vue"
+    ],
+    "rules": {
+        "vue/max-attributes-per-line": ["error", {
+            "singleline": {
+                "max": 3
+            },
+            "multiline": {
+                "max": 1
+            }
+        }]
+    }
+}
