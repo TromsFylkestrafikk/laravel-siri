@@ -36,6 +36,13 @@ Publish the required configuration, then customize it in `config/siri.php`:
 artisan vendor:publish --tag=siri-config
 ```
 
+This may include using the following environment entries in .env:
+```
+SIRI_DISK=local
+SIRI_SUB_HEARTBEAT_INTERVAL=PT1M
+SIRI_SUB_REQUESTOR_REF="Unicorn and rainbows"
+```
+
 ### Emulate published siri updates.
 
 This tool uses a simple upload form to emulate post request from siri
@@ -54,3 +61,19 @@ The following artisan commands manages SIRI subscriptions:
 - `siri:list` – Show current SIRI subscriptions and status.
 - `siri:terminate` – Remove SIRI subscription
 
+## Development
+
+Add the following lines in your laravel installation's webpack.mix.js
+during development of this package:
+
+```javascript
+/**
+ * TromsFylkestrafikk/laravel-siri stuff
+ */
+mix.js('vendor/tromsfylkestrafikk/laravel-siri/resources/js/app.js', 'public/siri/js')
+    .vue()
+    .extract([
+        'axios',
+        'vue',
+    ]);
+```
