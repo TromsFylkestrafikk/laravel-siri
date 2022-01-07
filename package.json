@@ -5,8 +5,8 @@
     "author": "Kåre Slettnes <kaare.slettnes@tffk.no>",
     "license": "GPL-3.0-or-later",
     "main": "index.js",
+    "homepage": "https://github.com/TromsFylkestrafikk/laravel-siri#readme",
     "scripts": {
-        "test": "test",
         "prepare": "husky install"
     },
     "repository": {
@@ -16,20 +16,19 @@
     "bugs": {
         "url": "https://github.com/TromsFylkestrafikk/laravel-siri/issues"
     },
-    "homepage": "https://github.com/TromsFylkestrafikk/laravel-siri#readme",
     "devDependencies": {
+        "eslint": "^8.5.0",
+        "eslint-config-airbnb-base": "^15.0.0",
+        "eslint-plugin-import": "^2.25.3",
+        "eslint-plugin-vue": "^8.2.0",
         "husky": "^7.0.4",
-        "lint-staged": "^12.1.2"
+        "laravel-mix": "^6.0.39",
+        "lint-staged": "^12.1.2",
+        "vue-loader": "^15.9.8",
+        "vue-template-compiler": "^2.6.14"
     },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
-    "lint-staged": {
-        "src/**/*.php": [
-            "./vendor/bin/phpcs -n --colors --standard=phpcs.xml",
-            "./vendor/bin/phpstan analyze"
-        ]
+    "dependencies": {
+        "axios": "^0.24.0",
+        "vue": "^2.6.14"
     }
 }

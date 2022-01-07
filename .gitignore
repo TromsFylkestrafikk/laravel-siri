@@ -8,6 +8,7 @@ composer.lock
 /.tern-port
 .php_cs.cache
 /.eslintcache
+/_ide_helper*
 
 # Auto-generated files
 .log/

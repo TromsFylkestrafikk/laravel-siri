@@ -1,15 +1,37 @@
 <?php
 
+/**
+ * Development controller
+ *
+ * Logic related to development of this package.
+ */
+
 namespace TromsFylkestrafikk\Siri\Http\Controllers;
 
+use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
-class SiriDebugController extends Controller
+class SiriDevController extends Controller
 {
+    /**
+     * Get at list of available, active subscribed channels.
+     *
+     * @return array
+     */
+    public function subscriptions()
+    {
+        return [
+            'subscriptions' => SiriSubscription::whereActive(true)
+                ->get(['id', 'channel', 'subscription_url'])
+                ->keyBy('id'),
+        ];
+    }
+
     /**
      * Emulate successful subscription request response.
      */
-    public function subscribeOk(Request $request)
+    public function subscribeOk()
     {
         return <<<EOT
 <?xml version="1.0"?>
@@ -29,5 +51,13 @@ class SiriDebugController extends Controller
   </AA:SubscriptionResponse>
 </AA:Siri>
 EOT;
+    }
+
+    /**
+     * Emulate subscription response with failure.
+     */
+    public function subscribeFailed()
+    {
+        return response("You're not allowed here", Response::HTTP_FORBIDDEN);
     }
 }
