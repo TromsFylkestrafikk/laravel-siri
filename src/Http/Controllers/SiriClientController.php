@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 use TromsFylkestrafikk\Siri\Helpers\XmlFile;
+use TromsFylkestrafikk\Siri\Siri;
 use TromsFylkestrafikk\Xml\ChristmasTreeParser;
 
 class SiriClientController extends Controller
@@ -55,6 +56,8 @@ class SiriClientController extends Controller
     public function heartbeatNotification(ChristmasTreeParser $reader)
     {
         Log::debug("Got heartbeat notification response");
+        $xml = $reader->expandSimpleXml()->children(Siri::NS);
+        dump($xml->RequestTimestamp);
     }
 
     public function serviceDelivery(ChristmasTreeParser $reader)
