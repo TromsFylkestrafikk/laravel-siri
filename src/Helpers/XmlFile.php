@@ -4,12 +4,20 @@ namespace TromsFylkestrafikk\Siri\Helpers;
 
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Hide the Xml file handling mess.
+ */
 class XmlFile
 {
     protected $disk;
     protected $filename;
     protected $path;
 
+    /**
+     * Create new wrapper for handling a single XML file.
+     *
+     * @param string $filename Siri XML base filename, without path.
+     */
     final public function __construct($filename)
     {
         $this->disk = Storage::disk(config('siri.disk'));
@@ -17,9 +25,16 @@ class XmlFile
         $this->path = config('siri.folder') . '/' . $this->filename;
     }
 
+    /**
+     * Replace/set content in XML file.
+     *
+     * @param string|resource $content
+     *
+     * @return bool
+     */
     public function put($content)
     {
-        $this->disk->put($this->path, $content);
+        return $this->disk->put($this->path, $content);
     }
 
     /**
@@ -47,6 +62,11 @@ class XmlFile
         return new static($filename);
     }
 
+    /**
+     * Get the full filesystem (or uri) for this xml file.
+     *
+     * @return string
+     */
     public function getPath()
     {
         return $this->disk->path($this->path);

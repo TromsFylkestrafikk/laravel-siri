@@ -38,7 +38,6 @@ class SiriClientController extends Controller
         $xmlFile = XmlFile::create($this->channel);
         $xmlFile->put($request->getContent(true));
         $reader = new ChristmasTreeParser();
-        dump($xmlFile->getPath());
         $reader->open($xmlFile->getPath());
         $reader->addCallback(['Siri', 'SubscriptionResponse'], [$this, 'subscriptionResponse'])
             ->addCallback(['Siri', 'HeartbeatNotification'], [$this, 'heartbeatNotification'])
