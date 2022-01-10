@@ -2,15 +2,19 @@
 
 namespace TromsFylkestrafikk\Siri\Http\Controllers;
 
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 use TromsFylkestrafikk\Siri\Helpers\XmlFile;
+use TromsFylkestrafikk\Siri\Models\SiriSubscription;
+use TromsFylkestrafikk\Siri\Traits\LogPrefix;
 use TromsFylkestrafikk\Siri\Siri;
 use TromsFylkestrafikk\Xml\ChristmasTreeParser;
 
 class SiriClientController extends Controller
 {
+    use LogPrefix;
+
     /**
      * SIRI channel for our request.
      *
@@ -34,6 +38,7 @@ class SiriClientController extends Controller
 
     public function consume(Request $request, $channel, SiriSubscription $subscription)
     {
+        $this->setLogPrefix('Siri[%s]: ', $channel);
         $this->channel = $channel;
         $this->subscription = $subscription;
         $xmlFile = XmlFile::create($this->channel);
@@ -45,23 +50,24 @@ class SiriClientController extends Controller
             ->addCallback(['Siri', 'ServiceDelivery'], [$this, 'serviceDelivery'])
             ->parse()
             ->close();
-        return sprintf("Got request of type %s on subscription '%s'", $channel, $subscription->id);
     }
 
     public function subscriptionResponse(ChristmasTreeParser $reader)
     {
-        Log::debug("Got subscription response");
+        $this->logDebug("Subscription response");
     }
 
     public function heartbeatNotification(ChristmasTreeParser $reader)
     {
-        Log::debug("Got heartbeat notification response");
         $xml = $reader->expandSimpleXml()->children(Siri::NS);
-        dump($xml->RequestTimestamp);
+        $date = new DateTime($xml->RequestTimestamp);
+        $this->logDebug("Heartbeat notification date: %s", $date->format('Y-m-d H:i:s'));
+        $this->subscription->received++;
+        $this->subscription->save();
     }
 
     public function serviceDelivery(ChristmasTreeParser $reader)
     {
-        Log::debug("Got service delivery. Actual content.");
+        $this->logDebug("Service delivery. Actual content.");
     }
 }
