@@ -4,7 +4,7 @@ namespace TromsFylkestrafikk\Siri\Http\Controllers;
 
 use DateTime;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Response;
 use TromsFylkestrafikk\Siri\Helpers\XmlFile;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 use TromsFylkestrafikk\Siri\Traits\LogPrefix;

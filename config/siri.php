@@ -65,4 +65,18 @@ return [
     | ------------------------------------------------------------------------
     */
     'folder' => 'siri',
+
+    /*
+    | ------------------------------------------------------------------------
+    | Parse XML in queued jobs past this pivot size
+    | ------------------------------------------------------------------------
+    |
+    | Send parsing of consumed XMLs to queued jobs when files become larger than
+    | this, per channel.
+    */
+    'queue_pivot' => [
+        'VM' => 64000,
+        'ET' => 64000,
+        'SX' => 64000,
+    ],
 ];

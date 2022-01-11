@@ -2,12 +2,13 @@
 
 namespace TromsFylkestrafikk\Siri;
 
+use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use TromsFylkestrafikk\Siri\Console\CreateSubscription;
 use TromsFylkestrafikk\Siri\Console\ListSubscriptions;
 use TromsFylkestrafikk\Siri\Console\TerminateSubscription;
+use TromsFylkestrafikk\Siri\Http\Middleware\SubscribedChannel;
 
 class SiriServiceProvider extends ServiceProvider
 {
@@ -16,6 +17,7 @@ class SiriServiceProvider extends ServiceProvider
         $this->publishConfig();
         $this->publishAssets();
         $this->registerMigrations();
+        $this->registerMiddleware();
         $this->registerConsoleCommands();
         $this->registerRoutes();
         $this->registerViews();
@@ -46,6 +48,12 @@ class SiriServiceProvider extends ServiceProvider
     protected function registerMigrations()
     {
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+    }
+
+    protected function registerMiddleware()
+    {
+        $router = $this->app->make(Router::class);
+        $router->aliasMiddleware('channel.subscribed', SubscribedChannel::class);
     }
 
     /**
