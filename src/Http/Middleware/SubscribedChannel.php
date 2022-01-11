@@ -18,7 +18,7 @@ class SubscribedChannel
      */
     public function handle(Request $request, Closure $next)
     {
-        /** @var \TromsFylkestrafikk\Siri\Models\SiriSubscription $subscription */
+        /** @var SiriSubscription $subscription */
         $subscription = $request->route('subscription');
         if (strtolower($subscription->channel) !== strtolower($request->route('channel'))) {
             return response('Wrong channel', Response::HTTP_CONFLICT);
