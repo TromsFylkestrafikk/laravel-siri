@@ -103,7 +103,6 @@ class SiriClientController extends Controller
 
     public function subscriptionResponse(ChristmasTreeParser $reader)
     {
-        $this->logDebug("Subscription response");
         $this->xmlType = 'SubscriptionResponse';
         $this->validXml = true;
         $reader->halt();
@@ -123,7 +122,6 @@ class SiriClientController extends Controller
 
     public function serviceDelivery(ChristmasTreeParser $reader)
     {
-        $this->logDebug("Service delivery. Actual content.");
         $this->xmlType = 'ServiceDelivery';
         $this->validXml = true;
         if ($this->queued) {
