@@ -75,8 +75,22 @@ return [
     | this, per channel.
     */
     'queue_pivot' => [
-        'VM' => 64000,
         'ET' => 64000,
         'SX' => 64000,
+        'VM' => 64000,
+    ],
+
+    /*
+    | ------------------------------------------------------------------------
+    | Save XMLs
+    | ------------------------------------------------------------------------
+    |
+    | All incoming XMLs are saved during processing. Set these to save the xmls
+    | permanently for each channel.
+    */
+    'save_xml' => [
+        'ET' => false,
+        'SX' => false,
+        'VM' => false,
     ],
 ];
