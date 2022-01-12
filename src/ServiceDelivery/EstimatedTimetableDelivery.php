@@ -9,7 +9,11 @@ class EstimatedTimetableDelivery extends Base
     public function process()
     {
         parent::process();
-        $this->reader->addCallback(['Siri', 'ServiceDelivery', 'EstimatedTimetableDelivery'], [$this, 'etDelivery'])
+    }
+
+    public function setupHandlers()
+    {
+        $this->reader->addNestedCallback(['EstimatedTimetableDelivery'], [$this, 'etDelivery'])
             ->parse()
             ->close();
     }

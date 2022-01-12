@@ -8,6 +8,11 @@ use TromsFylkestrafikk\Xml\ChristmasTreeParser;
 abstract class Base
 {
     /**
+     * @var string
+     */
+    public $producerRef;
+
+    /**
      * @var XmlFile
      */
     protected $xmlFile;
@@ -32,5 +37,13 @@ abstract class Base
     {
         $this->reader = new ChristmasTreeParser();
         $this->reader->open($this->xmlFile->getPath());
+        $this->reader->addCallback(['Siri', 'ServiceDelivery'], [$this, 'setupHandlers'])
+            ->addCallback(['Siri', 'ServiceDelivery', 'ProducerRef'], function ($reader) {
+                $this->producerRef = $reader->readString();
+            })
+            ->parse()
+            ->close();
     }
+
+    abstract public function setupHandlers();
 }
