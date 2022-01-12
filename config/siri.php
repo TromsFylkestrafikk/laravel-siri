@@ -58,4 +58,39 @@ return [
     | - Last failed ET/SX/VM post.
     */
     'disk' => env('SIRI_DISK', 'local'),
+
+    /*
+    | ------------------------------------------------------------------------
+    | Folder on siri disk for SIRI data.
+    | ------------------------------------------------------------------------
+    */
+    'folder' => 'siri',
+
+    /*
+    | ------------------------------------------------------------------------
+    | Parse XML in queued jobs past this pivot size
+    | ------------------------------------------------------------------------
+    |
+    | Send parsing of consumed XMLs to queued jobs when files become larger than
+    | this, per channel.
+    */
+    'queue_pivot' => [
+        'ET' => 64000,
+        'SX' => 64000,
+        'VM' => 64000,
+    ],
+
+    /*
+    | ------------------------------------------------------------------------
+    | Save XMLs
+    | ------------------------------------------------------------------------
+    |
+    | All incoming XMLs are saved during processing. Set these to save the xmls
+    | permanently for each channel.
+    */
+    'save_xml' => [
+        'ET' => false,
+        'SX' => false,
+        'VM' => false,
+    ],
 ];
