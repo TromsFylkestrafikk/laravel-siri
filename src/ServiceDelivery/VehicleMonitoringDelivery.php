@@ -25,74 +25,47 @@ class VehicleMonitoringDelivery extends Base
     protected $activities;
 
     /**
-     * Mapping between xpath and destination key in activity array.
+     * Tree of XML elements to harvest.
      *
-     * @var string[]
+     * @var array
      */
-    public static $xpathMap = [
-        '//siri:RecordedAtTime' => 'recordedAtTime',
-        '//siri:ProgressBetweenStops/siri:LinkDistance' => 'progressLinkDistance',
-        '//siri:ProgressBetweenStops/siri:Percentage' => 'progressPercentage',
-        '//siri:MonitoredVehicleJourney/siri:LineRef' => 'lineRef',
-        '//siri:MonitoredVehicleJourney/siri:FramedVehicleJourneyRef/siri:DataFrameRef' => 'journeyDataFrameRef',
-        '//siri:MonitoredVehicleJourney/siri:FramedVehicleJourneyRef/siri:DatedVehicleJourneyRef' => 'journeyRef',
-        '//siri:MonitoredVehicleJourney/siri:PublishedLineName' => 'lineName',
-        '//siri:MonitoredVehicleJourney/siri:Monitored' => 'monitored',
-        '//siri:MonitoredVehicleJourney/siri:VehicleLocation/siri:Latitude' => 'latitude',
-        '//siri:MonitoredVehicleJourney/siri:VehicleLocation/siri:Longitude' => 'longitude',
-        '//siri:MonitoredVehicleJourney/siri:Bearing' => 'bearing',
-        '//siri:MonitoredVehicleJourney/siri:Delay' => 'delay',
-        '//siri:MonitoredVehicleJourney/siri:VehicleRef' => 'vehicleRef',
-        '//siri:MonitoredVehicleJourney/siri:MonitoredCall/siri:StopPointRef' => 'callStopPointRef',
-        '//siri:MonitoredVehicleJourney/siri:MonitoredCall/siri:VisitNumber' => 'callVisitNumber',
-        '//siri:MonitoredVehicleJourney/siri:MonitoredCall/siri:StopPointName' => 'callStopPointName',
-        '//siri:MonitoredVehicleJourney/siri:MonitoredCall/siri:VehicleAtStop' => 'callVehicleAtStop',
-    ];
-
     public static $activityTree = [
-        'RecordedAtTime' => 'single',
+        'RecordedAtTime' => 'string',
         'ProgressBetweenStops' => [
-            'LinkDistance' => 'single',
-            'Percentage' => 'single',
+            'LinkDistance' => 'float',
+            'Percentage' => 'float',
         ],
         'MonitoredVehicleJourney' => [
-            'LineRef' => 'single',
+            'LineRef' => 'string',
             'FramedVehicleJourneyRef' => [
-                'DataFrameRef' => 'single',
-                'DatedVehicleJourneyRef' => 'single',
+                'DataFrameRef' => 'string',
+                'DatedVehicleJourneyRef' => 'string',
             ],
-            'PublishedLineName' => 'single',
-            'Monitored' => 'single',
+            'PublishedLineName' => 'string',
+            'Monitored' => 'bool',
             'VehicleLocation' => [
-                'Latitude' => 'single',
-                'Longitude' => 'single',
+                'Latitude' => 'float',
+                'Longitude' => 'float',
             ],
-            'Bearing' => 'single',
-            'Delay' => 'single',
-            'VehicleRef' => 'single',
+            'Bearing' => 'string',
+            'Delay' => 'string',
+            'VehicleRef' => 'string',
             'PreviousCalls' => [
                 'PreviousCall' => [
                     '#multiple' => true,
-                    'StopPointRef' => 'single',
-                    'VisitNumber' => 'single',
-                    'StopPointName' => 'single',
-                    'VehicleAtStop' => 'single',
+                    'StopPointRef' => 'string',
+                    'VisitNumber' => 'string',
+                    'StopPointName' => 'string',
+                    'VehicleAtStop' => 'bool',
                 ],
             ],
             'MonitoredCall' => [
-                'StopPointRef' => 'single',
-                'VisitNumber' => 'single',
-                'StopPointName' => 'single',
-                'VehicleAtStop' => 'single',
+                'StopPointRef' => 'string',
+                'VisitNumber' => 'string',
+                'StopPointName' => 'string',
+                'VehicleAtStop' => 'bool',
             ],
         ],
-    ];
-
-    public static $xpathPrevCallMap = [
-        'siri:StopPointRef' => 'stopPointRef',
-        'siri:VisitNumber' => 'visitNumber',
-        'siri:StopPointName' => 'stopPointName',
-        'siri:VehicleAtStop' => 'vehicleAtStop',
     ];
 
     public function process()
@@ -127,17 +100,24 @@ class VehicleMonitoringDelivery extends Base
      */
     public function vehicleActivity(ChristmasTreeParser $reader)
     {
-        $activity = [];
         $actXml = $reader->expandSimpleXml();
-        $actXml->registerXPathNamespace('siri', Siri::NS);
-        foreach (self::$xpathMap as $xpath => $destKey) {
-            $hits = $actXml->xpath($xpath);
-            if (count($hits)) {
-                $activity[$destKey] = trim((string) $hits[0]);
+        $this->activities[] = $this->getXmlChildElements(self::$activityTree, $actXml);
+        $reader->halt();
+    }
+
+    protected function getXmlChildElements(array $map, SimpleXMLElement $xml)
+    {
+        $ret = [];
+        foreach (array_keys($map) as $element) {
+            if (strpos($element, '#') === 0) {
+                continue;
+            }
+            $elementVal = $this->getXmlElement($element, $map, $xml);
+            if ($elementVal !== null) {
+                $ret[$element] = $elementVal;
             }
         }
-        $this->activities[] = $activity;
-        $reader->halt();
+        return $ret;
     }
 
     public function getXmlElement($element, $map, SimpleXMLElement $xml)
@@ -148,9 +128,8 @@ class VehicleMonitoringDelivery extends Base
             return null;
         }
         if (!is_array($map[$element])) {
-            return trim((string) $elXml[0]);
+            return $this->castValue(trim((string) $elXml[0]), $map[$element]);
         }
-
         if (!empty($map[$element]['#multiple'])) {
             $childItems = [];
             foreach ($elXml as $childXml) {
@@ -161,39 +140,17 @@ class VehicleMonitoringDelivery extends Base
         return $this->getXmlChildElements($map[$element], $elXml[0]);
     }
 
-    protected function getXmlChildElements($map, SimpleXMLElement $xml)
+    protected function castValue($value, $cast)
     {
-        $ret = [];
-        foreach ($map as $element => $children) {
-            $ret[$element] = $this->getXmlElement($element, $map, $xml);
-        }
-        return $ret;
-    }
-
-    protected function parsePreviousCalls(SimpleXMLElement $xml, &$activity)
-    {
-        // $actXml->registerXPathNamespace('siri', Siri::NS);
-        $prevCalls = [];
-        foreach ($xml->xpath('//siri:MonitoredVehicleJourney/siri:PreviousCalls/siri:PreviousCall') as $prev) {
-            $call = [];
-            $this->xmlToArray($prev, self::$xpathPrevCallMap, $call);
-            $prevCalls[] = $call;
-        }
-    }
-
-    /**
-     * @param SimpleXMLElement $xml
-     * @param array $map
-     * @param array $dest
-     */
-    protected function xmlToArray($xml, $map, &$dest)
-    {
-        $xml->registerXPathNamespace('siri', Siri::NS);
-        foreach ($map as $xpath => $destKey) {
-            $hits = $xml->xpath($xpath);
-            if (count($hits)) {
-                $dest[$destKey] = trim((string) $hits[0]);
-            }
+        switch ($cast) {
+            case 'int':
+                return intval($value);
+            case 'float':
+                return floatval($value);
+            case 'string':
+                return $value;
+            case 'bool':
+                return strtolower($value) === 'yes';
         }
     }
 }
