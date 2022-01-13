@@ -30,7 +30,22 @@ class VehicleMonitoringDelivery extends Base
      */
     public static $xpathMap = [
         '//siri:RecordedAtTime' => 'recordedAtTime',
-        '//siri:ProgressBetweenStops/siri:LinkDistance' => 'linkDistance',
+        '//siri:ProgressBetweenStops/siri:LinkDistance' => 'progressLinkDistance',
+        '//siri:ProgressBetweenStops/siri:Percentage' => 'progressPercentage',
+        '//siri:MonitoredVehicleJourney/siri:LineRef' => 'lineRef',
+        '//siri:MonitoredVehicleJourney/siri:FramedVehicleJourneyRef/siri:DataFrameRef' => 'journeyDataFrameRef',
+        '//siri:MonitoredVehicleJourney/siri:FramedVehicleJourneyRef/siri:DatedVehicleJourneyRef' => 'journeyRef',
+        '//siri:MonitoredVehicleJourney/siri:PublishedLineName' => 'lineName',
+        '//siri:MonitoredVehicleJourney/siri:Monitored' => 'monitored',
+        '//siri:MonitoredVehicleJourney/siri:VehicleLocation/siri:Latitude' => 'latitude',
+        '//siri:MonitoredVehicleJourney/siri:VehicleLocation/siri:Longitude' => 'longitude',
+        '//siri:MonitoredVehicleJourney/siri:Bearing' => 'bearing',
+        '//siri:MonitoredVehicleJourney/siri:Delay' => 'delay',
+        '//siri:MonitoredVehicleJourney/siri:VehicleRef' => 'vehicleRef',
+        '//siri:MonitoredVehicleJourney/siri:MonitoredCall/siri:StopPointRef' => 'callStopPointRef',
+        '//siri:MonitoredVehicleJourney/siri:MonitoredCall/siri:VisitNumber' => 'callVisitNumber',
+        '//siri:MonitoredVehicleJourney/siri:MonitoredCall/siri:StopPointName' => 'callStopPointName',
+        '//siri:MonitoredVehicleJourney/siri:MonitoredCall/siri:VehicleAtStop' => 'callVehicleAtStop',
     ];
 
     public function process()
