@@ -30,7 +30,7 @@ class VehicleMonitoringDelivery extends Base
      *
      * @var array
      */
-    public static $activityTree = [
+    public static $activitySchema = [
         'RecordedAtTime' => 'string',
         'ProgressBetweenStops' => [
             'LinkDistance' => 'float',
@@ -102,6 +102,6 @@ class VehicleMonitoringDelivery extends Base
     public function vehicleActivity(ChristmasTreeParser $reader)
     {
         $actXml = $reader->expandSimpleXml();
-        $this->activities[] = XmlMapper::getXmlChildElements(static::$activityTree, $actXml);
+        $this->activities[] = XmlMapper::getXmlChildElements(static::$activitySchema, $actXml);
     }
 }

@@ -38,8 +38,12 @@ use TromsFylkestrafikk\Siri\Siri;
 class XmlMapper
 {
     /**
-     * @param array $schema Map of key => value pairs to extract from xml.
+     * Extract XML into an array using a php array as schema.
+     *
+     * @param array $schema Map of element => type pairs to extract from xml.
      * @param SimpleXMLElement $xml The XML tree to extract values from.
+     *
+     * @return array
      */
     public static function getXmlChildElements(array $schema, SimpleXMLElement $xml)
     {
@@ -56,6 +60,14 @@ class XmlMapper
         return $ret;
     }
 
+    /**
+     * The the value of a single element from XML.
+     *
+     * @param string $element Name of element to get
+     * @param array $schema The '$element' argument must be present within this.
+     *
+     * @return mixed
+     */
     protected static function getXmlElement($element, $schema, SimpleXMLElement $xml)
     {
         $xml->registerXPathNamespace('siri', Siri::NS);
@@ -76,6 +88,14 @@ class XmlMapper
         return static::getXmlChildElements($schema[$element], $elXml[0]);
     }
 
+    /**
+     * Cast given value to type $cast.
+     *
+     * @param string $value
+     * @param string $cast
+     *
+     * @return mixed
+     */
     public static function castValue($value, $cast)
     {
         switch ($cast) {
