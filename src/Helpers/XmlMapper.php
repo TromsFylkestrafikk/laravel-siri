@@ -45,7 +45,7 @@ class XmlMapper
      *
      * @return array
      */
-    public static function getXmlChildElements(array $schema, SimpleXMLElement $xml)
+    public static function getXmlElements(array $schema, SimpleXMLElement $xml)
     {
         $ret = [];
         foreach (array_keys($schema) as $element) {
@@ -81,11 +81,11 @@ class XmlMapper
         if (!empty($schema[$element]['#multiple'])) {
             $childItems = [];
             foreach ($elXml as $childXml) {
-                $childItems[] = static::getXmlChildElements($schema[$element], $childXml);
+                $childItems[] = static::getXmlElements($schema[$element], $childXml);
             }
             return $childItems;
         }
-        return static::getXmlChildElements($schema[$element], $elXml[0]);
+        return static::getXmlElements($schema[$element], $elXml[0]);
     }
 
     /**

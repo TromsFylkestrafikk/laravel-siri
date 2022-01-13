@@ -102,6 +102,6 @@ class VehicleMonitoringDelivery extends Base
     public function vehicleActivity(ChristmasTreeParser $reader)
     {
         $actXml = $reader->expandSimpleXml();
-        $this->activities[] = XmlMapper::getXmlChildElements(static::$activitySchema, $actXml);
+        $this->activities[] = XmlMapper::getXmlElements(static::$activitySchema, $actXml);
     }
 }
