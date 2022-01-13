@@ -2,6 +2,7 @@
 
 namespace TromsFylkestrafikk\Siri\Helpers;
 
+use Illuminate\Support\Str;
 use SimpleXMLElement;
 use TromsFylkestrafikk\Siri\Siri;
 
@@ -38,6 +39,19 @@ use TromsFylkestrafikk\Siri\Siri;
 class XmlMapper
 {
     /**
+     * @var array
+     */
+    protected $options;
+
+    /**
+     * @param array $options Settings for how to extract/map elements.
+     */
+    public function __construct($options = [])
+    {
+        $this->options = $options;
+    }
+
+    /**
      * Extract XML into an array using a php array as schema.
      *
      * @param array $schema Map of element => type pairs to extract from xml.
@@ -45,19 +59,28 @@ class XmlMapper
      *
      * @return array
      */
-    public static function getXmlElements(array $schema, SimpleXMLElement $xml)
+    public function getXmlElements(array $schema, SimpleXMLElement $xml)
     {
         $ret = [];
         foreach (array_keys($schema) as $element) {
             if (strpos($element, '#') === 0) {
                 continue;
             }
-            $elementVal = static::getXmlElement($element, $schema, $xml);
+            $elementVal = $this->getXmlElement($element, $schema, $xml);
             if ($elementVal !== null) {
-                $ret[$element] = $elementVal;
+                $ret[$this->destKey($element)] = $elementVal;
             }
         }
         return $ret;
+    }
+
+    protected function destKey($elementName)
+    {
+        if (empty($this->options['element_case_style'])) {
+            return $elementName;
+        }
+        $caseMethod = $this->options['element_case_style'];
+        return Str::$caseMethod($elementName);
     }
 
     /**
@@ -68,7 +91,7 @@ class XmlMapper
      *
      * @return mixed
      */
-    protected static function getXmlElement($element, $schema, SimpleXMLElement $xml)
+    protected function getXmlElement($element, $schema, SimpleXMLElement $xml)
     {
         $xml->registerXPathNamespace('siri', Siri::NS);
         $elXml = $xml->xpath("siri:$element");
@@ -81,11 +104,11 @@ class XmlMapper
         if (!empty($schema[$element]['#multiple'])) {
             $childItems = [];
             foreach ($elXml as $childXml) {
-                $childItems[] = static::getXmlElements($schema[$element], $childXml);
+                $childItems[] = $this->getXmlElements($schema[$element], $childXml);
             }
             return $childItems;
         }
-        return static::getXmlElements($schema[$element], $elXml[0]);
+        return $this->getXmlElements($schema[$element], $elXml[0]);
     }
 
     /**

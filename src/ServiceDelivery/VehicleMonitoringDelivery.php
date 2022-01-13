@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Log;
 use SimpleXMLElement;
 use TromsFylkestrafikk\Xml\ChristmasTreeParser;
 use TromsFylkestrafikk\Siri\Siri;
-use TromsFylkestrafikk\Siri\Helpers\XmlMapper;
 
 class VehicleMonitoringDelivery extends Base
 {
@@ -102,6 +101,6 @@ class VehicleMonitoringDelivery extends Base
     public function vehicleActivity(ChristmasTreeParser $reader)
     {
         $actXml = $reader->expandSimpleXml();
-        $this->activities[] = XmlMapper::getXmlElements(static::$activitySchema, $actXml);
+        $this->activities[] = $this->mapper->getXmlElements(static::$activitySchema, $actXml);
     }
 }
