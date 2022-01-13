@@ -109,5 +109,5 @@ return [
     |   * snake: recorded_at_time
     |   * kebab: recorded-at-time
     */
-    'xml_element_case_style' => 'snake',
+    'xml_element_case_style' => 'camel',
 ];

@@ -2,10 +2,7 @@
 
 namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
-use Illuminate\Support\Facades\Log;
-use SimpleXMLElement;
 use TromsFylkestrafikk\Xml\ChristmasTreeParser;
-use TromsFylkestrafikk\Siri\Siri;
 
 class VehicleMonitoringDelivery extends Base
 {
@@ -88,10 +85,11 @@ class VehicleMonitoringDelivery extends Base
 
     /**
      * ChristmasTreeParser callback.
+     *
+     * Prepare target for VehicleMonitoringDelivery content.
      */
     public function vmDelivery()
     {
-        Log::debug("VehicleMonitoring delivery");
         $this->activities = [];
     }
 
@@ -101,6 +99,6 @@ class VehicleMonitoringDelivery extends Base
     public function vehicleActivity(ChristmasTreeParser $reader)
     {
         $actXml = $reader->expandSimpleXml();
-        $this->activities[] = $this->mapper->getXmlElements(static::$activitySchema, $actXml);
+        $this->activities[] = app('siri.xml_mapper')->getXmlElements(static::$activitySchema, $actXml);
     }
 }

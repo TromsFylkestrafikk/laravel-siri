@@ -1,6 +1,6 @@
 <?php
 
-namespace TromsFylkestrafikk\Siri\Helpers;
+namespace TromsFylkestrafikk\Siri\Services;
 
 use Illuminate\Support\Str;
 use SimpleXMLElement;
