@@ -81,7 +81,9 @@ class SiriClientController extends Controller
         } catch (IllegalStateException $e) {
             return response('Illegal XML.', Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            $this->logError("%s[%d]: %s\n%s", $e->getFile(), $e->getLine(), $e->getMessage(), $e->getTraceAsString());
+            $traceLines = array_slice(explode("\n", $e->getTraceAsString()), 0, 6);
+            $trace = implode("\n", $traceLines);
+            $this->logError("%s[%d]: %s\n%s", $e->getFile(), $e->getLine(), $e->getMessage(), $trace);
             return response('Fuzz while processing XML');
         }
         return response($this->validXml ? 'OK' : "Got invalid XML");
@@ -101,6 +103,9 @@ class SiriClientController extends Controller
             ->close();
         $this->logDebug("Got XML of type %s", $this->xmlType);
 
+        if ($this->xmlType !== 'ServiceDelivery') {
+            return;
+        }
         if ($this->queued) {
             $this->logDebug("Using queued processing");
             return $this->handleQueued();

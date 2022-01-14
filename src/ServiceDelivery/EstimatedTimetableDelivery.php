@@ -60,9 +60,7 @@ class EstimatedTimetableDelivery extends Base
             ->addNestedCallback(
                 ['EstimatedTimetableDelivery', 'EstimatedJourneyVersionFrame', 'EstimatedVehicleJourney'],
                 [$this, 'estimatedVehicleJourney']
-            )
-            ->parse()
-            ->close();
+            );
     }
 
     public function etDelivery()

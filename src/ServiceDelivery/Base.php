@@ -63,6 +63,7 @@ abstract class Base
     public function process()
     {
         $this->reader = new ChristmasTreeParser();
+        $this->logDebug("Incoming file: %s", $this->xmlFile->getPath());
         $this->reader->open($this->xmlFile->getPath());
         $this->reader->addCallback(['Siri', 'ServiceDelivery'], [$this, 'setupHandlers'])
             ->addCallback(['Siri', 'ServiceDelivery', 'ProducerRef'], function ($reader) {
