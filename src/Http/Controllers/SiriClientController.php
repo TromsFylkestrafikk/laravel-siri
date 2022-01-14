@@ -81,7 +81,8 @@ class SiriClientController extends Controller
         } catch (IllegalStateException $e) {
             return response('Illegal XML.', Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            return response('Fuzz while parsing XML');
+            $this->logError("%s[%d]: %s\n%s", $e->getFile(), $e->getLine(), $e->getMessage(), $e->getTraceAsString());
+            return response('Fuzz while processing XML');
         }
         return response($this->validXml ? 'OK' : "Got invalid XML");
     }
@@ -116,7 +117,7 @@ class SiriClientController extends Controller
     protected function handleQueued()
     {
         $this->logDebug("Sending processing of XML to background queue.");
-        BackgroundXmlHandler::dispatch($this->xmlFile, $this->channel);
+        BackgroundXmlHandler::dispatch($this->subscription->id, $this->xmlFile, $this->channel);
     }
 
     /**
