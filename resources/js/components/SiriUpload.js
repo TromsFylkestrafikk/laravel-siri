@@ -5,6 +5,7 @@ export default {
         return {
             subscriptions: null,
             selectedId: null,
+            response: null,
         };
     },
 
@@ -16,17 +17,22 @@ export default {
 
     methods: {
         async submitXml() {
+            this.response = null;
             const file = this.$refs.xmlFile;
             if (!file.files.length || !this.selectedId) {
                 return;
             }
             const data = await file.files[0].text();
             const sub = this.subscriptions[this.selectedId];
-            await axios({
+            axios({
                 method: 'post',
                 url: route('siri.consume', [sub.channel, sub.id]),
                 data,
                 headers: { 'Content-Type': 'application/xml' },
+            }).then((response) => {
+                this.response = response.request;
+            }).catch((error) => {
+                this.response = error.request;
             });
         },
     },

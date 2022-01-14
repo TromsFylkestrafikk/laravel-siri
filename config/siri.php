@@ -93,4 +93,21 @@ return [
         'SX' => false,
         'VM' => false,
     ],
+
+    /*
+    | ------------------------------------------------------------------------
+    | Casing method when extracting XML tree into array
+    | ------------------------------------------------------------------------
+    |
+    | It might be desired to use a different case style for the extracted
+    | version of incoming service deliveries.  The SIRI XML standard uses Pascal
+    | case style for it's XML, as often is the case in the XML world.
+    |
+    | Possible values and their result for 'RecordedAtTime':
+    |   * pascal: RecordedAtTime
+    |   * camel: recordedAtTime
+    |   * snake: recorded_at_time
+    |   * kebab: recorded-at-time
+    */
+    'xml_element_case_style' => 'camel',
 ];

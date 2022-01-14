@@ -8,10 +8,30 @@ use Illuminate\Support\Facades\Route;
 use TromsFylkestrafikk\Siri\Console\CreateSubscription;
 use TromsFylkestrafikk\Siri\Console\ListSubscriptions;
 use TromsFylkestrafikk\Siri\Console\TerminateSubscription;
+use TromsFylkestrafikk\Siri\Services\XmlMapper;
 use TromsFylkestrafikk\Siri\Http\Middleware\SubscribedChannel;
 
 class SiriServiceProvider extends ServiceProvider
 {
+    /**
+     * @inheritdoc
+     */
+    public function register()
+    {
+        $this->app->singleton('siri.xml_mapper', function () {
+            $options = ['element_case_style' => config('siri.xml_element_case_style')];
+            return new XmlMapper($options);
+        });
+    }
+
+    public function provides()
+    {
+        return ['siri.xml_mapper'];
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function boot()
     {
         $this->publishConfig();

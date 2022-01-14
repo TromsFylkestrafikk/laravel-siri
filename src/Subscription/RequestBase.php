@@ -7,7 +7,6 @@ use DOMDocument;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use LogicException;
 use SimpleXMLElement;
 
 /**
@@ -73,7 +72,7 @@ class RequestBase
     }
 
     /**
-     * @implements SiriRequestContract::sendRequest.
+     * @implements SiriRequestContract<sendRequest>.
      */
     public function sendRequest(bool $dryRun = false)
     {
@@ -88,7 +87,7 @@ class RequestBase
         if (!$response->ok()) {
             Log::warning(sprintf(
                 "SiriRequest [%s]: Unexpected response status %d: %s",
-                $this->subscription->subscriber_ref,
+                $this->subscription->id,
                 $response->status(),
                 $response->toPsrResponse()->getReasonPhrase()
             ));
