@@ -69,7 +69,7 @@ class VehicleMonitoringDelivery extends Base
     public function process()
     {
         parent::process();
-        dump($this->activities);
+        $this->logDebug("Parsed %d vehicle activities in %.3f seconds", count($this->activities), microtime(true) - LARAVEL_START);
     }
 
     public function setupHandlers()
@@ -105,10 +105,5 @@ class VehicleMonitoringDelivery extends Base
         $actXml = $this->reader->expandSimpleXml();
         $this->activities[] = app('siri.xml_mapper')->getXmlElements(static::$activitySchema, $actXml);
         $latest = last($this->activities);
-        $this->logDebug(
-            "Vehicle %s, seen at: %s",
-            $latest['monitored_vehicle_journey']['vehicle_ref'],
-            $latest['recorded_at_time']
-        );
     }
 }
