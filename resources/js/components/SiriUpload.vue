@@ -28,7 +28,7 @@
     <div v-if="response" class="Result">
       <ul>
         <li>Status: {{ response.status }} ({{ response.statusText }})</li>
-        <li>Response body: {{ response.data }}</li>
+        <li>Response body: {{ response.response }}</li>
       </ul>
     </div>
   </div>
