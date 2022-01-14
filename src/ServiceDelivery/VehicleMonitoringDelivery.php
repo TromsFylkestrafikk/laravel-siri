@@ -2,6 +2,7 @@
 
 namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
+use TromsFylkestrafikk\Siri\Exceptions\IllegalStateException;
 use TromsFylkestrafikk\Xml\ChristmasTreeParser;
 
 class VehicleMonitoringDelivery extends Base
@@ -77,9 +78,7 @@ class VehicleMonitoringDelivery extends Base
             ->addNestedCallback(['VehicleMonitoringDelivery', 'SubscriberRef'], function (ChristmasTreeParser $reader) {
                 $this->subscriberRef = trim($reader->readString());
             })
-            ->addNestedCallback(['VehicleMonitoringDelivery', 'SubscriptionRef'], function (ChristmasTreeParser $reader) {
-                $this->subscriptionId = trim($reader->readString());
-            })
+            ->addNestedCallback(['VehicleMonitoringDelivery', 'SubscriptionRef'], [$this, 'verifySubscriptionRef'])
             ->addNestedCallback(['VehicleMonitoringDelivery', 'VehicleActivity'], [$this, 'vehicleActivity']);
     }
 
@@ -96,9 +95,20 @@ class VehicleMonitoringDelivery extends Base
     /**
      * ChristmasTreeParser callback.
      */
-    public function vehicleActivity(ChristmasTreeParser $reader)
+    public function vehicleActivity()
     {
-        $actXml = $reader->expandSimpleXml();
+        if (!$this->subscriptionVerified && $this->haltOnSubscription) {
+            $this->logError("Subscription identifier in XML is missing or doesn't match. Halting!");
+            $this->reader->halt();
+            throw new IllegalStateException("Wrong Subscription identifier");
+        }
+        $actXml = $this->reader->expandSimpleXml();
         $this->activities[] = app('siri.xml_mapper')->getXmlElements(static::$activitySchema, $actXml);
+        $latest = last($this->activities);
+        $this->logDebug(
+            "Vehicle %s, seen at: %s",
+            $latest['monitored_vehicle_journey']['vehicle_ref'],
+            $latest['recorded_at_time']
+        );
     }
 }

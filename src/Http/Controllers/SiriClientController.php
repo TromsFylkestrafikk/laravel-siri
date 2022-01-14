@@ -106,7 +106,7 @@ class SiriClientController extends Controller
         }
         $handlerClass = sprintf("\\TromsFylkestrafikk\\Siri\\ServiceDelivery\\%s", Siri::$serviceMap[$this->channel]);
         /** @var \TromsFylkestrafikk\Siri\ServiceDelivery\Base $handler */
-        $handler = new $handlerClass($this->xmlFile);
+        $handler = new $handlerClass($this->subscription, $this->xmlFile);
         return $handler->process();
     }
 
