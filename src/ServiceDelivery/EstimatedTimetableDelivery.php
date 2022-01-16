@@ -4,6 +4,9 @@ namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
 class EstimatedTimetableDelivery extends Base
 {
+    /**
+     * @var mixed[]
+     */
     protected $journeys;
 
     /**
@@ -65,7 +68,7 @@ class EstimatedTimetableDelivery extends Base
     public function process()
     {
         parent::process();
-        $this->logDebug("Got updates for %d journeys and %d calls", $this->journeyCount, $this->callCount);
+        $this->logDebug("Got timetables %d journeys and %d calls", $this->journeyCount, $this->callCount);
     }
 
     public function setupHandlers()

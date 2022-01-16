@@ -74,7 +74,13 @@ class XmlMapper
         return $ret;
     }
 
-    protected function destKey($elementName)
+    /**
+     * Given an Xml element name, return the destination array key.
+     *
+     * @param string $elementName
+     * @return string
+     */
+    public function destKey($elementName)
     {
         if (empty($this->options['element_case_style'])) {
             return $elementName;

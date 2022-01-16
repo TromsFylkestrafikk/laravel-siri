@@ -83,7 +83,7 @@ abstract class Base
     /**
      * ChristmasTreeParser callback for SubscriptionRef.
      *
-     * Channels may use this to verify that the subscription reference in XML
+     * Channels use this to verify that the subscription reference in XML
      * matches the route's subscription ID.
      */
     public function verifySubscriptionRef()

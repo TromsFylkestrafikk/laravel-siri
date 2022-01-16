@@ -13,11 +13,6 @@ class VehicleMonitoringDelivery extends Base
     protected $subscriberRef;
 
     /**
-     * @var string
-     */
-    protected $subscriptionId;
-
-    /**
      * @var mixed[]
      */
     protected $activities;
@@ -104,6 +99,5 @@ class VehicleMonitoringDelivery extends Base
         }
         $actXml = $this->reader->expandSimpleXml();
         $this->activities[] = app('siri.xml_mapper')->getXmlElements(static::$activitySchema, $actXml);
-        $latest = last($this->activities);
     }
 }
