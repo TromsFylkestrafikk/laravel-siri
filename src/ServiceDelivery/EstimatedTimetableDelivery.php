@@ -67,12 +67,18 @@ class EstimatedTimetableDelivery extends Base
     ];
 
 
+    /**
+     * @inheritdoc
+     */
     public function process()
     {
         parent::process();
         $this->logDebug("Got timetables %d journeys and %d calls", $this->journeyCount, $this->callCount);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setupHandlers()
     {
         $this->reader->addNestedCallback(['EstimatedTimetableDelivery'], [$this, 'etDelivery'])
@@ -83,6 +89,11 @@ class EstimatedTimetableDelivery extends Base
             );
     }
 
+    /**
+     * ChristmasTreeParser callback for 'EstimatedTimetableDelivery'.
+     *
+     * We use this to init/reset our object.
+     */
     public function etDelivery()
     {
         $this->journeys = [];
@@ -91,6 +102,11 @@ class EstimatedTimetableDelivery extends Base
         $this->logDebug("EstimatedTimetable delivery");
     }
 
+    /**
+     * ChristmasTreeParser callback for EstimatedVehicleJourney.
+     *
+     * This is the meat of the VM xml dump.
+     */
     public function estimatedVehicleJourney()
     {
         $xml = $this->reader->expandSimpleXml();
