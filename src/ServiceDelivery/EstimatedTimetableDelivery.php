@@ -2,6 +2,8 @@
 
 namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
+use TromsFylkestrafikk\Siri\Services\XmlMapper;
+
 class EstimatedTimetableDelivery extends Base
 {
     /**
@@ -92,11 +94,10 @@ class EstimatedTimetableDelivery extends Base
     public function estimatedVehicleJourney()
     {
         $xml = $this->reader->expandSimpleXml();
-        $etJourney = app('siri.xml_mapper')->getXmlElements(static::$journeySchema, $xml);
+        $mapper = new XmlMapper($xml, static::$journeySchema);
+        $etJourney = $mapper->execute();
         $this->journeyCount++;
-        $this->callCount += empty($etJourney['estimated_calls']['estimated_call'])
-            ? 0
-            : count($etJourney['estimated_calls']['estimated_call']);
+        $this->callCount += count($mapper->get('EstimatedCalls.EstimatedCall', []));
         $this->journeys[] = $etJourney;
     }
 }

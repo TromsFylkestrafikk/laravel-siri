@@ -16,22 +16,6 @@ class SiriServiceProvider extends ServiceProvider
     /**
      * @inheritdoc
      */
-    public function register()
-    {
-        $this->app->singleton('siri.xml_mapper', function () {
-            $options = ['element_case_style' => config('siri.xml_element_case_style')];
-            return new XmlMapper($options);
-        });
-    }
-
-    public function provides()
-    {
-        return ['siri.xml_mapper'];
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function boot()
     {
         $this->publishConfig();
