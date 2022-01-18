@@ -2,7 +2,6 @@
 
 namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
-use TromsFylkestrafikk\Siri\Exceptions\IllegalStateException;
 use TromsFylkestrafikk\Xml\ChristmasTreeParser;
 use TromsFylkestrafikk\Siri\Services\XmlMapper;
 
@@ -97,11 +96,7 @@ class VehicleMonitoringDelivery extends Base
      */
     public function vehicleActivity()
     {
-        if (!$this->subscriptionVerified && $this->haltOnSubscription) {
-            $this->logError("Subscription identifier in XML is missing or doesn't match. Halting!");
-            $this->reader->halt();
-            throw new IllegalStateException("Wrong Subscription identifier");
-        }
+        $this->assertAuthenticated();
         $xml = $this->reader->expandSimpleXml();
         $mapper = new XmlMapper($xml, static::$activitySchema);
         $this->activities[] = $mapper->execute();

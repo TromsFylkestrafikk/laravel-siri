@@ -72,8 +72,14 @@ class EstimatedTimetableDelivery extends Base
      */
     public function process()
     {
+        $start = microtime(true);
         parent::process();
-        $this->logDebug("Got timetables %d journeys and %d calls", $this->journeyCount, $this->callCount);
+        $this->logDebug(
+            "Processed timetables for %d journeys and %d calls in %.3f seconds.",
+            $this->journeyCount,
+            $this->callCount,
+            microtime(true) - $start
+        );
     }
 
     /**
@@ -109,6 +115,7 @@ class EstimatedTimetableDelivery extends Base
      */
     public function estimatedVehicleJourney()
     {
+        $this->assertAuthenticated();
         $xml = $this->reader->expandSimpleXml();
         $mapper = new XmlMapper($xml, static::$journeySchema);
         $etJourney = $mapper->execute();

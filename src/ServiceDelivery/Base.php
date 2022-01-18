@@ -2,6 +2,7 @@
 
 namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
+use TromsFylkestrafikk\Siri\Exceptions\IllegalStateException;
 use TromsFylkestrafikk\Siri\Helpers\XmlFile;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 use TromsFylkestrafikk\Siri\Traits\LogPrefix;
@@ -76,7 +77,8 @@ abstract class Base
     /**
      * ChristmasTreeParser callback for 'ServiceDelivery'.
      *
-     * Channels must implement this and set up their own mapping/parsing of content.
+     * Channels must implement this and set up their own mapping/parsing of
+     * content.
      */
     abstract public function setupHandlers();
 
@@ -95,9 +97,24 @@ abstract class Base
             return;
         }
         $this->logWarning(
-            "Subscription ref authentication FAILED. Got ref: %s, Expects: %s",
+            "Subscription authentication FAILED. Got ref: %s, Expects: %s",
             $xmlRef,
             $this->subscription->id
         );
+    }
+
+    /**
+     * Assert subscription authentication is in order.
+     *
+     * Call this from the XML tree where it is expected that the subscription
+     * ref is received, i.e. when the 'meat' of the transmission begins.
+     */
+    protected function assertAuthenticated()
+    {
+        if (!$this->subscriptionVerified && $this->haltOnSubscription) {
+            $this->logError("Subscription identifier in XML is missing or doesn't match. Halting!");
+            $this->reader->halt();
+            throw new IllegalStateException("Wrong Subscription identifier");
+        }
     }
 }
