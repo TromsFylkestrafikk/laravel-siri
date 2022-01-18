@@ -3,6 +3,7 @@
 namespace TromsFylkestrafikk\Siri\Services;
 
 use Illuminate\Support\Str;
+use Illuminate\Config\Repository;
 use SimpleXMLElement;
 use TromsFylkestrafikk\Siri\Siri;
 
@@ -18,7 +19,7 @@ use TromsFylkestrafikk\Siri\Siri;
  * of peers for given element.  Exmple map:
  * @code
  * $map = [
- *   'book' => [
+ *   'Book' => [
  *     '#multiple' => true,
  *     'Author' => [
  *       'Name' => 'string',
@@ -39,16 +40,138 @@ use TromsFylkestrafikk\Siri\Siri;
 class XmlMapper
 {
     /**
+     * @var SimpleXMLElement $xml
+     */
+    protected $xml;
+
+    /**
+     * @var array
+     */
+    protected $schema;
+
+    /**
+     * @var array
+     */
+    protected $target;
+
+    /**
+     * @var null|Repository
+     */
+    protected $targetRepo;
+
+    /**
      * @var array
      */
     protected $options;
 
     /**
+     * @var bool
+     */
+    protected $hasMapped;
+
+    /**
+     * @param SimpleXMLElement $xml,
+     * @param array $schema Array with schema to retrieve.
      * @param array $options Settings for how to extract/map elements.
      */
-    public function __construct($options = [])
+    public function __construct(SimpleXMLElement $xml, array $schema, $options = [])
     {
-        $this->options = $options;
+        $this->xml = $xml;
+        $this->schema = $schema;
+        $this->target = [];
+        $this->options = array_merge([
+            'element_case_style' => config('siri.xml_element_case_style'),
+        ], $options);
+        $this->targetRepo = null;
+    }
+
+    /**
+     * Set target/destination array for mapped elements
+     *
+     * @param mixed[] $target
+     */
+    public function setTarget(array &$target)
+    {
+        $this->target = $target;
+    }
+
+    /**
+     * Perform XML to array mapping and return result.
+     *
+     * @return array
+     */
+    public function execute(): array
+    {
+        if (!$this->hasMapped) {
+            $this->target = $this->getXmlElements($this->schema, $this->xml);
+            $this->hasMapped = true;
+        }
+        return $this->target;
+    }
+
+    /**
+     * Get a value from target array using dot notation.
+     *
+     * The key can be in any case style, but mixing snake and kebab style seems
+     * to confuse Laravel's Str::class case method, so try to be consistent in
+     * your choice of case style weapon.
+     *
+     * To retrieve e.g <DeeplyNested><XmlTreeValue>34</...> you can retrieve it
+     * in any of the configurable case style ways, e.g.:
+     *   - $this->get('deeplyNested.xmlTreeValue');
+     *   - $this->get('deeply_nested.xml_tree_value');
+     *
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function get(string $key, $default = null)
+    {
+        $this->execute();
+        if ($this->targetRepo === null) {
+            $this->targetRepo = new Repository($this->target);
+        }
+        $caseStyle = $this->options['element_case_style'];
+        $parts = array_map([Str::class, $caseStyle], explode('.', $key));
+        return $this->targetRepo->get(implode('.', $parts), $default);
+    }
+
+    /**
+     * Given an Xml element name, return the key used in target array.
+     *
+     * @param string $elementName
+     *
+     * @return string
+     */
+    public function destKey(string $elementName): string
+    {
+        if (empty($this->options['element_case_style'])) {
+            return $elementName;
+        }
+        $caseMethod = $this->options['element_case_style'];
+        return Str::$caseMethod($elementName);
+    }
+
+    /**
+     * Cast given value to type $cast.
+     *
+     * @param string $value
+     * @param string $cast
+     *
+     * @return mixed
+     */
+    public static function castValue(string $value, string $cast)
+    {
+        switch ($cast) {
+            case 'int':
+                return intval($value);
+            case 'float':
+                return floatval($value);
+            case 'string':
+                return $value;
+            case 'bool':
+                return strtolower($value) === 'yes';
+        }
     }
 
     /**
@@ -59,7 +182,7 @@ class XmlMapper
      *
      * @return array
      */
-    public function getXmlElements(array $schema, SimpleXMLElement $xml)
+    protected function getXmlElements(array $schema, SimpleXMLElement $xml): array
     {
         $ret = [];
         foreach (array_keys($schema) as $element) {
@@ -72,15 +195,6 @@ class XmlMapper
             }
         }
         return $ret;
-    }
-
-    protected function destKey($elementName)
-    {
-        if (empty($this->options['element_case_style'])) {
-            return $elementName;
-        }
-        $caseMethod = $this->options['element_case_style'];
-        return Str::$caseMethod($elementName);
     }
 
     /**
@@ -109,27 +223,5 @@ class XmlMapper
             return $childItems;
         }
         return $this->getXmlElements($schema[$element], $elXml[0]);
-    }
-
-    /**
-     * Cast given value to type $cast.
-     *
-     * @param string $value
-     * @param string $cast
-     *
-     * @return mixed
-     */
-    public static function castValue($value, $cast)
-    {
-        switch ($cast) {
-            case 'int':
-                return intval($value);
-            case 'float':
-                return floatval($value);
-            case 'string':
-                return $value;
-            case 'bool':
-                return strtolower($value) === 'yes';
-        }
     }
 }

@@ -104,7 +104,7 @@ return [
     | case style for it's XML, as often is the case in the XML world.
     |
     | Possible values and their result for 'RecordedAtTime':
-    |   * pascal: RecordedAtTime
+    |   * studly: RecordedAtTime
     |   * camel: recordedAtTime
     |   * snake: recorded_at_time
     |   * kebab: recorded-at-time

@@ -4,6 +4,7 @@ namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
 use TromsFylkestrafikk\Siri\Exceptions\IllegalStateException;
 use TromsFylkestrafikk\Xml\ChristmasTreeParser;
+use TromsFylkestrafikk\Siri\Services\XmlMapper;
 
 class VehicleMonitoringDelivery extends Base
 {
@@ -11,11 +12,6 @@ class VehicleMonitoringDelivery extends Base
      * @var string
      */
     protected $subscriberRef;
-
-    /**
-     * @var string
-     */
-    protected $subscriptionId;
 
     /**
      * @var mixed[]
@@ -69,7 +65,11 @@ class VehicleMonitoringDelivery extends Base
     public function process()
     {
         parent::process();
-        $this->logDebug("Parsed %d vehicle activities in %.3f seconds", count($this->activities), microtime(true) - LARAVEL_START);
+        $this->logDebug(
+            "Parsed %d vehicle activities in %.3f seconds",
+            count($this->activities),
+            microtime(true) - LARAVEL_START
+        );
     }
 
     public function setupHandlers()
@@ -102,8 +102,8 @@ class VehicleMonitoringDelivery extends Base
             $this->reader->halt();
             throw new IllegalStateException("Wrong Subscription identifier");
         }
-        $actXml = $this->reader->expandSimpleXml();
-        $this->activities[] = app('siri.xml_mapper')->getXmlElements(static::$activitySchema, $actXml);
-        $latest = last($this->activities);
+        $xml = $this->reader->expandSimpleXml();
+        $mapper = new XmlMapper($xml, static::$activitySchema);
+        $this->activities[] = $mapper->execute();
     }
 }
