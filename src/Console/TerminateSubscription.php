@@ -45,7 +45,7 @@ class TerminateSubscription extends Command
         $subscription = SiriSubscription::find($this->argument('id'));
         if (!$subscription) {
             $this->warn("Subscription not found. See 'siri:list' for a list of current subscriptions.");
-            return 1;
+            return static::FAILURE;
         }
         if (
             !$this->option('yes')
@@ -55,7 +55,7 @@ class TerminateSubscription extends Command
                 $subscription->subscription_url,
             ), false)
         ) {
-            return 0;
+            return static::SUCCESS;
         }
         $subscription->delete();
         $msg = sprintf(
@@ -66,6 +66,6 @@ class TerminateSubscription extends Command
         );
         Log::info($msg);
         $this->info($msg);
-        return 0;
+        return static::SUCCESS;
     }
 }

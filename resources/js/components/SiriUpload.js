@@ -26,7 +26,7 @@ export default {
             const sub = this.subscriptions[this.selectedId];
             axios({
                 method: 'post',
-                url: route('siri.consume', [sub.channel, sub.id]),
+                url: route('siri.consume', [sub.channel, sub.subscription_ref]),
                 data,
                 headers: { 'Content-Type': 'application/xml' },
             }).then((response) => {

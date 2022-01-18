@@ -21,6 +21,7 @@ class CreateSubscription extends Command
     protected $signature = 'siri:subscribe
                            { url : SIRI service subscription URL }
                            { channel : SIRI functional service. E.g. \'SX\' or \'VM\' }
+                           { name : Internal name of subscription. This is not exposed to service. }
                            { --H|heartbeat-interval= : Period (ISO 8601) between heartbeats from service }
                            { --r|requestor-ref= : Identifies client consuming siri data }
                            { --f|force : Create new subscription even if it exists for given channel and service }';
@@ -51,7 +52,7 @@ class CreateSubscription extends Command
     {
         $channel = $this->getChannel();
         if (!$channel) {
-            return 1;
+            return static::FAILURE;
         }
         $exists = SiriSubscription::firstWhere([
             ['channel', $channel],
@@ -65,14 +66,15 @@ class CreateSubscription extends Command
                 $exists->id
             ), false)
         ) {
-            return 0;
+            return static::SUCCESS;
         }
         $subscription = new SiriSubscription();
-        $subscription->id = Uuid::uuid4();
         $subscription->fill([
             'channel' => $channel,
             'active' => true,
+            'name' => $this->argument('name'),
             'subscription_url' => $this->argument('url'),
+            'subscription_ref' => Uuid::uuid4(),
             'heartbeat_interval' => $this->getHeartbeatInterval(),
             'requestor_ref' => $this->getOptionOrConfig('requestor_ref'),
         ]);
@@ -91,7 +93,7 @@ class CreateSubscription extends Command
                 $subscription->channel
             ));
         }
-        return 0;
+        return static::SUCCESS;
     }
 
     /**

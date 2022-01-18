@@ -54,7 +54,7 @@ abstract class Base
         $this->subscription = $subscription;
         $this->xmlFile = $xmlFile;
         $this->subscriptionVerified = false;
-        $this->setLogPrefix('Siri[%s]: ', $subscription->channel);
+        $this->setLogPrefix('Siri-%s[%d]: ', $subscription->channel, $subscription->id);
         $this->haltOnSubscription = env('APP_ENV' !== 'local') || request()->root() !== env('APP_URL');
     }
 
@@ -91,7 +91,7 @@ abstract class Base
     public function verifySubscriptionRef()
     {
         $xmlRef = trim($this->reader->readString());
-        $this->subscriptionVerified = $xmlRef === $this->subscription->id;
+        $this->subscriptionVerified = $xmlRef === $this->subscription->subscription_ref;
         if ($this->subscriptionVerified) {
             $this->logDebug("Subscription ref OK (%s)", $xmlRef);
             return;
@@ -99,7 +99,7 @@ abstract class Base
         $this->logWarning(
             "Subscription authentication FAILED. Got ref: %s, Expects: %s",
             $xmlRef,
-            $this->subscription->id
+            $this->subscription->subscription_ref
         );
     }
 

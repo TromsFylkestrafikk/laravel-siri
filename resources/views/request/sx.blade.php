@@ -11,7 +11,7 @@
 
     <SituationExchangeSubscriptionRequest>
       <SubscriberRef>{{ $subscription->requestor_ref }}</SubscriberRef>
-      <SubscriptionIdentifier>{{ $subscription->id }}</SubscriptionIdentifier>
+      <SubscriptionIdentifier>{{ $subscription->subscription_ref }}</SubscriptionIdentifier>
       <InitialTerminationTime>{{ $subscription_ttl }}</InitialTerminationTime>
 
       <SituationExchangeRequest version="1.4">

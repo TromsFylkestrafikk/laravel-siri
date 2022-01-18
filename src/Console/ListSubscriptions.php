@@ -45,7 +45,7 @@ class ListSubscriptions extends Command
             $toPrint[] = [
                 $subscription->id,
                 $subscription->channel,
-                $subscription->subscription_url,
+                $subscription->name,
                 $subscription->isActive,
                 $subscription->received,
                 $subscription->created_at,
@@ -53,8 +53,9 @@ class ListSubscriptions extends Command
             ];
         }
         $this->table(
-            ['ID', 'Channel', 'Service URL', 'Active', 'Count', 'Created', 'Last communication'],
+            ['ID', 'Channel', 'Name', 'Active', 'Count', 'Created', 'Last communication'],
             $toPrint
         );
+        return static::SUCCESS;
     }
 }
