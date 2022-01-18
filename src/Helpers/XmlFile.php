@@ -9,8 +9,19 @@ use Illuminate\Support\Facades\Storage;
  */
 class XmlFile
 {
+    /**
+     * @var \Illuminate\Contracts\Filesystem\Filesystem
+     */
     protected $disk;
+
+    /**
+     * @var string
+     */
     protected $filename;
+
+    /**
+     * @var string
+     */
     protected $path;
 
     /**
