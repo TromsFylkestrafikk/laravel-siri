@@ -71,4 +71,14 @@ class XmlFile
     {
         return $this->disk->path($this->path);
     }
+
+    /**
+     * Delete file from storage.
+     *
+     * @return bool
+     */
+    public function delete()
+    {
+        return $this->disk->delete($this->path);
+    }
 }

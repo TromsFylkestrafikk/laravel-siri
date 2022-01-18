@@ -10,39 +10,20 @@ use TromsFylkestrafikk\Siri\Exceptions\IllegalStateException;
 use TromsFylkestrafikk\Siri\Helpers\XmlFile;
 use TromsFylkestrafikk\Siri\Jobs\BackgroundXmlHandler;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
-use TromsFylkestrafikk\Siri\Traits\LogPrefix;
 use TromsFylkestrafikk\Siri\Siri;
+use TromsFylkestrafikk\Siri\Traits\LogPrefix;
+use TromsFylkestrafikk\Siri\Traits\ServiceDeliveryDispatch;
 use TromsFylkestrafikk\Xml\ChristmasTreeParser;
 
 class SiriClientController extends Controller
 {
     use LogPrefix;
-
-    /**
-     * SIRI channel for our request.
-     *
-     * @var string
-     */
-    protected $channel;
-
-    /**
-     * Generated filename for incoming SIRI XML.
-     *
-     * @var XmlFile
-     */
-    protected $xmlFile;
+    use ServiceDeliveryDispatch;
 
     /**
      * @var ChristmasTreeParser
      */
     protected $reader;
-
-    /**
-     * Current subscription.
-     *
-     * @var SiriSubscription
-     */
-    protected $subscription;
 
     /**
      * @var bool
@@ -104,16 +85,14 @@ class SiriClientController extends Controller
         $this->logDebug("Got XML of type %s", $this->xmlType);
 
         if ($this->xmlType !== 'ServiceDelivery') {
+            $this->maybeDeleteXml();
             return;
         }
         if ($this->queued) {
             $this->logDebug("Using queued processing");
             return $this->handleQueued();
         }
-        $handlerClass = sprintf("\\TromsFylkestrafikk\\Siri\\ServiceDelivery\\%s", Siri::$serviceMap[$this->channel]);
-        /** @var \TromsFylkestrafikk\Siri\ServiceDelivery\Base $handler */
-        $handler = new $handlerClass($this->subscription, $this->xmlFile);
-        return $handler->process();
+        $this->dispatchServiceDelivery();
     }
 
     /**

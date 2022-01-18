@@ -63,11 +63,12 @@ class VehicleMonitoringDelivery extends Base
 
     public function process()
     {
+        $start = microtime(true);
         parent::process();
         $this->logDebug(
             "Parsed %d vehicle activities in %.3f seconds",
             count($this->activities),
-            microtime(true) - LARAVEL_START
+            microtime(true) - $start
         );
     }
 
