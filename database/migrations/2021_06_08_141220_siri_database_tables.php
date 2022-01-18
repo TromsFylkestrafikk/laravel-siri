@@ -14,9 +14,11 @@ class SiriDatabaseTables extends Migration
     public function up()
     {
         Schema::create('siri_subscriptions', function (Blueprint $table) {
-            $table->char('id', 48)->primary();
+            $table->id();
             $table->char('channel', 4);
+            $table->string('name', 128);
             $table->string('subscription_url', 128);
+            $table->string('subscription_ref', 48)->unique();
             $table->string('requestor_ref', 64);
             $table->char('heartbeat_interval', 16);
             $table->boolean('active')->default(true);

@@ -50,7 +50,7 @@ class RequestBase
             'request_date' => date('Y-m-d\TH:i:s'),
             'consumer_address' => url('siri/consume', [
                 strtolower($this->subscription->channel),
-                $this->subscription->id
+                $this->subscription->subscription_ref
             ]),
             'subscription' => $this->subscription,
         ];

@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property string $id
  * @property string $channel
+ * @property string $name
  * @property string $subscription_url
+ * @property string $subscription_ref
  * @property string $requestor_ref
  * @property string $heartbeat_interval
  * @property int $active
@@ -24,8 +26,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereHeartbeatInterval($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereReceived($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereRequestorRef($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereSubscriptionRef($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereSubscriptionUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereUpdatedAt($value)
  * @mixin \Eloquent
@@ -35,8 +39,6 @@ class SiriSubscription extends Model
     use HasFactory;
 
     protected $table = 'siri_subscriptions';
-    public $incrementing = false;
-    protected $keyType = 'string';
     protected $guarded = ['id'];
     protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',

@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Route;
 use TromsFylkestrafikk\Siri\Console\CreateSubscription;
 use TromsFylkestrafikk\Siri\Console\ListSubscriptions;
 use TromsFylkestrafikk\Siri\Console\TerminateSubscription;
-use TromsFylkestrafikk\Siri\Services\XmlMapper;
 use TromsFylkestrafikk\Siri\Http\Middleware\SubscribedChannel;
 
 class SiriServiceProvider extends ServiceProvider
@@ -56,8 +55,9 @@ class SiriServiceProvider extends ServiceProvider
 
     protected function registerMiddleware()
     {
+        /** @var \Illuminate\Routing\Router $router */
         $router = $this->app->make(Router::class);
-        $router->aliasMiddleware('channel.subscribed', SubscribedChannel::class);
+        $router->aliasMiddleware('siri.channel', SubscribedChannel::class);
     }
 
     /**

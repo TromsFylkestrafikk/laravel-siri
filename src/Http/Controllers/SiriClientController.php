@@ -44,7 +44,7 @@ class SiriClientController extends Controller
 
     public function consume(Request $request, $channel, SiriSubscription $subscription)
     {
-        $this->setLogPrefix('Siri[%s]: ', $channel);
+        $this->setLogPrefix('Siri-%s[%d]: ', $channel, $subscription->id);
         $this->channel = $channel;
         $this->subscription = $subscription;
         $this->xmlFile = XmlFile::create($this->channel);
