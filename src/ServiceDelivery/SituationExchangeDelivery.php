@@ -32,6 +32,8 @@ class SituationExchangeDelivery extends Base
                 'CreationTime' => 'string',
                 'ParticipantRef' => 'string',
                 'SituationNumber' => 'string',
+                'RelatedAs' => 'string',
+                'Version' => 'string',
             ],
         ],
         'Source' => [
@@ -110,7 +112,7 @@ class SituationExchangeDelivery extends Base
                 'Severity' => 'string',
                 'Blocking' => [
                     'JourneyPlanner' => 'bool',
-                    'RealTime' => 'true',
+                    'RealTime' => 'bool',
                 ],
                 'Boarding' => [
                     'ArrivalBoardingActivity' => 'string',
