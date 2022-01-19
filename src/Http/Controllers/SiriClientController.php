@@ -85,9 +85,13 @@ class SiriClientController extends Controller
         $this->logDebug("Got XML of type %s", $this->xmlType);
 
         if ($this->xmlType !== 'ServiceDelivery') {
+            $this->logDebug("NOT service delivery. Touching subscription");
+            $this->subscription->touch();
             $this->maybeDeleteXml();
             return;
         }
+        $this->subscription->received++;
+        $this->subscription->save();
         if ($this->queued) {
             $this->logDebug("Using queued processing");
             return $this->handleQueued();
@@ -122,8 +126,6 @@ class SiriClientController extends Controller
         $xml = $reader->expandSimpleXml()->children(Siri::NS);
         $date = new DateTime($xml->RequestTimestamp);
         $this->logDebug("Heartbeat notification date: %s", $date->format('Y-m-d H:i:s'));
-        $this->subscription->received++;
-        $this->subscription->save();
         $this->xmlType = 'HeartbeatNotification';
         $this->validXml = true;
         $reader->halt();
