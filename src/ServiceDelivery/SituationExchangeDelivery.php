@@ -34,6 +34,51 @@ class SituationExchangeDelivery extends Base
                 'SituationNumber' => 'string',
             ],
         ],
+        'Source' => [
+            'SourceType' => 'string',
+            'Name' => 'string',
+        ],
+        'Progress' => 'string',
+        'ValidityPeriod' => [
+            'StartTime' => 'string',
+            'EndTime' => 'string',
+        ],
+        'UndefinedReason' => 'string',
+        'Severity' => 'string',
+        'Audience' => 'string',
+        'ReportType' => 'string',
+        'Description' => 'string',
+        'Affects' => [
+            'Networks' => [
+                'AffectedNetwork' => [
+                    '#multiple',
+                    'VehicleMode' => 'string',
+                    'AffectedLine' => [
+                        'LineRef' => 'string',
+                    ],
+                ],
+            ],
+            'StopPoints' => [
+                'AffectedStopPoint' => [
+                    '#multiple' => true,
+                    'StopPointRef' => 'string',
+                ],
+            ],
+            'VehicleJourneys' => [
+                'AffectedVehicleJourney' => [
+                    '#multiple' => true,
+                    'VehicleJourneyRef' => 'string',
+                    'Route' => 'string',
+                ],
+            ],
+        ],
+        'Consequences' => [
+            'Consequence' => [
+                '#multiple' => true,
+                'Condition' => 'string',
+                'Severity' => 'string',
+            ],
+        ],
     ];
 
     public function process()

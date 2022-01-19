@@ -12,11 +12,6 @@ use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 class Subscriber
 {
     /**
-     * Supported SIRI channels.
-     */
-    public const CHANNELS = ['ET', 'VM'];
-
-    /**
      * Send SIRI subscription request to service.
      *
      * @param \TromsFylkestrafikk\Siri\Models\SiriSubscription $subscription
