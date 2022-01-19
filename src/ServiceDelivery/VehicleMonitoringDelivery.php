@@ -2,7 +2,6 @@
 
 namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
-use TromsFylkestrafikk\Xml\ChristmasTreeParser;
 use TromsFylkestrafikk\Siri\Services\XmlMapper;
 
 class VehicleMonitoringDelivery extends Base
@@ -75,9 +74,7 @@ class VehicleMonitoringDelivery extends Base
     public function setupHandlers()
     {
         $this->reader->addNestedCallback(['VehicleMonitoringDelivery'], [$this, 'vmDelivery'])
-            ->addNestedCallback(['VehicleMonitoringDelivery', 'SubscriberRef'], function (ChristmasTreeParser $reader) {
-                $this->subscriberRef = trim($reader->readString());
-            })
+            ->addNestedCallback(['VehicleMonitoringDelivery', 'SubscriberRef'], [$this, 'readSubscriberRef'])
             ->addNestedCallback(['VehicleMonitoringDelivery', 'SubscriptionRef'], [$this, 'verifySubscriptionRef'])
             ->addNestedCallback(['VehicleMonitoringDelivery', 'VehicleActivity'], [$this, 'vehicleActivity']);
     }

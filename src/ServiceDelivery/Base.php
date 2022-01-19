@@ -20,6 +20,11 @@ abstract class Base
     /**
      * @var string
      */
+    protected $subscriberRef;
+
+    /**
+     * @var string
+     */
     public $producerRef;
 
     /**
@@ -72,6 +77,17 @@ abstract class Base
             })
             ->parse()
             ->close();
+    }
+
+    /**
+     * ChristmasTreeParser callback for setting subscriberRef
+     *
+     * All service deliveries has this within their channel specific root
+     * element.
+     */
+    public function readSubscriberRef()
+    {
+        $this->subscriberRef = trim($this->reader->readString());
     }
 
     /**
