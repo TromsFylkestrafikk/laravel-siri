@@ -37,16 +37,23 @@ class SituationExchangeDelivery extends Base
         'Source' => [
             'SourceType' => 'string',
             'Name' => 'string',
+            'Phone' => 'string',
+            'AgentReference' => 'string',
+            'TimeOfCommunication' => 'string',
         ],
+        'Verification' => 'string',
         'Progress' => 'string',
+        'QualityIndex' => 'string',
         'ValidityPeriod' => [
             'StartTime' => 'string',
             'EndTime' => 'string',
         ],
+        'MiscellaneousReason' => 'string',
         'UndefinedReason' => 'string',
         'Severity' => 'string',
         'Audience' => 'string',
         'ReportType' => 'string',
+        'Summary' => 'string',
         'Description' => 'string',
         'Affects' => [
             'Networks' => [
@@ -62,6 +69,26 @@ class SituationExchangeDelivery extends Base
                 'AffectedStopPoint' => [
                     '#multiple' => true,
                     'StopPointRef' => 'string',
+                    'StopPointName' => 'string',
+                    'StopPointType' => 'string',
+                    'Location' => [
+                        'Latitude' => 'float',
+                        'Longitude' => 'float',
+                        'Precision' => 'float',
+                    ],
+                ],
+            ],
+            'StopPlaces' => [
+                'AffectedStopPlace' => [
+                    '#multiple' => true,
+                    'StopPlaceRef' => 'string',
+                    'AffectedComponents' => [
+                        'AffectedComponent' => [
+                            '#multiple' => true,
+                            'ComponentRef' => 'string',
+                            'ComponentName' => 'string',
+                        ],
+                    ],
                 ],
             ],
             'VehicleJourneys' => [
@@ -75,8 +102,44 @@ class SituationExchangeDelivery extends Base
         'Consequences' => [
             'Consequence' => [
                 '#multiple' => true,
+                'Period' => [
+                    'StartTime' => 'string',
+                    'EndTime' => 'string',
+                ],
                 'Condition' => 'string',
                 'Severity' => 'string',
+                'Blocking' => [
+                    'JourneyPlanner' => 'bool',
+                    'RealTime' => 'true',
+                ],
+                'Boarding' => [
+                    'ArrivalBoardingActivity' => 'string',
+                    'DepartureBoardingActivity' => 'string',
+                ],
+            ],
+        ],
+        'PublishingActions' => [
+            'PublishToWebAction' => [
+                'Incidents' => 'bool',
+                'HomePage' => 'bool',
+                'Ticker' => 'bool',
+            ],
+            'PublishToMobileAction' => [
+                'Incidents' => 'bool',
+                'HomePage' => 'bool',
+            ],
+            'PublishToDisplayAction' => [
+                'OnPlace' => 'bool',
+                'OnBoard' => 'bool',
+            ],
+            'PublishToTvAction' => [
+                'Ceefax' => 'bool',
+                'Teletext' => 'bool',
+            ],
+            'PublishToAlertsAction' => [
+                'ClearNotice' => 'bool',
+                'ByEmail' => 'bool',
+                'ByMobile' => 'bool',
             ],
         ],
     ];
