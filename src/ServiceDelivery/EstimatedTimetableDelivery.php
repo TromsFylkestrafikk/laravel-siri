@@ -88,6 +88,7 @@ class EstimatedTimetableDelivery extends Base
     public function setupHandlers()
     {
         $this->reader->addNestedCallback(['EstimatedTimetableDelivery'], [$this, 'etDelivery'])
+            ->addNestedCallback(['EstimatedTimetableDelivery', 'SubscriberRef'], [$this, 'readSubscriberRef'])
             ->addNestedCallback(['EstimatedTimetableDelivery', 'SubscriptionRef'], [$this, 'verifySubscriptionRef'])
             ->addNestedCallback(
                 ['EstimatedTimetableDelivery', 'EstimatedJourneyVersionFrame', 'EstimatedVehicleJourney'],

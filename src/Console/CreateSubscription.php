@@ -6,9 +6,9 @@ use Closure;
 use DateInterval;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
 use Ramsey\Uuid\Uuid;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
+use TromsFylkestrafikk\Siri\Siri;
 use TromsFylkestrafikk\Siri\Subscription\Subscriber;
 
 class CreateSubscription extends Command
@@ -102,11 +102,11 @@ class CreateSubscription extends Command
     protected function getChannel()
     {
         $channel = strtoupper($this->argument('channel'));
-        if (! in_array($channel, Subscriber::CHANNELS)) {
+        if (! isset(Siri::$serviceMap[$channel])) {
             $this->error(sprintf(
                 "Unknown SIRI channel (%s). Must be one of: %s",
                 $channel,
-                implode(', ', Subscriber::CHANNELS)
+                implode(', ', array_keys(Siri::$serviceMap))
             ));
             return false;
         }
