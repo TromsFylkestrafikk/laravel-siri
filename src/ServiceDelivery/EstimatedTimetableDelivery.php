@@ -76,14 +76,13 @@ class EstimatedTimetableDelivery extends Base
     {
         $start = microtime(true);
         parent::process();
+        $this->emitJourneys();
         $this->logDebug(
             "Processed timetables for %d journeys and %d calls in %.3f seconds.",
             $this->journeyCount,
             $this->callCount,
             microtime(true) - $start
         );
-        // Emit remaining journeys as event.
-        $this->emitJourneys();
     }
 
     /**
@@ -111,7 +110,6 @@ class EstimatedTimetableDelivery extends Base
         $this->journeyCount = 0;
         $this->chunkCount = 0;
         $this->callCount = 0;
-        $this->logDebug("EstimatedTimetable delivery");
     }
 
     /**

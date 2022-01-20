@@ -158,19 +158,29 @@ class SituationExchangeDelivery extends Base
         //
     ];
 
+    /**
+     * @var int
+     */
     protected $situationsCount;
 
+    /**
+     * @inheritdoc
+     */
     public function process()
     {
         $start = microtime(true);
         parent::process();
+        $this->emitSituations();
         $this->logDebug(
             "Parsed %s situations in %.3f seconds",
-            count($this->situationsCount),
+            $this->situationsCount,
             microtime(true) - $start
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setupHandlers()
     {
         $this->reader->addNestedCallback(['SituationExchangeDelivery'], [$this, 'sxDelivery'])
@@ -248,14 +258,19 @@ class SituationExchangeDelivery extends Base
     protected function maybeEmitSituations()
     {
         if ($this->maxChunkSize && $this->chunkCount >= $this->maxChunkSize) {
-            SxSituations::dispatch(
-                $this->subscription->id,
-                $this->ptSituations,
-                $this->roadSituations,
-                $this->subscriberRef,
-                $this->producerRef
-            );
+            $this->emitSituations();
             $this->resetChunk();
         }
+    }
+
+    protected function emitSituations()
+    {
+        SxSituations::dispatch(
+            $this->subscription->id,
+            $this->ptSituations,
+            $this->roadSituations,
+            $this->subscriberRef,
+            $this->producerRef
+        );
     }
 }
