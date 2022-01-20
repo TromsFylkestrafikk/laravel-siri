@@ -3,7 +3,7 @@
 namespace TromsFylkestrafikk\Siri\Events;
 
 /**
- * Emits a single EstimatedVehicleJourney-ish element.
+ * Emits a single RoadSituationElement-ish element.
  */
 class SxRoadSituation extends ServiceDeliveryBase
 {
@@ -13,7 +13,7 @@ class SxRoadSituation extends ServiceDeliveryBase
     public $roadSituation;
 
     /**
-     * Create a new ET journey event
+     * Create a new SX road situation event
      *
      * @param int $subscriptionId Subscription (Model) ID
      * @param array $roadSituation Siri SX RoadSituationElement-ish data
