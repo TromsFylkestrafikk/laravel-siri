@@ -17,13 +17,39 @@ class EstimatedVehicleJourney
     use SerializesModels;
 
     /**
+     * @var int
+     */
+    public $subscriptionId;
+
+    /**
+     * @var array
+     */
+    public $journey;
+
+    /**
+     * @var string
+     */
+    public $subscriberRef;
+
+    /**
+     * @var string
+     */
+    public $producerRef;
+
+    /**
      * Create a new event instance.
      *
-     * @return void
+     * @param int $subscriptionId Subscription (Model) ID
+     * @param array $journey Array with populated journey data
+     * @param string $subscriberRef Subscription reference
+     * @param string $producerRef Producer reference
      */
-    public function __construct()
+    public function __construct($subscriptionId, $journey, $subscriberRef = null, $producerRef = null)
     {
-        //
+        $this->subscriptionId = $subscriptionId;
+        $this->journey = $journey;
+        $this->subscriberRef = $subscriberRef;
+        $this->producerRef = $producerRef;
     }
 
     /**
@@ -33,6 +59,6 @@ class EstimatedVehicleJourney
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return new PrivateChannel('siri.et.journey');
     }
 }

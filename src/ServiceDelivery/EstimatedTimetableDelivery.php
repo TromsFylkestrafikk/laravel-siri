@@ -3,6 +3,8 @@
 namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
 use TromsFylkestrafikk\Siri\Services\XmlMapper;
+use TromsFylkestrafikk\Siri\Events\EtDelivery as EtDeliveryEvent;
+use TromsFylkestrafikk\Siri\Events\EtDelivery\EstimatedVehicleJourney as EtJourneyEvent;
 
 class EstimatedTimetableDelivery extends Base
 {
@@ -80,6 +82,8 @@ class EstimatedTimetableDelivery extends Base
             $this->callCount,
             microtime(true) - $start
         );
+        // Emit remaining journeys as event.
+        $this->emitAllJourneys();
     }
 
     /**
@@ -105,6 +109,7 @@ class EstimatedTimetableDelivery extends Base
     {
         $this->journeys = [];
         $this->journeyCount = 0;
+        $this->chunkCount = 0;
         $this->callCount = 0;
         $this->logDebug("EstimatedTimetable delivery");
     }
@@ -121,7 +126,30 @@ class EstimatedTimetableDelivery extends Base
         $mapper = new XmlMapper($xml, static::$journeySchema);
         $etJourney = $mapper->execute();
         $this->journeyCount++;
+        $this->chunkCount++;
         $this->callCount += count($mapper->get('EstimatedCalls.EstimatedCall', []));
         $this->journeys[] = $etJourney;
+        $this->emitSingleJourney($etJourney);
+        $this->emitChunkOfJourneys();
+    }
+
+    protected function emitSingleJourney($journey)
+    {
+        EtJourneyEvent::dispatch($this->subscription->id, $journey, $this->subscriberRef, $this->producerRef);
+    }
+
+    protected function emitChunkOfJourneys()
+    {
+        if ($this->maxChunkSize && $this->chunkCount >= $this->maxChunkSize) {
+            $this->emitAllJourneys();
+            $this->journeys = [];
+            $this->chunkCount = 0;
+        }
+    }
+
+    protected function emitAllJourneys()
+    {
+        $this->logDebug("Emitting all journeys (%d)", $this->chunkCount);
+        EtDeliveryEvent::dispatch($this->subscription->id, $this->journeys, $this->subscriberRef, $this->producerRef);
     }
 }

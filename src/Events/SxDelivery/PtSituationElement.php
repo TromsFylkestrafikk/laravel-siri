@@ -33,6 +33,6 @@ class PtSituationElement
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return new PrivateChannel('siri.sx.situation');
     }
 }
