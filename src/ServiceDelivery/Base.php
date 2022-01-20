@@ -15,7 +15,7 @@ abstract class Base
     /**
      * @var SiriSubscription
      */
-    public $subscription;
+    protected $subscription;
 
     /**
      * @var string
@@ -25,7 +25,7 @@ abstract class Base
     /**
      * @var string
      */
-    public $producerRef;
+    protected $producerRef;
 
     /**
      * True if ServiceDelivery XML matches current subscription.
@@ -52,6 +52,16 @@ abstract class Base
     protected $haltOnSubscription;
 
     /**
+     * @var int
+     */
+    protected $chunkCount;
+
+    /**
+     * @var int
+     */
+    protected $maxChunkSize;
+
+    /**
      * @param XmlFile $xmlFile The incoming Siri XML file to process.
      */
     public function __construct(SiriSubscription $subscription, XmlFile $xmlFile)
@@ -61,6 +71,8 @@ abstract class Base
         $this->subscriptionVerified = false;
         $this->setLogPrefix('Siri-%s[%d]: ', $subscription->channel, $subscription->id);
         $this->haltOnSubscription = env('APP_ENV' !== 'local') || request()->root() !== env('APP_URL');
+        $this->maxChunkSize = config('siri.event_chunk_size.' . $subscription->channel);
+        $this->logDebug("Event chunk size = " . $this->maxChunkSize);
     }
 
     /**

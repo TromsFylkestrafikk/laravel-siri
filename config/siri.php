@@ -110,4 +110,28 @@ return [
     |   * kebab: recorded-at-time
     */
     'xml_element_case_style' => 'camel',
+
+    /*
+    | ------------------------------------------------------------------------
+    | Split service delivery event data in chunks.
+    | ------------------------------------------------------------------------
+    |
+    | This package dispatches events on several occations during parsing of XML
+    | data.  The actual data depends on the channel, but the pattern stays the
+    | same: Within a <Siri><ServiceDelivery> ... there are elements for each
+    | channel that defines individual activity/updates.  We emit events for each
+    | individual such data element, and entire groups (i.e. 'all') of elements
+    | for each channel.
+    |
+    | For large service deliveries it might be overwhelming and memory-consuming
+    | to emit all parsed elements in one event. As the XML is parsed grouped of
+    | service delivery data can be chunked in smaller parts before emitted.  You
+    | can then have individual events for each chunk from the same incoming XML,
+    | off-loading the burden on your systems.
+    */
+    'event_chunk_size' => [
+        'ET' => 100,
+        'VM' => 200,
+        'SX' => 50,
+    ],
 ];

@@ -3,6 +3,8 @@
 namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
 use TromsFylkestrafikk\Siri\Services\XmlMapper;
+use TromsFylkestrafikk\Siri\Events\VmActivities;
+use TromsFylkestrafikk\Siri\Events\VmActivity;
 
 class VehicleMonitoringDelivery extends Base
 {
@@ -15,6 +17,11 @@ class VehicleMonitoringDelivery extends Base
      * @var mixed[]
      */
     protected $activities;
+
+    /**
+     * @var int
+     */
+    protected $activityCount;
 
     /**
      * Tree of XML elements to harvest.
@@ -64,6 +71,7 @@ class VehicleMonitoringDelivery extends Base
     {
         $start = microtime(true);
         parent::process();
+        $this->emitActivities();
         $this->logDebug(
             "Parsed %d vehicle activities in %.3f seconds",
             count($this->activities),
@@ -87,6 +95,8 @@ class VehicleMonitoringDelivery extends Base
     public function vmDelivery()
     {
         $this->activities = [];
+        $this->activityCount = 0;
+        $this->chunkCount = 0;
     }
 
     /**
@@ -97,6 +107,30 @@ class VehicleMonitoringDelivery extends Base
         $this->assertAuthenticated();
         $xml = $this->reader->expandSimpleXml();
         $mapper = new XmlMapper($xml, static::$activitySchema);
-        $this->activities[] = $mapper->execute();
+        $activity = $mapper->execute();
+        $this->chunkCount++;
+        $this->activities[] = $activity;
+        $this->emitActivity($activity);
+        $this->maybeEmitActivities();
+    }
+
+    protected function emitActivity($activity)
+    {
+        VmActivity::dispatch($this->subscription->id, $activity, $this->subscriberRef, $this->producerRef);
+    }
+
+    protected function maybeEmitActivities()
+    {
+        if ($this->maxChunkSize && $this->chunkCount >= $this->maxChunkSize) {
+            $this->emitActivities();
+            $this->activities = [];
+            $this->chunkCount = 0;
+        }
+    }
+
+    protected function emitActivities()
+    {
+        $this->logDebug("Emitting all activities (%d)", $this->chunkCount);
+        VmActivities::dispatch($this->subscription->id, $this->activities, $this->subscriberRef, $this->producerRef);
     }
 }
