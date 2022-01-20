@@ -3,13 +3,10 @@
 namespace TromsFylkestrafikk\Siri\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
-class EtDelivery
+class ServiceDeliveryBase
 {
     use Dispatchable;
     use InteractsWithSockets;
@@ -41,21 +38,10 @@ class EtDelivery
      *
      * @return void
      */
-    public function __construct($subId, $journeys, $subRef = null, $prodRef = null)
+    public function __construct($subId, $subscriberRef = null, $producerRef = null)
     {
         $this->subscriptionId = $subId;
-        $this->journeys = $journeys;
-        $this->subscriberRef = $subRef;
-        $this->producerRef = $prodRef;
-    }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
-    public function broadcastOn()
-    {
-        return new PrivateChannel('siri.et');
+        $this->subscriberRef = $subscriberRef;
+        $this->producerRef = $producerRef;
     }
 }

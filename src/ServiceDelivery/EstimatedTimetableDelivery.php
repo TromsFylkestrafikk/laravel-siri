@@ -3,8 +3,8 @@
 namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
 use TromsFylkestrafikk\Siri\Services\XmlMapper;
-use TromsFylkestrafikk\Siri\Events\EtDelivery as EtDeliveryEvent;
-use TromsFylkestrafikk\Siri\Events\EtDelivery\EstimatedVehicleJourney as EtJourneyEvent;
+use TromsFylkestrafikk\Siri\Events\EtJourney;
+use TromsFylkestrafikk\Siri\Events\EtJourneys;
 
 class EstimatedTimetableDelivery extends Base
 {
@@ -83,7 +83,7 @@ class EstimatedTimetableDelivery extends Base
             microtime(true) - $start
         );
         // Emit remaining journeys as event.
-        $this->emitAllJourneys();
+        $this->emitJourneys();
     }
 
     /**
@@ -129,27 +129,27 @@ class EstimatedTimetableDelivery extends Base
         $this->chunkCount++;
         $this->callCount += count($mapper->get('EstimatedCalls.EstimatedCall', []));
         $this->journeys[] = $etJourney;
-        $this->emitSingleJourney($etJourney);
-        $this->emitChunkOfJourneys();
+        $this->emitJourney($etJourney);
+        $this->maybeEmitJourneys();
     }
 
-    protected function emitSingleJourney($journey)
+    protected function emitJourney($journey)
     {
-        EtJourneyEvent::dispatch($this->subscription->id, $journey, $this->subscriberRef, $this->producerRef);
+        EtJourney::dispatch($this->subscription->id, $journey, $this->subscriberRef, $this->producerRef);
     }
 
-    protected function emitChunkOfJourneys()
+    protected function maybeEmitJourneys()
     {
         if ($this->maxChunkSize && $this->chunkCount >= $this->maxChunkSize) {
-            $this->emitAllJourneys();
+            $this->emitJourneys();
             $this->journeys = [];
             $this->chunkCount = 0;
         }
     }
 
-    protected function emitAllJourneys()
+    protected function emitJourneys()
     {
         $this->logDebug("Emitting all journeys (%d)", $this->chunkCount);
-        EtDeliveryEvent::dispatch($this->subscription->id, $this->journeys, $this->subscriberRef, $this->producerRef);
+        EtJourneys::dispatch($this->subscription->id, $this->journeys, $this->subscriberRef, $this->producerRef);
     }
 }
