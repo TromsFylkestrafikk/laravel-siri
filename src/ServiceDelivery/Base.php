@@ -20,6 +20,11 @@ abstract class Base
     /**
      * @var string
      */
+    protected $responseTimestamp;
+
+    /**
+     * @var string
+     */
     protected $subscriberRef;
 
     /**
@@ -92,6 +97,17 @@ abstract class Base
     }
 
     /**
+     * ChristmasTreeParser callback for setting responseTimestamp
+     *
+     * All service deliveries may have this within their channel specific root
+     * element.
+     */
+    public function readResponseTimestamp()
+    {
+        $this->responseTimestamp = trim($this->reader->readString());
+    }
+
+    /**
      * ChristmasTreeParser callback for setting subscriberRef
      *
      * All service deliveries has this within their channel specific root
@@ -144,5 +160,17 @@ abstract class Base
             $this->reader->halt();
             throw new IllegalStateException("Wrong Subscription identifier");
         }
+    }
+
+    protected function createPayload(string $key, $content)
+    {
+        /** @var \TromsFylkestrafikk\Siri\Services\CaseStyler */
+        $case = app('siri.case');
+        return [
+            $case->style('ResponseTimestamp') => $this->responseTimestamp,
+            $case->style('SubscriberRef') => $this->subscriberRef,
+            $case->style('ProducerRef') => $this->producerRef,
+            $case->style($key) => $content,
+        ];
     }
 }

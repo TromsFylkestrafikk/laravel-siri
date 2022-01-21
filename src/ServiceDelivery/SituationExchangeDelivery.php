@@ -2,10 +2,10 @@
 
 namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
-use TromsFylkestrafikk\Siri\Services\XmlMapper;
 use TromsFylkestrafikk\Siri\Events\SxSituations;
 use TromsFylkestrafikk\Siri\Events\SxPtSituation;
 use TromsFylkestrafikk\Siri\Events\SxRoadSituation;
+use TromsFylkestrafikk\Siri\Services\XmlMapper;
 
 class SituationExchangeDelivery extends Base
 {
@@ -184,6 +184,7 @@ class SituationExchangeDelivery extends Base
     public function setupHandlers()
     {
         $this->reader->addNestedCallback(['SituationExchangeDelivery'], [$this, 'sxDelivery'])
+            ->addNestedCallback(['SituationExchangeDelivery', 'ResponseTimestamp'], [$this, 'readResponseTimestamp'])
             ->addNestedCallback(['SituationExchangeDelivery', 'SubscriberRef'], [$this, 'readSubscriberRef'])
             ->addNestedCallback(['SituationExchangeDelivery', 'SubscriptionRef'], [$this, 'verifySubscriptionRef'])
             ->addNestedCallback(
@@ -208,6 +209,28 @@ class SituationExchangeDelivery extends Base
     }
 
     /**
+     * ChristmasTreeParser callback.
+     */
+    public function parsePtSituation()
+    {
+        $situation = $this->parseSituationType('point');
+        SxPtSituation::dispatch($this->subscription->id, $this->createPayload('PtSituationElement', $situation));
+        $this->ptSituations[] = $situation;
+        $this->maybeEmitSituations();
+    }
+
+    /**
+     * ChristmasTreeParser callback.
+     */
+    public function parseRoadSituation()
+    {
+        $situation = $this->parseSituationType('road');
+        SxRoadSituation::dispatch($this->subscription->id, $this->createPayload('RoadSituationElement', $situation));
+        $this->roadSituations[] = $situation;
+        $this->maybeEmitSituations();
+    }
+
+    /**
      * @param string $situationType
      *
      * @return mixed[]
@@ -224,28 +247,6 @@ class SituationExchangeDelivery extends Base
         $this->chunkCount++;
         $this->situationsCount++;
         return $mapper->execute();
-    }
-
-    /**
-     * ChristmasTreeParser callback.
-     */
-    public function parsePtSituation()
-    {
-        $situation = $this->parseSituationType('point');
-        SxPtSituation::dispatch($this->subscription->id, $situation, $this->subscriberRef, $this->producerRef);
-        $this->ptSituations[] = $situation;
-        $this->maybeEmitSituations();
-    }
-
-    /**
-     * ChristmasTreeParser callback.
-     */
-    public function parseRoadSituation()
-    {
-        $situation = $this->parseSituationType('road');
-        SxRoadSituation::dispatch($this->subscription->id, $situation, $this->subscriberRef, $this->producerRef);
-        $this->roadSituations[] = $situation;
-        $this->maybeEmitSituations();
     }
 
     protected function resetChunk()
@@ -265,12 +266,13 @@ class SituationExchangeDelivery extends Base
 
     protected function emitSituations()
     {
+        $case = app('siri.case');
         SxSituations::dispatch(
             $this->subscription->id,
-            $this->ptSituations,
-            $this->roadSituations,
-            $this->subscriberRef,
-            $this->producerRef
+            $this->createPayload('Situations', [
+                $case->style('PtSituationElement') => $this->ptSituations,
+                $case->style('RoadSituationElement') => $this->roadSituations,
+            ])
         );
     }
 }

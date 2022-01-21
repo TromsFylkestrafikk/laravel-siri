@@ -77,6 +77,7 @@ class VehicleMonitoringDelivery extends Base
     public function setupHandlers()
     {
         $this->reader->addNestedCallback(['VehicleMonitoringDelivery'], [$this, 'vmDelivery'])
+            ->addNestedCallback(['VehicleMonitoringDelivery', 'ResponseTimestamp'], [$this, 'readResponseTimestamp'])
             ->addNestedCallback(['VehicleMonitoringDelivery', 'SubscriberRef'], [$this, 'readSubscriberRef'])
             ->addNestedCallback(['VehicleMonitoringDelivery', 'SubscriptionRef'], [$this, 'verifySubscriptionRef'])
             ->addNestedCallback(['VehicleMonitoringDelivery', 'VehicleActivity'], [$this, 'vehicleActivity']);
@@ -111,7 +112,7 @@ class VehicleMonitoringDelivery extends Base
 
     protected function emitActivity($activity)
     {
-        VmActivity::dispatch($this->subscription->id, $activity, $this->subscriberRef, $this->producerRef);
+        VmActivity::dispatch($this->subscription->id, $this->createPayload('VehicleActivity', $activity));
     }
 
     protected function maybeEmitActivities()
@@ -126,6 +127,6 @@ class VehicleMonitoringDelivery extends Base
     protected function emitActivities()
     {
         $this->logDebug("Emitting all activities (%d)", $this->chunkCount);
-        VmActivities::dispatch($this->subscription->id, $this->activities, $this->subscriberRef, $this->producerRef);
+        VmActivities::dispatch($this->subscription->id, $this->createPayload('VehicleActivity', $this->activities));
     }
 }

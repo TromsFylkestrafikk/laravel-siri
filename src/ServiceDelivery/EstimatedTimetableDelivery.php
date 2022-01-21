@@ -91,6 +91,7 @@ class EstimatedTimetableDelivery extends Base
     public function setupHandlers()
     {
         $this->reader->addNestedCallback(['EstimatedTimetableDelivery'], [$this, 'etDelivery'])
+            ->addNestedCallback(['EstimatedTimetableDelivery', 'ResponseTimestamp'], [$this, 'readResponseTimestamp'])
             ->addNestedCallback(['EstimatedTimetableDelivery', 'SubscriberRef'], [$this, 'readSubscriberRef'])
             ->addNestedCallback(['EstimatedTimetableDelivery', 'SubscriptionRef'], [$this, 'verifySubscriptionRef'])
             ->addNestedCallback(
@@ -133,7 +134,7 @@ class EstimatedTimetableDelivery extends Base
 
     protected function emitJourney($journey)
     {
-        EtJourney::dispatch($this->subscription->id, $journey, $this->subscriberRef, $this->producerRef);
+        EtJourney::dispatch($this->subscription->id, $this->createPayload('EstimatedVehicleJourney', $journey));
     }
 
     protected function maybeEmitJourneys()
@@ -148,6 +149,6 @@ class EstimatedTimetableDelivery extends Base
     protected function emitJourneys()
     {
         $this->logDebug("Emitting all journeys (%d)", $this->chunkCount);
-        EtJourneys::dispatch($this->subscription->id, $this->journeys, $this->subscriberRef, $this->producerRef);
+        EtJourneys::dispatch($this->subscription->id, $this->createPayload('EstimatedVehicleJourney', $this->journeys));
     }
 }
