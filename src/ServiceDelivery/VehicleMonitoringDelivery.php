@@ -9,11 +9,6 @@ use TromsFylkestrafikk\Siri\Events\VmActivity;
 class VehicleMonitoringDelivery extends Base
 {
     /**
-     * @var string
-     */
-    protected $subscriberRef;
-
-    /**
      * @var mixed[]
      */
     protected $activities;
