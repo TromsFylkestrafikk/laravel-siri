@@ -68,7 +68,6 @@ class EstimatedTimetableDelivery extends Base
         ],
     ];
 
-
     /**
      * @inheritdoc
      */
@@ -90,27 +89,10 @@ class EstimatedTimetableDelivery extends Base
      */
     public function setupHandlers()
     {
-        $this->reader->addNestedCallback(['EstimatedTimetableDelivery'], [$this, 'etDelivery'])
-            ->addNestedCallback(['EstimatedTimetableDelivery', 'ResponseTimestamp'], [$this, 'readResponseTimestamp'])
-            ->addNestedCallback(['EstimatedTimetableDelivery', 'SubscriberRef'], [$this, 'readSubscriberRef'])
-            ->addNestedCallback(['EstimatedTimetableDelivery', 'SubscriptionRef'], [$this, 'verifySubscriptionRef'])
-            ->addNestedCallback(
-                ['EstimatedTimetableDelivery', 'EstimatedJourneyVersionFrame', 'EstimatedVehicleJourney'],
-                [$this, 'estimatedVehicleJourney']
-            );
-    }
-
-    /**
-     * ChristmasTreeParser callback for 'EstimatedTimetableDelivery'.
-     *
-     * We use this to init/reset our object.
-     */
-    public function etDelivery()
-    {
-        $this->journeys = [];
-        $this->journeyCount = 0;
-        $this->chunkCount = 0;
-        $this->callCount = 0;
+        $this->reader->addNestedCallback(
+            ['EstimatedJourneyVersionFrame', 'EstimatedVehicleJourney'],
+            [$this, 'estimatedVehicleJourney']
+        );
     }
 
     /**

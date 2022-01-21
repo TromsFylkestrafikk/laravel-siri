@@ -76,23 +76,7 @@ class VehicleMonitoringDelivery extends Base
 
     public function setupHandlers()
     {
-        $this->reader->addNestedCallback(['VehicleMonitoringDelivery'], [$this, 'vmDelivery'])
-            ->addNestedCallback(['VehicleMonitoringDelivery', 'ResponseTimestamp'], [$this, 'readResponseTimestamp'])
-            ->addNestedCallback(['VehicleMonitoringDelivery', 'SubscriberRef'], [$this, 'readSubscriberRef'])
-            ->addNestedCallback(['VehicleMonitoringDelivery', 'SubscriptionRef'], [$this, 'verifySubscriptionRef'])
-            ->addNestedCallback(['VehicleMonitoringDelivery', 'VehicleActivity'], [$this, 'vehicleActivity']);
-    }
-
-    /**
-     * ChristmasTreeParser callback.
-     *
-     * Prepare target for VehicleMonitoringDelivery content.
-     */
-    public function vmDelivery()
-    {
-        $this->activities = [];
-        $this->activityCount = 0;
-        $this->chunkCount = 0;
+        $this->reader->addNestedCallback(['VehicleActivity'], [$this, 'vehicleActivity']);
     }
 
     /**

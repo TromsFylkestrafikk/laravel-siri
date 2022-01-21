@@ -5,6 +5,7 @@ namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 use TromsFylkestrafikk\Siri\Exceptions\IllegalStateException;
 use TromsFylkestrafikk\Siri\Helpers\XmlFile;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
+use TromsFylkestrafikk\Siri\Siri;
 use TromsFylkestrafikk\Siri\Traits\LogPrefix;
 use TromsFylkestrafikk\Xml\ChristmasTreeParser;
 
@@ -13,7 +14,7 @@ abstract class Base
     use LogPrefix;
 
     /**
-     * @var SiriSubscription
+     * @var \TromsFylkestrafikk\Siri\Models\SiriSubscription
      */
     protected $subscription;
 
@@ -45,7 +46,7 @@ abstract class Base
     protected $xmlFile;
 
     /**
-     * @var ChristmasTreeParser
+     * @var \TromsFylkestrafikk\Xml\ChristmasTreeParser
      */
     protected $reader;
 
@@ -67,6 +68,13 @@ abstract class Base
     protected $maxChunkSize;
 
     /**
+     * Destination during parsing.
+     *
+     * @var array
+     */
+    protected $payload;
+
+    /**
      * @param XmlFile $xmlFile The incoming Siri XML file to process.
      */
     public function __construct(SiriSubscription $subscription, XmlFile $xmlFile)
@@ -85,15 +93,39 @@ abstract class Base
      */
     public function process()
     {
+        $chanElement = Siri::$serviceMap[$this->subscription->channel];
         $this->reader = new ChristmasTreeParser();
         $this->logDebug("Incoming file: %s", $this->xmlFile->getPath());
         $this->reader->open($this->xmlFile->getPath());
-        $this->reader->addCallback(['Siri', 'ServiceDelivery'], [$this, 'setupHandlers'])
-            ->addCallback(['Siri', 'ServiceDelivery', 'ProducerRef'], function ($reader) {
+        $this->reader->addCallback(['Siri', 'ServiceDelivery', $chanElement], [$this, 'setupChannelHandlers']);
+        $this->reader->addCallback(['Siri', 'ServiceDelivery', 'ProducerRef'], function ($reader) {
                 $this->producerRef = $reader->readString();
-            })
+        })
             ->parse()
             ->close();
+    }
+
+    /**
+     * ChristmasTreeParser callback for 'Siri/ServiceDelivery/[<CHANNEL>]'.
+     *
+     * Channels must implement this and set up their own mapping/parsing of
+     * content.
+     */
+    abstract public function setupHandlers();
+
+    /**
+     * ChristmasTreeParser callback for 'Siri/ServiceDelivery/[<CHANNEL>]'.
+     *
+     * Read common elements in service delivery channels.
+     */
+    protected function setupChannelCallbacks()
+    {
+        $chanElement = Siri::$serviceMap[$this->subscription->channel];
+        $this->reader->addNestedCallback([$chanElement, 'ResponseTimestamp'], [$this, 'readResponseTimestamp'])
+            ->addNestedCallback([$chanElement, 'SubscriberRef'], [$this, 'readSubscriberRef'])
+            ->addNestedCallback([$chanElement, 'SubscriptionRef'], [$this, 'verifySubscriptionRef']);
+        // Time to let channels implement their own mappings.
+        $this->setupHandlers();
     }
 
     /**
@@ -117,14 +149,6 @@ abstract class Base
     {
         $this->subscriberRef = trim($this->reader->readString());
     }
-
-    /**
-     * ChristmasTreeParser callback for 'ServiceDelivery'.
-     *
-     * Channels must implement this and set up their own mapping/parsing of
-     * content.
-     */
-    abstract public function setupHandlers();
 
     /**
      * ChristmasTreeParser callback for SubscriptionRef.

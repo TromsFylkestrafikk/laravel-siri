@@ -10,11 +10,6 @@ use TromsFylkestrafikk\Siri\Services\XmlMapper;
 class SituationExchangeDelivery extends Base
 {
     /**
-     * @var string
-     */
-    protected $subscriberRef;
-
-    /**
      * @var mixed[]
      */
     protected $ptSituations;
@@ -183,18 +178,9 @@ class SituationExchangeDelivery extends Base
      */
     public function setupHandlers()
     {
-        $this->reader->addNestedCallback(['SituationExchangeDelivery'], [$this, 'sxDelivery'])
-            ->addNestedCallback(['SituationExchangeDelivery', 'ResponseTimestamp'], [$this, 'readResponseTimestamp'])
-            ->addNestedCallback(['SituationExchangeDelivery', 'SubscriberRef'], [$this, 'readSubscriberRef'])
-            ->addNestedCallback(['SituationExchangeDelivery', 'SubscriptionRef'], [$this, 'verifySubscriptionRef'])
-            ->addNestedCallback(
-                ['SituationExchangeDelivery', 'Situations', 'PtSituationElement'],
-                [$this, 'parsePtSituation']
-            )
-            ->addNestedCallback(
-                ['SituationExchangeDelivery', 'Situations', 'RoadSituationElement'],
-                [$this, 'parseRoadSituation']
-            );
+        $this->reader
+            ->addNestedCallback(['Situations', 'PtSituationElement'], [$this, 'parsePtSituation'])
+            ->addNestedCallback(['Situations', 'RoadSituationElement'], [$this, 'parseRoadSituation']);
     }
 
     /**
