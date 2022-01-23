@@ -60,11 +60,6 @@ class XmlMapper
     protected $targetRepo;
 
     /**
-     * @var array
-     */
-    protected $options;
-
-    /**
      * @var bool
      */
     protected $hasMapped;
@@ -72,16 +67,12 @@ class XmlMapper
     /**
      * @param SimpleXMLElement $xml,
      * @param array $schema Array with schema to retrieve.
-     * @param array $options Settings for how to extract/map elements.
      */
-    public function __construct(SimpleXMLElement $xml, array $schema, $options = [])
+    public function __construct(SimpleXMLElement $xml, array $schema)
     {
         $this->xml = $xml;
         $this->schema = $schema;
         $this->target = [];
-        $this->options = array_merge([
-            'element_case_style' => config('siri.xml_element_case_style'),
-        ], $options);
         $this->targetRepo = null;
     }
 
@@ -131,25 +122,9 @@ class XmlMapper
         if ($this->targetRepo === null) {
             $this->targetRepo = new Repository($this->target);
         }
-        $caseStyle = $this->options['element_case_style'];
-        $parts = array_map([Str::class, $caseStyle], explode('.', $key));
+        $caseStyler = app('siri.case');
+        $parts = array_map([$caseStyler, 'style'], explode('.', $key));
         return $this->targetRepo->get(implode('.', $parts), $default);
-    }
-
-    /**
-     * Given an Xml element name, return the key used in target array.
-     *
-     * @param string $elementName
-     *
-     * @return string
-     */
-    public function destKey(string $elementName): string
-    {
-        if (empty($this->options['element_case_style'])) {
-            return $elementName;
-        }
-        $caseMethod = $this->options['element_case_style'];
-        return Str::$caseMethod($elementName);
     }
 
     /**
@@ -185,13 +160,14 @@ class XmlMapper
     protected function getXmlElements(array $schema, SimpleXMLElement $xml): array
     {
         $ret = [];
+        $caseStyler = app('siri.case');
         foreach (array_keys($schema) as $element) {
             if (strpos($element, '#') === 0) {
                 continue;
             }
             $elementVal = $this->getXmlElement($element, $schema, $xml);
             if ($elementVal !== null) {
-                $ret[$this->destKey($element)] = $elementVal;
+                $ret[$caseStyler->style($element)] = $elementVal;
             }
         }
         return $ret;

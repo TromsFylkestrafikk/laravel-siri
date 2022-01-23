@@ -18,30 +18,18 @@ class ServiceDeliveryBase
     public $subscriptionId;
 
     /**
-     * @var string
-     */
-    public $subscriberRef;
-
-    /**
-     * @var string
-     */
-    public $producerRef;
-
-    /**
      * @var array
      */
-    public $journeys;
-
+    public $payload;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($subId, $subscriberRef = null, $producerRef = null)
+    public function __construct($subscriptionId, $payload)
     {
-        $this->subscriptionId = $subId;
-        $this->subscriberRef = $subscriberRef;
-        $this->producerRef = $producerRef;
+        $this->subscriptionId = $subscriptionId;
+        $this->payload = $payload;
     }
 }

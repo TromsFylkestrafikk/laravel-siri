@@ -9,9 +9,17 @@ use TromsFylkestrafikk\Siri\Console\CreateSubscription;
 use TromsFylkestrafikk\Siri\Console\ListSubscriptions;
 use TromsFylkestrafikk\Siri\Console\TerminateSubscription;
 use TromsFylkestrafikk\Siri\Http\Middleware\SubscribedChannel;
+use TromsFylkestrafikk\Siri\Services\CaseStyler;
 
 class SiriServiceProvider extends ServiceProvider
 {
+    public function register()
+    {
+        $this->app->singleton('siri.case', function () {
+            return new CaseStyler(config('siri.xml_element_case_style'));
+        });
+    }
+
     /**
      * @inheritdoc
      */
