@@ -5,6 +5,7 @@ namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 use TromsFylkestrafikk\Siri\Exceptions\IllegalStateException;
 use TromsFylkestrafikk\Siri\Helpers\XmlFile;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
+use TromsFylkestrafikk\Siri\Services\XmlMapper;
 use TromsFylkestrafikk\Siri\Siri;
 use TromsFylkestrafikk\Siri\Traits\LogPrefix;
 use TromsFylkestrafikk\Xml\ChristmasTreeParser;
@@ -17,6 +18,16 @@ abstract class Base
      * @var \TromsFylkestrafikk\Siri\Models\SiriSubscription
      */
     protected $subscription;
+
+    /**
+     * @var \TromsFylkestrafikk\Siri\Helpers\XmlFile
+     */
+    protected $xmlFile;
+
+    /**
+     * @var \TromsFylkestrafikk\Xml\ChristmasTreeParser
+     */
+    protected $reader;
 
     /**
      * @var string
@@ -41,16 +52,6 @@ abstract class Base
     protected $subscriptionVerified;
 
     /**
-     * @var XmlFile
-     */
-    protected $xmlFile;
-
-    /**
-     * @var \TromsFylkestrafikk\Xml\ChristmasTreeParser
-     */
-    protected $reader;
-
-    /**
      * Throw exception if subscription identifier doesn't match.
      *
      * @var bool
@@ -58,9 +59,18 @@ abstract class Base
     protected $haltOnSubscription;
 
     /**
+     * Elements read per channel before emitting event.
+     *
      * @var int
      */
     protected $chunkCount;
+
+    /**
+     * Total number of channel specific elements read
+     *
+     * @var int
+     */
+    protected $elementCount;
 
     /**
      * @var int
@@ -68,14 +78,14 @@ abstract class Base
     protected $maxChunkSize;
 
     /**
-     * Destination during parsing.
+     * Data sent to channel event for channel.
      *
      * @var array
      */
     protected $payload;
 
     /**
-     * @param XmlFile $xmlFile The incoming Siri XML file to process.
+     * @param \TromsFylkestrafikk\Siri\Helpers\XmlFile $xmlFile The incoming Siri XML file to process.
      */
     public function __construct(SiriSubscription $subscription, XmlFile $xmlFile)
     {
@@ -93,17 +103,34 @@ abstract class Base
      */
     public function process()
     {
+        $start = microtime(true);
         $chanElement = Siri::$serviceMap[$this->subscription->channel];
         $this->reader = new ChristmasTreeParser();
         $this->logDebug("Incoming file: %s", $this->xmlFile->getPath());
+
         $this->reader->open($this->xmlFile->getPath());
-        $this->reader->addCallback(['Siri', 'ServiceDelivery', $chanElement], [$this, 'setupChannelHandlers']);
-        $this->reader->addCallback(['Siri', 'ServiceDelivery', 'ProducerRef'], function ($reader) {
-                $this->producerRef = $reader->readString();
-        })
+        $this->reader->addCallback(['Siri', 'ServiceDelivery', $chanElement], [$this, 'setupChannelCallbacks'])
+            ->addCallback(['Siri', 'ServiceDelivery', 'ProducerRef'], function ($reader) {
+                $this->producerRef = trim($reader->readString());
+            })
             ->parse()
             ->close();
+
+        $this->emitPayload();
+        $this->logDebug("Parsed %d items in %.3f seconds", $this->elementCount, microtime(true) - $start);
     }
+
+    /**
+     * Get target schema of current channel.
+     *
+     * @return array
+     */
+    abstract protected function getTargetSchema($elName);
+
+    /**
+     * Emit current payload
+     */
+    abstract protected function emitPayload();
 
     /**
      * ChristmasTreeParser callback for 'Siri/ServiceDelivery/[<CHANNEL>]'.
@@ -118,12 +145,15 @@ abstract class Base
      *
      * Read common elements in service delivery channels.
      */
-    protected function setupChannelCallbacks()
+    public function setupChannelCallbacks()
     {
-        $chanElement = Siri::$serviceMap[$this->subscription->channel];
-        $this->reader->addNestedCallback([$chanElement, 'ResponseTimestamp'], [$this, 'readResponseTimestamp'])
-            ->addNestedCallback([$chanElement, 'SubscriberRef'], [$this, 'readSubscriberRef'])
-            ->addNestedCallback([$chanElement, 'SubscriptionRef'], [$this, 'verifySubscriptionRef']);
+        $this->chunkCount = 0;
+        $this->elementCount = 0;
+        $this->payload = [];
+
+        $this->reader->addNestedCallback(['ResponseTimestamp'], [$this, 'readResponseTimestamp'])
+            ->addNestedCallback(['SubscriberRef'], [$this, 'readSubscriberRef'])
+            ->addNestedCallback(['SubscriptionRef'], [$this, 'verifySubscriptionRef']);
         // Time to let channels implement their own mappings.
         $this->setupHandlers();
     }
@@ -172,6 +202,29 @@ abstract class Base
     }
 
     /**
+     * Parse and add element to payload.
+     *
+     * Helper function for channel implementations.  Call this during parsing of
+     * what is considered the 'main' payload element in the channel's service
+     * delivery.
+     *
+     * @return array The populated target array after processing.
+     */
+    protected function processChannelPayloadElement()
+    {
+        $this->assertAuthenticated();
+        $elName = $this->reader->elementName;
+        $xml = $this->reader->expandSimpleXml();
+        $mapper = new XmlMapper($xml, $this->getTargetSchema($elName));
+        $result = $mapper->execute();
+        $this->chunkCount++;
+        $this->elementCount++;
+        $this->payload[] = $result;
+        $this->maybeEmitPayload();
+        return $result;
+    }
+
+    /**
      * Assert subscription authentication is in order.
      *
      * Call this from the XML tree where it is expected that the subscription
@@ -196,5 +249,14 @@ abstract class Base
             $case->style('ProducerRef') => $this->producerRef,
             $case->style($key) => $content,
         ];
+    }
+
+    protected function maybeEmitPayload()
+    {
+        if ($this->maxChunkSize && $this->chunkCount >= $this->maxChunkSize) {
+            $this->emitPayload();
+            $this->payload = [];
+            $this->chunkCount = 0;
+        }
     }
 }

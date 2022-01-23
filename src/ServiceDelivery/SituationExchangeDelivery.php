@@ -5,7 +5,6 @@ namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 use TromsFylkestrafikk\Siri\Events\SxSituations;
 use TromsFylkestrafikk\Siri\Events\SxPtSituation;
 use TromsFylkestrafikk\Siri\Events\SxRoadSituation;
-use TromsFylkestrafikk\Siri\Services\XmlMapper;
 
 class SituationExchangeDelivery extends Base
 {
@@ -20,7 +19,7 @@ class SituationExchangeDelivery extends Base
     protected $roadSituations;
 
     /**
-     * Tree of XML elements to harvest.
+     * Tree of XML elements to harvest for PtSituationElement
      *
      * @var array
      */
@@ -154,23 +153,14 @@ class SituationExchangeDelivery extends Base
     ];
 
     /**
-     * @var int
-     */
-    protected $situationsCount;
-
-    /**
      * @inheritdoc
      */
-    public function process()
+    protected function getTargetSchema($elName)
     {
-        $start = microtime(true);
-        parent::process();
-        $this->emitSituations();
-        $this->logDebug(
-            "Parsed %s situations in %.3f seconds",
-            $this->situationsCount,
-            microtime(true) - $start
-        );
+        return [
+            'PtSituationElement' => static::$ptSituationSchema,
+            'RoadSituationElement' => static::$roadSituationSchema,
+        ][$elName];
     }
 
     /**
@@ -185,24 +175,12 @@ class SituationExchangeDelivery extends Base
 
     /**
      * ChristmasTreeParser callback.
-     *
-     * Prepare target for SituationExchangeDelivery content.
-     */
-    public function sxDelivery()
-    {
-        $this->situationsCount = 0;
-        $this->resetChunk();
-    }
-
-    /**
-     * ChristmasTreeParser callback.
      */
     public function parsePtSituation()
     {
-        $situation = $this->parseSituationType('point');
-        SxPtSituation::dispatch($this->subscription->id, $this->createPayload('PtSituationElement', $situation));
+        $situation = $this->processChannelPayloadElement();
         $this->ptSituations[] = $situation;
-        $this->maybeEmitSituations();
+        SxPtSituation::dispatch($this->subscription->id, $this->createPayload('PtSituationElement', $situation));
     }
 
     /**
@@ -210,47 +188,12 @@ class SituationExchangeDelivery extends Base
      */
     public function parseRoadSituation()
     {
-        $situation = $this->parseSituationType('road');
-        SxRoadSituation::dispatch($this->subscription->id, $this->createPayload('RoadSituationElement', $situation));
+        $situation = $this->processChannelPayloadElement();
         $this->roadSituations[] = $situation;
-        $this->maybeEmitSituations();
+        SxRoadSituation::dispatch($this->subscription->id, $this->createPayload('RoadSituationElement', $situation));
     }
 
-    /**
-     * @param string $situationType
-     *
-     * @return mixed[]
-     */
-    protected function parseSituationType($situationType)
-    {
-        $schemas = [
-            'road' => static::$roadSituationSchema,
-            'point' => static::$ptSituationSchema,
-        ];
-        $this->assertAuthenticated();
-        $xml = $this->reader->expandSimpleXml();
-        $mapper = new XmlMapper($xml, $schemas[$situationType]);
-        $this->chunkCount++;
-        $this->situationsCount++;
-        return $mapper->execute();
-    }
-
-    protected function resetChunk()
-    {
-        $this->ptSituations = [];
-        $this->roadSituations = [];
-        $this->chunkCount = 0;
-    }
-
-    protected function maybeEmitSituations()
-    {
-        if ($this->maxChunkSize && $this->chunkCount >= $this->maxChunkSize) {
-            $this->emitSituations();
-            $this->resetChunk();
-        }
-    }
-
-    protected function emitSituations()
+    protected function emitPayload()
     {
         $case = app('siri.case');
         SxSituations::dispatch(
@@ -260,5 +203,8 @@ class SituationExchangeDelivery extends Base
                 $case->style('RoadSituationElement') => $this->roadSituations,
             ])
         );
+        // Reset SX internal harvesters.
+        $this->roadSituations = [];
+        $this->ptSituations = [];
     }
 }
