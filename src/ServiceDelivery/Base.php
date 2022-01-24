@@ -2,6 +2,7 @@
 
 namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
+use TromsFylkestrafikk\Siri\Events\ChannelSchema;
 use TromsFylkestrafikk\Siri\Exceptions\IllegalStateException;
 use TromsFylkestrafikk\Siri\Helpers\XmlFile;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
@@ -28,6 +29,13 @@ abstract class Base
      * @var \TromsFylkestrafikk\Xml\ChristmasTreeParser
      */
     protected $reader;
+
+    /**
+     * Schema used to map XML elements to target array.
+     *
+     * @var array
+     */
+    protected $schemas;
 
     /**
      * @var string
@@ -123,6 +131,8 @@ abstract class Base
     /**
      * Get target schema of current channel.
      *
+     * @param string $elName The element in question we need to get a schema for.
+     *
      * @return array
      */
     abstract protected function getTargetSchema($elName);
@@ -202,6 +212,21 @@ abstract class Base
     }
 
     /**
+     * Assert subscription authentication is in order.
+     *
+     * Call this from the XML tree where it is expected that the subscription
+     * ref is received, i.e. when the 'meat' of the transmission begins.
+     */
+    protected function assertAuthenticated()
+    {
+        if (!$this->subscriptionVerified && $this->haltOnSubscription) {
+            $this->logError("Subscription identifier in XML is missing or doesn't match. Halting!");
+            $this->reader->halt();
+            throw new IllegalStateException("Wrong Subscription identifier");
+        }
+    }
+
+    /**
      * Parse and add element to payload.
      *
      * Helper function for channel implementations.  Call this during parsing of
@@ -215,7 +240,7 @@ abstract class Base
         $this->assertAuthenticated();
         $elName = $this->reader->elementName;
         $xml = $this->reader->expandSimpleXml();
-        $mapper = new XmlMapper($xml, $this->getTargetSchema($elName));
+        $mapper = new XmlMapper($xml, $this->getFinalTargetSchema($elName));
         $result = $mapper->execute();
         $this->chunkCount++;
         $this->elementCount++;
@@ -225,18 +250,22 @@ abstract class Base
     }
 
     /**
-     * Assert subscription authentication is in order.
+     * Retrieve schema from channel and allow other to modify it.
      *
-     * Call this from the XML tree where it is expected that the subscription
-     * ref is received, i.e. when the 'meat' of the transmission begins.
+     * @param string $elName
+     *
+     * @return array Actual schema that will be used to map content.
      */
-    protected function assertAuthenticated()
+    protected function getFinalTargetSchema($elName)
     {
-        if (!$this->subscriptionVerified && $this->haltOnSubscription) {
-            $this->logError("Subscription identifier in XML is missing or doesn't match. Halting!");
-            $this->reader->halt();
-            throw new IllegalStateException("Wrong Subscription identifier");
+        $schemaKey = $elName ?: 'null';
+        if (empty($this->schemas[$schemaKey])) {
+            $schema = $this->getTargetSchema($elName);
+            ChannelSchema::dispatch($this->subscription->channel, $schema, $elName);
+            dump($schema);
+            $this->schemas[$schemaKey] = $schema;
         }
+        return $this->schemas[$schemaKey];
     }
 
     protected function createPayload(string $key, $content)

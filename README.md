@@ -1,11 +1,54 @@
 # Laravel SIRI
 
-Add SIRI VM and ET handling to your Laravel project.
+Add SIRI consumer service for SX, ET and VM channels.
 
-VM data is sent to a pub/sub server, whereas ET data is written
-directly to activated DB tables (see
-[tromsfylkestrafikk/laravel-netex](https://github.com/TromsFylkestrafikk/laravel-netex).)
+This package sets up SIRI subscriptions for the Estimated Timetable
+(ET), Vehicle Monitoring (VM) and Situation Exchange (SX) service
+channels. Incoming channel data will be parsed according to channel
+specific schemas and handed over to other packages or main
+installation as events.
 
+## Available events
+
+The following events are dispatched during the incoming channel data
+cycle.
+
+- `\TromsFylkestrafikk\Siri\Events\ChannelSchema`: The schema used to
+  map data from XML to array.  Use this modify what elements to harvest.
+- `\TromsFylkestrafikk\Siri\Events\EtJourney`: A parsed
+  `EstimatedJourneyVersionFrame` is available with additional sibling
+  elements.
+- `\TromsFylkestrafikk\Siri\Events\EtJourneys`: An array of the same
+  item as above.
+- `\TromsFylkestrafikk\Siri\Events\VmActivity`: A parsed
+  `VehicleActivity` item is available, with additional sibling elements.
+- `\TromsFylkestrafikk\Siri\Events\VmActivities`: An array of above
+  mentioned items.
+- `\TromsFylkestrafikk\Siri\Events\SxPtSituation`: A parsed
+  `PtSituationElement` is available with additional generic channel
+  data.
+- `\TromsFylkestrafikk\Siri\Events\SxRoadSituation`: A parsed
+  `RoadSituationElement` item is available.
+- `\TromsFylkestrafikk\Siri\Events\SxSituations`: An array of
+  situations are available.
+  
+## Schema and mapped data
+
+Incoming XMLs are parsed using our own ChristmasTreeParser XML parser.
+This uses a combination of XMLReader an SimpleXmlElement to extract
+XML data, to cope with really large dumps.
+
+The 'meat' of channel data are emitted using events, but for really
+large xml's the data are split up in chunks. The chunk size can be
+configured per siri channel in `config/siri.php`.
+
+The schema used to harvest channel data must map the exact element
+name and path in order to retrieve the value from the xml, but the
+case style for the destination keys can be configured using the
+`xml_element_case_style` configuration.
+
+Data within the schema definition are provided exactly as retrieved,
+but some surrounding elements are not.
 
 ## Install
 
