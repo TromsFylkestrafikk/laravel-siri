@@ -262,7 +262,6 @@ abstract class Base
         if (empty($this->schemas[$schemaKey])) {
             $schema = $this->getTargetSchema($elName);
             ChannelSchema::dispatch($this->subscription->channel, $schema, $elName);
-            dump($schema);
             $this->schemas[$schemaKey] = $schema;
         }
         return $this->schemas[$schemaKey];
