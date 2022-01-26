@@ -2,7 +2,7 @@
 
 namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
-use TromsFylkestrafikk\Siri\Events\ChannelSchema;
+use Illuminate\Pipeline\Pipeline;
 use TromsFylkestrafikk\Siri\Exceptions\IllegalStateException;
 use TromsFylkestrafikk\Siri\Helpers\XmlFile;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
@@ -260,8 +260,18 @@ abstract class Base
     {
         $schemaKey = $elName ?: 'null';
         if (empty($this->schemas[$schemaKey])) {
-            $schema = $this->getTargetSchema($elName);
-            ChannelSchema::dispatch($this->subscription->channel, $schema, $elName);
+            $schema = app(Pipeline::class)
+                ->send([
+                    'schema' => $this->getTargetSchema($elName),
+                    'channel' => $this->subscription->channel,
+                    'elementName' => $elName,
+                ])
+                ->through(config('siri.schema_pipeline', []))
+                ->then(function ($processed) {
+                    $this->logDebug("Got schema through pipeline.");
+                    return $processed['schema'];
+                });
+            $this->logDebug("Post schema pipeline");
             $this->schemas[$schemaKey] = $schema;
         }
         return $this->schemas[$schemaKey];
