@@ -108,33 +108,6 @@ class XmlMapper
     }
 
     /**
-     * Get a value from target array using dot notation.
-     *
-     * The key can be in any case style, but mixing snake and kebab style seems
-     * to confuse Laravel's Str::class case method, so try to be consistent in
-     * your choice of case style weapon.
-     *
-     * To retrieve e.g <DeeplyNested><XmlTreeValue>34</...> you can retrieve it
-     * in any of the configurable case style ways, e.g.:
-     *   - $this->get('deeplyNested.xmlTreeValue');
-     *   - $this->get('deeply_nested.xml_tree_value');
-     *
-     * @param string $key
-     *
-     * @return mixed
-     */
-    public function get(string $key, $default = null)
-    {
-        $this->execute();
-        if ($this->targetRepo === null) {
-            $this->targetRepo = new Repository($this->target);
-        }
-        $caseStyler = app('siri.case');
-        $parts = array_map([$caseStyler, 'style'], explode('.', $key));
-        return $this->targetRepo->get(implode('.', $parts), $default);
-    }
-
-    /**
      * Cast given value to type $cast.
      *
      * @param string $value
