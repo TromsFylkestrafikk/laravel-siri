@@ -9,9 +9,19 @@ use Illuminate\Config\Repository;
  */
 class DotLookup
 {
+    /**
+     * @var \Illuminate\Config\Repository
+     */
     protected $repo;
+
+    /**
+     * @var \TromsFylkestrafikk\Siri\Services\CaseStyler
+     */
     protected $case;
 
+    /**
+     * @param mixed[] $map
+     */
     public function __construct(array $map)
     {
         $this->repo = new Repository($map);
