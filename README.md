@@ -13,8 +13,6 @@ installation as events.
 The following events are dispatched during the incoming channel data
 cycle.
 
-- `\TromsFylkestrafikk\Siri\Events\ChannelSchema`: The schema used to
-  map data from XML to array.  Use this modify what elements to harvest.
 - `\TromsFylkestrafikk\Siri\Events\EtJourney`: A parsed
   `EstimatedJourneyVersionFrame` is available with additional sibling
   elements.
@@ -48,7 +46,22 @@ case style for the destination keys can be configured using the
 `xml_element_case_style` configuration.
 
 Data within the schema definition are provided exactly as retrieved,
-but some surrounding elements are not.
+given the schema cast type, but some surrounding elements are not.
+
+### Customizing schemas
+
+The schema are retrieved using Laravel's pipeline which allows you to
+modify the individual channel schemas before mapping.  Implement a
+class with a 'handle' method and add this class to your
+config/siri.php in the 'schema_pipeline' array.  The stub of this
+handler should look like this:
+```php
+    public function handle(array $schemaSetup, \Closure $next)
+    {
+        // Do stuff with $schemaSetup['schema']
+        return $next($schemaSetup);
+    }
+```
 
 ## Install
 

@@ -19,6 +19,7 @@
     "require": {
         "php": "^7.3|^8.0",
         "guzzlehttp/guzzle": "^7.0.1",
+	"illuminate/config": "^8.0",
         "illuminate/console": "^8.0",
         "illuminate/database": "^8.0",
         "illuminate/http": "^8.0",

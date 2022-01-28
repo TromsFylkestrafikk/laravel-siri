@@ -134,4 +134,28 @@ return [
         'VM' => 200,
         'SX' => 50,
     ],
+
+    /*
+    | ------------------------------------------------------------------------
+    | Pipeline of classes to act upon channel schemas
+    | ------------------------------------------------------------------------
+    |
+    | List of classes that act upon modifying Siri channel schemas before
+    | mapping incoming data to arrays. Each class must implement a method with
+    | the footprint
+    |
+    |     @method public handle(array $schemaSetup, Closure $next): mixed
+    |
+    | The $schemaSetup payload is keyed with the following content:
+    | - schema: The schema that may be altered.
+    | - channel: The siri subscription channel (VM, ET or SX)
+    | - elementName: The SIRI XML element name the schema belongs to.
+    |
+    | As normal with Laravel pipelines, the handlers must invoke and return the
+    | next handler:
+    |
+    |    return $next($schemaSetup);
+    */
+    'schema_pipeline' => [
+    ],
 ];

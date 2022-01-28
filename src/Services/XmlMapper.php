@@ -2,7 +2,6 @@
 
 namespace TromsFylkestrafikk\Siri\Services;
 
-use Illuminate\Support\Str;
 use Illuminate\Config\Repository;
 use SimpleXMLElement;
 use TromsFylkestrafikk\Siri\Siri;
@@ -65,6 +64,13 @@ class XmlMapper
     protected $hasMapped;
 
     /**
+     * Map of namespace => prefix in use during parsing.
+     *
+     * @var string[]
+     */
+    protected $namespaces;
+
+    /**
      * @param SimpleXMLElement $xml,
      * @param array $schema Array with schema to retrieve.
      */
@@ -74,6 +80,7 @@ class XmlMapper
         $this->schema = $schema;
         $this->target = [];
         $this->targetRepo = null;
+        $this->namespaces = [Siri::NS => 'siri'];
     }
 
     /**
@@ -98,33 +105,6 @@ class XmlMapper
             $this->hasMapped = true;
         }
         return $this->target;
-    }
-
-    /**
-     * Get a value from target array using dot notation.
-     *
-     * The key can be in any case style, but mixing snake and kebab style seems
-     * to confuse Laravel's Str::class case method, so try to be consistent in
-     * your choice of case style weapon.
-     *
-     * To retrieve e.g <DeeplyNested><XmlTreeValue>34</...> you can retrieve it
-     * in any of the configurable case style ways, e.g.:
-     *   - $this->get('deeplyNested.xmlTreeValue');
-     *   - $this->get('deeply_nested.xml_tree_value');
-     *
-     * @param string $key
-     *
-     * @return mixed
-     */
-    public function get(string $key, $default = null)
-    {
-        $this->execute();
-        if ($this->targetRepo === null) {
-            $this->targetRepo = new Repository($this->target);
-        }
-        $caseStyler = app('siri.case');
-        $parts = array_map([$caseStyler, 'style'], explode('.', $key));
-        return $this->targetRepo->get(implode('.', $parts), $default);
     }
 
     /**
@@ -157,15 +137,18 @@ class XmlMapper
      *
      * @return array
      */
-    protected function getXmlElements(array $schema, SimpleXMLElement $xml): array
+    protected function getXmlElements(array $schema, SimpleXMLElement $xml, $namespace = null): array
     {
+        if (!$namespace) {
+            $namespace = Siri::NS;
+        }
         $ret = [];
         $caseStyler = app('siri.case');
         foreach (array_keys($schema) as $element) {
             if (strpos($element, '#') === 0) {
                 continue;
             }
-            $elementVal = $this->getXmlElement($element, $schema, $xml);
+            $elementVal = $this->getXmlElement($element, $schema, $xml, $namespace);
             if ($elementVal !== null) {
                 $ret[$caseStyler->style($element)] = $elementVal;
             }
@@ -174,17 +157,21 @@ class XmlMapper
     }
 
     /**
-     * The the value of a single element from XML.
+     * The value of a single element from XML.
      *
      * @param string $element Name of element to get
      * @param array $schema The '$element' argument must be present within this.
+     * @param SimpleXMLElement $xml Where to extract value from.
+     * @param string $namespace Namespace the XML element is using.
      *
      * @return mixed
      */
-    protected function getXmlElement($element, $schema, SimpleXMLElement $xml)
+    protected function getXmlElement($element, $schema, SimpleXMLElement $xml, $namespace)
     {
-        $xml->registerXPathNamespace('siri', Siri::NS);
-        $elXml = $xml->xpath("siri:$element");
+        $namespace = $this->updateNamespace($schema[$element], $namespace);
+        $nsPrefix = $this->getNsPrefix($namespace);
+        $xml->registerXPathNamespace($nsPrefix, $namespace);
+        $elXml = $xml->xpath("$nsPrefix:$element");
         if (!count($elXml)) {
             return null;
         }
@@ -198,6 +185,37 @@ class XmlMapper
             }
             return $childItems;
         }
-        return $this->getXmlElements($schema[$element], $elXml[0]);
+        return $this->getXmlElements($schema[$element], $elXml[0], $namespace);
+    }
+
+    /**
+     * Update namespace used for current element
+     *
+     * @param mixed[] $elSchema XmlMapper element schema
+     * @param string $namespace Parent element namespace
+     *
+     * @return string
+     */
+    protected function updateNamespace($elSchema, $namespace)
+    {
+        if (is_array($elSchema) && !empty($elSchema['#xmlns'])) {
+            $namespace = $elSchema['#xmlns'];
+        }
+        return $namespace;
+    }
+
+    /**
+     * Get or create a suitable namespace prefix.
+     *
+     * @param string $namespace
+     *
+     * @return string New or existing prefix for given namespace.
+     */
+    protected function getNsPrefix($namespace)
+    {
+        if (!isset($this->namespaces[$namespace])) {
+            $this->namespaces[$namespace] = 'tftmap' . chr(97 + count($this->namespaces));
+        }
+        return $this->namespaces[$namespace];
     }
 }

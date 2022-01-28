@@ -56,7 +56,7 @@ class VehicleMonitoringDelivery extends Base
                     'Latitude' => 'float',
                     'Longitude' => 'float',
                 ],
-                'Bearing' => 'string',
+                'Bearing' => 'float',
                 'ProgressRate' => 'string',
                 'Delay' => 'string',
                 'ProgressStatus' => 'string',
@@ -72,7 +72,7 @@ class VehicleMonitoringDelivery extends Base
                     'PreviousCall' => [
                         '#multiple' => true,
                         'StopPointRef' => 'string',
-                        'VisitNumber' => 'string',
+                        'VisitNumber' => 'int',
                         'StopPointName' => 'string',
                         'VehicleAtStop' => 'bool',
                         'AimedArrivalTime' => 'string',
@@ -85,7 +85,7 @@ class VehicleMonitoringDelivery extends Base
                     'OnwardCall' => [
                         '#multiple' => true,
                         'StopPointRef' => 'string',
-                        'VisitNumber' => 'string',
+                        'VisitNumber' => 'int',
                         'StopPointName' => 'string',
                         'VehicleAtStop' => 'bool',
                         'AimedDepartureTime' => 'string',
@@ -96,7 +96,7 @@ class VehicleMonitoringDelivery extends Base
                 ],
                 'MonitoredCall' => [
                     'StopPointRef' => 'string',
-                    'VisitNumber' => 'string',
+                    'VisitNumber' => 'int',
                     'StopPointName' => 'string',
                     'VehicleAtStop' => 'bool',
                 ],
