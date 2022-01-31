@@ -54,6 +54,10 @@ return [
     | When siri channel subscriptions becomes dead, attempt re-subscription
     | after this time interval. Period is a ISO-8601 duration.
     |
+    | NOTE: This must be higher than the siri.subscription.heartbeat_interval
+    | value above, otherwise, it will continuously re-subscribe in 'dead'
+    | periods.
+    |
     | Set value to null or false to omit re-subscriptions.
     */
     'resubscribe_timeout' => 'PT1H',
