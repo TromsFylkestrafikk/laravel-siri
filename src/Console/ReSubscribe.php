@@ -55,6 +55,7 @@ class ReSubscribe extends Command
             ));
             return static::FAILURE;
         }
+        $subscription->touch();
         $this->info(sprintf(
             "Successfully re-subscribed SIRI-channel %s to %s.",
             $subscription->channel,
