@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use TromsFylkestrafikk\Siri\Console\CreateSubscription;
 use TromsFylkestrafikk\Siri\Console\ListSubscriptions;
+use TromsFylkestrafikk\Siri\Console\ReSubscribe;
 use TromsFylkestrafikk\Siri\Console\TerminateSubscription;
 use TromsFylkestrafikk\Siri\Http\Middleware\SubscribedChannel;
 use TromsFylkestrafikk\Siri\Services\CaseStyler;
@@ -77,6 +78,7 @@ class SiriServiceProvider extends ServiceProvider
             $this->commands([
                 CreateSubscription::class,
                 ListSubscriptions::class,
+                ReSubscribe::class,
                 TerminateSubscription::class,
             ]);
         }
