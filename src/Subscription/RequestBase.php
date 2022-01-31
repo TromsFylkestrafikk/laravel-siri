@@ -48,9 +48,9 @@ class RequestBase
             'message_identifier' => "RequestorMsg",
             'subscription_ttl' => "2100-01-01T00:00:00.0",
             'request_date' => date('Y-m-d\TH:i:s'),
-            'consumer_address' => url('siri/consume', [
-                strtolower($this->subscription->channel),
-                $this->subscription->subscription_ref
+            'consumer_address' => route('siri.consume', [
+                'channel' => $this->subscription->channel,
+                'subscription' => $this->subscription->subscription_ref
             ]),
             'subscription' => $this->subscription,
         ];
