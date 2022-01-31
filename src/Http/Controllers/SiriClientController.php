@@ -49,12 +49,6 @@ class SiriClientController extends Controller
         $this->subscription = $subscription;
         $this->xmlFile = XmlFile::create($this->channel);
         $this->xmlFile->put($request->getContent(true));
-        $this->logDebug(
-            "XML file size is %d, Configured size ('%s') is %d",
-            filesize($this->xmlFile->getPath()),
-            "siri.queue_pivot.{$this->channel}",
-            config("siri.queue_pivot.{$this->channel}")
-        );
         $this->queued = filesize($this->xmlFile->getPath()) > config("siri.queue_pivot.{$this->channel}");
         $this->validXml = false;
         try {

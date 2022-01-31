@@ -123,7 +123,7 @@ class VehicleMonitoringDelivery extends Base
 
     protected function emitPayload()
     {
-        $this->logDebug("Emitting all activities (%d)", $this->chunkCount);
+        $this->logDebug("Emitting %d activities", $this->chunkCount);
         VmActivities::dispatch($this->subscription->id, $this->createPayload('VehicleActivity', $this->payload));
     }
 }

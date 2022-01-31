@@ -103,7 +103,6 @@ abstract class Base
         $this->setLogPrefix('Siri-%s[%d]: ', $subscription->channel, $subscription->id);
         $this->haltOnSubscription = env('APP_ENV' !== 'local') || request()->root() !== env('APP_URL');
         $this->maxChunkSize = config('siri.event_chunk_size.' . $subscription->channel);
-        $this->logDebug("Event chunk size = " . $this->maxChunkSize);
     }
 
     /**
@@ -114,7 +113,6 @@ abstract class Base
         $start = microtime(true);
         $chanElement = Siri::$serviceMap[$this->subscription->channel];
         $this->reader = new ChristmasTreeParser();
-        $this->logDebug("Incoming file: %s", $this->xmlFile->getPath());
 
         $this->reader->open($this->xmlFile->getPath());
         $this->reader->addCallback(['Siri', 'ServiceDelivery', $chanElement], [$this, 'setupChannelCallbacks'])
@@ -125,7 +123,7 @@ abstract class Base
             ->close();
 
         $this->emitPayload();
-        $this->logDebug("Parsed %d items in %.3f seconds", $this->elementCount, microtime(true) - $start);
+        $this->logInfo("Parsed %d items in %.3f seconds", $this->elementCount, microtime(true) - $start);
     }
 
     /**

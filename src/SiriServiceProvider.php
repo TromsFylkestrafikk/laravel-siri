@@ -2,12 +2,15 @@
 
 namespace TromsFylkestrafikk\Siri;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use TromsFylkestrafikk\Siri\Console\CreateSubscription;
 use TromsFylkestrafikk\Siri\Console\ListSubscriptions;
+use TromsFylkestrafikk\Siri\Console\ReSubscribe;
 use TromsFylkestrafikk\Siri\Console\TerminateSubscription;
+use TromsFylkestrafikk\Siri\Jobs\PeriodicResubscribe;
 use TromsFylkestrafikk\Siri\Http\Middleware\SubscribedChannel;
 use TromsFylkestrafikk\Siri\Services\CaseStyler;
 
@@ -32,6 +35,7 @@ class SiriServiceProvider extends ServiceProvider
         $this->registerConsoleCommands();
         $this->registerRoutes();
         $this->registerViews();
+        $this->registerScheduledJobs();
     }
 
     protected function publishConfig()
@@ -77,9 +81,26 @@ class SiriServiceProvider extends ServiceProvider
             $this->commands([
                 CreateSubscription::class,
                 ListSubscriptions::class,
+                ReSubscribe::class,
                 TerminateSubscription::class,
             ]);
         }
+    }
+
+    /**
+     * Set up scheduled commands and jobs.
+     */
+    protected function registerScheduledJobs()
+    {
+        $this->app->booted(function () {
+            if (!config('siri.resubscribe_timeout', false)) {
+                return;
+            }
+
+            /** @var \Illuminate\Console\Scheduling\Schedule $schedule */
+            $schedule = $this->app->make(Schedule::class);
+            $schedule->job(PeriodicResubscribe::class)->everyMinute();
+        });
     }
 
     /**
