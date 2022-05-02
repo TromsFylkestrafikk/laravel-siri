@@ -2,7 +2,6 @@
 
 namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
-use TromsFylkestrafikk\Siri\Services\XmlMapper;
 use TromsFylkestrafikk\Siri\Events\EtJourney;
 use TromsFylkestrafikk\Siri\Events\EtJourneys;
 

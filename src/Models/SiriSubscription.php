@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $id
  * @property string $channel
  * @property string $name
+ * @property string $version
  * @property string $subscription_url
  * @property string $subscription_ref
  * @property string $requestor_ref
@@ -27,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereHeartbeatInterval($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereVersion($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereReceived($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereRequestorRef($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SiriSubscription whereSubscriptionRef($value)

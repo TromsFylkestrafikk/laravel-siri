@@ -22,6 +22,7 @@ class CreateSubscription extends Command
                            { url : SIRI service subscription URL }
                            { channel : SIRI functional service. E.g. \'SX\' or \'VM\' }
                            { name : Internal name of subscription. This is not exposed to service. }
+                           { --s|siri-version= : SIRI version for this subscription (Default 2.0) }
                            { --H|heartbeat-interval= : Period (ISO 8601) between heartbeats from service }
                            { --r|requestor-ref= : Identifies client consuming siri data }
                            { --f|force : Create new subscription even if it exists for given channel and service }';
@@ -73,6 +74,7 @@ class CreateSubscription extends Command
             'channel' => $channel,
             'active' => true,
             'name' => $this->argument('name'),
+            'version' => $this->getOptionOrDefault('siri-version', '2.0'),
             'subscription_url' => $this->argument('url'),
             'subscription_ref' => Uuid::uuid4(),
             'heartbeat_interval' => $this->getHeartbeatInterval(),
@@ -143,5 +145,10 @@ class CreateSubscription extends Command
             $validate($value);
         }
         return $value;
+    }
+
+    protected function getOptionOrDefault($key, $default = null)
+    {
+        return $this->option($key) ?: $default;
     }
 }
