@@ -11,6 +11,7 @@ use TromsFylkestrafikk\Siri\Console\ListSubscriptions;
 use TromsFylkestrafikk\Siri\Console\ReSubscribe;
 use TromsFylkestrafikk\Siri\Console\TerminateSubscription;
 use TromsFylkestrafikk\Siri\Jobs\PeriodicResubscribe;
+use TromsFylkestrafikk\Siri\Http\Middleware\SiriVersion;
 use TromsFylkestrafikk\Siri\Http\Middleware\SubscribedChannel;
 use TromsFylkestrafikk\Siri\Services\CaseStyler;
 
@@ -70,6 +71,7 @@ class SiriServiceProvider extends ServiceProvider
         /** @var \Illuminate\Routing\Router $router */
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('siri.channel', SubscribedChannel::class);
+        $router->aliasMiddleware('siri.version', SiriVersion::class);
     }
 
     /**

@@ -31,10 +31,15 @@ class SiriDevController extends Controller
     /**
      * Emulate successful subscription request response.
      */
-    public function subscribeOk()
+    public function subscribeOk($version)
     {
+        // Make '1.4' => 'v14', '2.0' => 'v20'
+        $versionPath = sprintf("v%s", str_replace('.', '', $version));
         $now = new DateTime();
-        return view('siri::dev.response.subscribe-ok')->with(['timestamp' => $now->format('c')]);
+        return view(sprintf(
+            'siri::dev.response.%s.subscribe-ok',
+            $versionPath
+        ))->with(['timestamp' => $now->format('c')]);
     }
 
     /**
