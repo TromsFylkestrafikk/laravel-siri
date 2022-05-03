@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Siri version="2.0" xmlns="http://www.siri.org.uk/siri">
+<Siri xmlns="http://www.siri.org.uk/siri" version="{{ $subscription->version }}">
   <SubscriptionRequest>
     <RequestTimestamp>{{ $request_date }}</RequestTimestamp>
     <RequestorRef>{{ $subscription->requestor_ref }}</RequestorRef>
@@ -9,16 +9,15 @@
       <HeartbeatInterval>{{ $subscription->heartbeat_interval }}</HeartbeatInterval>
     </SubscriptionContext>
 
-    <SituationExchangeSubscriptionRequest>
+    <VehicleMonitoringSubscriptionRequest>
       <SubscriberRef>{{ $subscription->requestor_ref }}</SubscriberRef>
       <SubscriptionIdentifier>{{ $subscription->subscription_ref }}</SubscriptionIdentifier>
       <InitialTerminationTime>{{ $subscription_ttl }}</InitialTerminationTime>
 
-      <SituationExchangeRequest version="2.0">
+      <VehicleMonitoringRequest version="{{ $subscription->version }}">
         <RequestTimestamp>{{ $request_date }}</RequestTimestamp>
-        <PreviewInterval>{{ $preview_interval }}</PreviewInterval>
-      </SituationExchangeRequest>
+      </VehicleMonitoringRequest>
 
-    </SituationExchangeSubscriptionRequest>
+    </VehicleMonitoringSubscriptionRequest>
   </SubscriptionRequest>
 </Siri>

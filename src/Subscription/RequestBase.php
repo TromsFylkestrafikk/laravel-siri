@@ -104,6 +104,7 @@ class RequestBase
         if (
             !$xml
             || !$xml->SubscriptionResponse
+            || $xml['version'][0] !== $this->subscription->version
             || (string) $xml->SubscriptionResponse->ResponseStatus->Status !== 'true'
         ) {
             Log::error(sprintf(
