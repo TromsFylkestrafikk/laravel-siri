@@ -6,7 +6,7 @@
   <SubscriptionResponse xs:type="SubscriptionResponseStructure">
     <ResponseTimestamp>{{ $timestamp }}</ResponseTimestamp>
     <ResponderRef>SIRI Service provider</ResponderRef>
-    <RequestMessageRef xs:type="MessageQualifierStructure">RequestorMsg</RequestMessageRef>
+    <RequestMessageRef xs:type="MessageQualifierStructure">d8984743-c99b-4189-9a35-251f995ac88f</RequestMessageRef>
     <ResponseStatus xs:type="StatusResponseStructure">
       <ResponseTimestamp>{{ $timestamp }}</ResponseTimestamp>
       <SubscriberRef>Client company</SubscriberRef>
