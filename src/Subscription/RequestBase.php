@@ -121,7 +121,6 @@ class RequestBase
         if (
             !$xml
             || !$xml->SubscriptionResponse
-            || (string) $xml->attributes()['version'][0] !== $this->subscription->version
             || (string) $xml->SubscriptionResponse->RequestMessageRef !== $this->messageId
             || $status !== 'true'
         ) {
