@@ -115,8 +115,8 @@ class RequestBase
     protected function parseResponseXml($xmlStr)
     {
         // @var \SimpleXMLElement $xml
-        $xml = simplexml_load_string($xmlStr, SimpleXMLElement::class, 0, self::NAMESPACE_SIRI);
         $this->dumpResponseXml($xmlStr);
+        $xml = simplexml_load_string($xmlStr, SimpleXMLElement::class, 0, self::NAMESPACE_SIRI);
         if (
             !$xml
             || !$xml->SubscriptionResponse

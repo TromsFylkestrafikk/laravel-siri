@@ -8,7 +8,8 @@
   <SubscriptionRequest>
     <RequestTimestamp>{{ $request_date }}</RequestTimestamp>
     <RequestorRef>{{ $subscription->requestor_ref }}</RequestorRef>
-    <Address>{{ $consumer_address }}</Address>
+    <MessageIdentifier>{{ $message_id }}</MessageIdentifier>
+    <ConsumerAddress>{{ $consumer_address }}</ConsumerAddress>
 
     <SubscriptionContext>
       <HeartbeatInterval>{{ $subscription->heartbeat_interval }}</HeartbeatInterval>
@@ -21,7 +22,6 @@
 
       <EstimatedTimetableRequest version="{{ $subscription->version }}">
         <RequestTimestamp>{{ $request_date }}</RequestTimestamp>
-        <MessageIdentifier>{{ $message_id }}</MessageIdentifier>
         <PreviewInterval>{{ $preview_interval }}</PreviewInterval>
       </EstimatedTimetableRequest>
 

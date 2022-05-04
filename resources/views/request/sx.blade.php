@@ -8,6 +8,7 @@
   <SubscriptionRequest>
     <RequestTimestamp>{{ $request_date }}</RequestTimestamp>
     <RequestorRef>{{ $subscription->requestor_ref }}</RequestorRef>
+    <MessageIdentifier>{{ $message_id }}</MessageIdentifier>
     <ConsumerAddress>{{ $consumer_address }}</ConsumerAddress>
 
     <SubscriptionContext>
@@ -21,7 +22,6 @@
 
       <SituationExchangeRequest version="{{ $subscription->version }}">
         <RequestTimestamp>{{ $request_date }}</RequestTimestamp>
-        <MessageIdentifier>{{ $message_id }}</MessageIdentifier>
         <PreviewInterval>{{ $preview_interval }}</PreviewInterval>
       </SituationExchangeRequest>
 
