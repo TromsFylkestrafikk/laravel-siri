@@ -21,6 +21,7 @@
 
       <VehicleMonitoringRequest version="{{ $subscription->version }}">
         <RequestTimestamp>{{ $request_date }}</RequestTimestamp>
+        <MessageIdentifier>{{ $message_id }}</MessageIdentifier>
       </VehicleMonitoringRequest>
 
     </VehicleMonitoringSubscriptionRequest>

@@ -21,6 +21,7 @@
 
       <SituationExchangeRequest version="{{ $subscription->version }}">
         <RequestTimestamp>{{ $request_date }}</RequestTimestamp>
+        <MessageIdentifier>{{ $message_id }}</MessageIdentifier>
         <PreviewInterval>{{ $preview_interval }}</PreviewInterval>
       </SituationExchangeRequest>
 
