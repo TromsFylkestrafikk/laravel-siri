@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Siri xmlns="http://www.siri.org.uk/siri" version="{{ $subscription->version }}">
+<Siri
+  xmlns="http://www.siri.org.uk/siri"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  version="{{ $subscription->version }}"
+  xsi:schemaLocation="http://www.siri.org.uk/siri ../siri.xsd"
+>
   <SubscriptionRequest>
     <RequestTimestamp>{{ $request_date }}</RequestTimestamp>
     <RequestorRef>{{ $subscription->requestor_ref }}</RequestorRef>
