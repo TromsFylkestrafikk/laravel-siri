@@ -278,6 +278,7 @@ abstract class Base
         /** @var \TromsFylkestrafikk\Siri\Services\CaseStyler */
         $case = app('siri.case');
         return [
+            'version' => $this->subscription->version,
             $case->style('ResponseTimestamp') => $this->responseTimestamp,
             $case->style('SubscriberRef') => $this->subscriberRef,
             $case->style('ProducerRef') => $this->producerRef,

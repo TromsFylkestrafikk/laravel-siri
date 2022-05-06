@@ -17,7 +17,7 @@ class EstimatedTimetableDelivery extends Base
      */
     protected function getTargetSchema($elName)
     {
-        return [
+        $schema = [
             'LineRef' => 'string',
             'DirectionRef' => 'string',
             'DatedVehicleJourneyRef' => 'string',
@@ -58,6 +58,14 @@ class EstimatedTimetableDelivery extends Base
                 ],
             ],
         ];
+        // Version specific elements
+        if ($this->subscription->version === '2.0') {
+            $schema['FramedVehicleJourneyRef'] = [
+                'DataFrameRef' => 'string',
+                'DatedVehicleJourneyRef' => 'string',
+            ];
+        }
+        return $schema;
     }
 
     /**
