@@ -86,6 +86,6 @@ class EstimatedTimetableDelivery extends Base
     protected function emitPayload()
     {
         $this->logDebug("Emitting all journeys (%d)", $this->chunkCount);
-        EtJourneys::dispatch($this->subscription->id, $this->createPayload('EstimatedVehicleJourney', $this->payload));
+        EtJourneys::dispatch($this->subscription->id, $this->createPayload('EstimatedTimetableDelivery', $this->payload));
     }
 }
