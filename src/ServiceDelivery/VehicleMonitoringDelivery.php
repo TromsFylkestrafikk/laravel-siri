@@ -22,7 +22,7 @@ class VehicleMonitoringDelivery extends Base
      */
     public function getTargetSchema($elName)
     {
-        return [
+        $schema = [
             'RecordedAtTime' => 'string',
             'ItemIdentifier' => 'string',
             'ValidUntilTime' => 'string',
@@ -42,6 +42,7 @@ class VehicleMonitoringDelivery extends Base
                 'OperatorRef' => 'string',
                 'ProductCategoryRef' => 'string',
                 'ServiceFeatureRef' => 'string',
+                'OriginRef' => 'string',
                 'OriginName' => 'string',
                 'Via' => [
                     '#multiple' => true,
@@ -100,8 +101,16 @@ class VehicleMonitoringDelivery extends Base
                     'StopPointName' => 'string',
                     'VehicleAtStop' => 'bool',
                 ],
+                'IsCompleteStopSequence' => 'bool',
             ],
         ];
+
+        if (version_compare($this->subscription->version, '2.0', 'gte')) {
+            $schema['MonitoredVehicleJourney']['VehicleMode'] = 'string';
+            $schema['MonitoredVehicleJourney']['VehicleStatus'] = 'string';
+        }
+
+        return $schema;
     }
 
     /**

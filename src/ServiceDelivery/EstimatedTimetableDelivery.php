@@ -59,11 +59,12 @@ class EstimatedTimetableDelivery extends Base
             ],
         ];
         // Version specific elements
-        if ($this->subscription->version === '2.0') {
+        if (version_compare($this->subscription->version, '2.0', 'gte')) {
             $schema['FramedVehicleJourneyRef'] = [
                 'DataFrameRef' => 'string',
                 'DatedVehicleJourneyRef' => 'string',
             ];
+            $schema['RecordedAtTime'] = 'string';
         }
         return $schema;
     }
