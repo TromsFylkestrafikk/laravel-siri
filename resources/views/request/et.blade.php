@@ -19,7 +19,6 @@
       <SubscriberRef>{{ $subscription->requestor_ref }}</SubscriberRef>
       <SubscriptionIdentifier>{{ $subscription->subscription_ref }}</SubscriptionIdentifier>
       <InitialTerminationTime>{{ $subscription_ttl }}</InitialTerminationTime>
-      <UpdateInterval>{{ $update_interval }}</UpdateInterval>
 
       <EstimatedTimetableRequest version="{{ $subscription->version }}">
         <RequestTimestamp>{{ $request_date }}</RequestTimestamp>

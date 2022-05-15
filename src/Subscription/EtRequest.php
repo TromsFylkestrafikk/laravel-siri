@@ -12,7 +12,6 @@ class EtRequest extends RequestBase implements SiriRequestContract
         return array_merge(parent::getViewData(), [
             'change_before_updates' => 'PT30S',
             'incremental_updates' => 'true',
-            'update_interval' => 'PT10S',
         ]);
     }
 }
