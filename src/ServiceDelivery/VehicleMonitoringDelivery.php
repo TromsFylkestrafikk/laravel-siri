@@ -53,6 +53,7 @@ class VehicleMonitoringDelivery extends Base
                 'JourneyNote' => 'string',
                 'Monitored' => 'bool',
                 'InCongestion' => 'bool',
+                'DataSource' => 'string',
                 'VehicleLocation' => [
                     'Latitude' => 'float',
                     'Longitude' => 'float',
@@ -98,8 +99,10 @@ class VehicleMonitoringDelivery extends Base
                 'MonitoredCall' => [
                     'StopPointRef' => 'string',
                     'VisitNumber' => 'int',
+                    'Order' => 'int',
                     'StopPointName' => 'string',
                     'VehicleAtStop' => 'bool',
+                    'DestinationDisplay' => 'string',
                 ],
                 'IsCompleteStopSequence' => 'bool',
             ],
