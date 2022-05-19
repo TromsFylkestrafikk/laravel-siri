@@ -39,16 +39,21 @@ class EstimatedTimetableDelivery extends Base
                 'EstimatedCall' => [
                     '#multiple' => true,
                     'StopPointRef' => 'string',
-                    'ExtraCall' => 'bool',
+                    'VisitNumber' => 'int',
                     'Order' => 'int',
+                    'StopPointName' => 'string',
+                    'ExtraCall' => 'bool',
+                    'Cancellation' => 'bool',
                     'PredictionInaccurate' => 'bool',
                     'Occupancy' => 'string',
+                    'TimingPoint' => 'bool',
                     'BoardingStretch' => 'bool',
                     'RequestStop' => 'bool',
+                    'DestinationDisplay' => 'string',
                     'CallNote' => 'string',
-                    'Cancellation' => 'bool',
                     'AimedArrivalTime' => 'string',
                     'ExpectedArrivalTime' => 'string',
+                    'ArrivalProximityText' => 'string',
                     'ArrivalPlatformName' => 'string',
                     'ArrivalBoardingActivity' => 'string',
                     'AimedDepartureTime' => 'string',
@@ -65,6 +70,33 @@ class EstimatedTimetableDelivery extends Base
                 'DatedVehicleJourneyRef' => 'string',
             ];
             $schema['RecordedAtTime'] = 'string';
+            $schema['EstimatedCalls']['EstimatedCall']['EarliestExpectedDepartureTime'] = 'string';
+            $schema['EstimatedCalls']['EstimatedCall']['OriginDisplay'] = 'string';
+            $schema['EstimatedCalls']['EstimatedCall']['ArrivalStatus'] = 'string';
+            $schema['EstimatedCalls']['EstimatedCall']['ProvisionalExpectedDepartureTime'] = 'string';
+            $schema['RecordedCalls'] = [
+                'RecordedCall' => [
+                    '#multiple' => true,
+                    'StopPointRef' => 'string',
+                    'VisitNumber' => 'string',
+                    'Order' => 'int',
+                    'ExtraCall' => 'bool',
+                    'Cancellation' => 'bool',
+                    'PredictionInaccurate' => 'bool',
+                    'Occupancy' => 'string',
+                    'AimedArrivalTime' => 'string',
+                    'ExpectedArrivalTime' => 'string',
+                    'ActualArrivalTime' => 'string',
+                    'ArrivalPlatformName' => 'string',
+                    'AimedDepartureTime' => 'string',
+                    'ExpectedDepartureTime' => 'string',
+                    'DeparturePlatformName' => 'string',
+                    'ActualDepartureTime' => 'string',
+                    'AimedHeadwayInterval' => 'string',
+                    'ExpectedHeadwayInterval' => 'string',
+                    'ActualHeadwayInterval' => 'string',
+                ],
+            ];
         }
         return $schema;
     }
