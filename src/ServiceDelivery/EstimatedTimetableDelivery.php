@@ -83,8 +83,8 @@ class EstimatedTimetableDelivery extends Base
             $schema['EstimatedCalls']['EstimatedCall']['ExpectedLatestPassengerAccessTime'] = 'string';
             $schema['EstimatedCalls']['EstimatedCall']['DepartureStopAssignment'] = 'string';
             $schema['EstimatedCalls']['EstimatedCall']['DepartureOperatorRefs'] = 'string';
-            $schema['EstimatedCalls']['EstimatedCall']['DistanceFromStop'] = 'string';
-            $schema['EstimatedCalls']['EstimatedCall']['NumberOfStopsAway'] = 'string';
+            $schema['EstimatedCalls']['EstimatedCall']['DistanceFromStop'] = 'int';
+            $schema['EstimatedCalls']['EstimatedCall']['NumberOfStopsAway'] = 'int';
             $schema['RecordedCalls'] = [
                 'RecordedCall' => [
                     '#multiple' => true,
