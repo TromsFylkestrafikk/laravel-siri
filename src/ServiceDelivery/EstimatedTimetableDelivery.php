@@ -58,8 +58,12 @@ class EstimatedTimetableDelivery extends Base
                     'ArrivalBoardingActivity' => 'string',
                     'AimedDepartureTime' => 'string',
                     'ExpectedDepartureTime' => 'string',
+                    'DepartureStatus' => 'string',
+                    'DepartureProximityText' => 'string',
                     'DeparturePlatformName' => 'string',
                     'DepartureBoardingActivity' => 'string',
+                    'AimedHeadwayInterval' => 'string',
+                    'ExpectedHeadwayInterval' => 'string',
                 ],
             ],
         ];
@@ -74,6 +78,13 @@ class EstimatedTimetableDelivery extends Base
             $schema['EstimatedCalls']['EstimatedCall']['OriginDisplay'] = 'string';
             $schema['EstimatedCalls']['EstimatedCall']['ArrivalStatus'] = 'string';
             $schema['EstimatedCalls']['EstimatedCall']['ProvisionalExpectedDepartureTime'] = 'string';
+            $schema['EstimatedCalls']['EstimatedCall']['EarliestExpectedDepartureTime'] = 'string';
+            $schema['EstimatedCalls']['EstimatedCall']['AimedLatestPassengerAccessTime'] = 'string';
+            $schema['EstimatedCalls']['EstimatedCall']['ExpectedLatestPassengerAccessTime'] = 'string';
+            $schema['EstimatedCalls']['EstimatedCall']['DepartureStopAssignment'] = 'string';
+            $schema['EstimatedCalls']['EstimatedCall']['DepartureOperatorRefs'] = 'string';
+            $schema['EstimatedCalls']['EstimatedCall']['DistanceFromStop'] = 'string';
+            $schema['EstimatedCalls']['EstimatedCall']['NumberOfStopsAway'] = 'string';
             $schema['RecordedCalls'] = [
                 'RecordedCall' => [
                     '#multiple' => true,
