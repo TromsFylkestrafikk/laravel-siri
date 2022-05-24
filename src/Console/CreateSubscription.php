@@ -4,6 +4,7 @@ namespace TromsFylkestrafikk\Siri\Console;
 
 use Closure;
 use DateInterval;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
@@ -74,7 +75,7 @@ class CreateSubscription extends Command
             'channel' => $channel,
             'active' => true,
             'name' => $this->argument('name'),
-            'version' => $this->getOptionOrDefault('siri-version', '2.0'),
+            'version' => $this->getOptionOrDefault('siri-version', '2.0', Siri::VERSIONS),
             'subscription_url' => $this->argument('url'),
             'subscription_ref' => Uuid::uuid4(),
             'heartbeat_interval' => $this->getHeartbeatInterval(),
@@ -147,8 +148,26 @@ class CreateSubscription extends Command
         return $value;
     }
 
-    protected function getOptionOrDefault($key, $default = null)
+    /**
+     * Get option from cli or use provided default.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @param array|null $haystack The provided value must be one of these.
+     *
+     * @return string
+     */
+    protected function getOptionOrDefault($key, $default = null, $haystack = null)
     {
-        return $this->option($key) ?: $default;
+        $value = $this->option($key) ?: $default;
+        if ($haystack && array_search($value, $haystack) === false) {
+            throw new Exception(sprintf(
+                "Illegal value for option '%s' (%s). Must be one of: %s",
+                $key,
+                $value,
+                implode(', ', $haystack)
+            ));
+        }
+        return $value;
     }
 }
