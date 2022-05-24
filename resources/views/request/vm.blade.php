@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Siri version="1.4" xmlns="http://www.siri.org.uk/siri">
+<Siri
+  xmlns="http://www.siri.org.uk/siri"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  version="{{ $subscription->version }}"
+  xsi:schemaLocation="http://www.siri.org.uk/siri ../siri.xsd"
+>
   <SubscriptionRequest>
     <RequestTimestamp>{{ $request_date }}</RequestTimestamp>
     <RequestorRef>{{ $subscription->requestor_ref }}</RequestorRef>
+    <MessageIdentifier>{{ $message_id }}</MessageIdentifier>
     <ConsumerAddress>{{ $consumer_address }}</ConsumerAddress>
 
     <SubscriptionContext>
@@ -14,7 +20,7 @@
       <SubscriptionIdentifier>{{ $subscription->subscription_ref }}</SubscriptionIdentifier>
       <InitialTerminationTime>{{ $subscription_ttl }}</InitialTerminationTime>
 
-      <VehicleMonitoringRequest version="1.4">
+      <VehicleMonitoringRequest version="{{ $subscription->version }}">
         <RequestTimestamp>{{ $request_date }}</RequestTimestamp>
       </VehicleMonitoringRequest>
 

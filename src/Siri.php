@@ -9,6 +9,8 @@ class Siri
      */
     public const NS = 'http://www.siri.org.uk/siri';
 
+    public const VERSIONS = ['1.4', '2.0'];
+
     /**
      * Map of channels to XML element names below ServiceDelivery.
      *

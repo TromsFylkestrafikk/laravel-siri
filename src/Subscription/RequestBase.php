@@ -7,6 +7,7 @@ use DOMDocument;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Ramsey\Uuid\Uuid;
 use SimpleXMLElement;
 
 /**
@@ -30,6 +31,13 @@ class RequestBase
      */
     protected $viewData;
 
+    /**
+     * Current message identifier with siri service.
+     *
+     * @var string
+     */
+    protected $messageId = null;
+
     public function __construct(SiriSubscription $subscription)
     {
         $this->subscription = $subscription;
@@ -45,7 +53,7 @@ class RequestBase
         $this->viewData = [
             'preview_interval' => 'PT24H',
             'is_incremental' => 'false',
-            'message_identifier' => "RequestorMsg",
+            'message_id' => $this->messageId,
             'subscription_ttl' => "2100-01-01T00:00:00.0",
             'request_date' => date('Y-m-d\TH:i:s'),
             'consumer_address' => route('siri.consume', [
@@ -65,6 +73,7 @@ class RequestBase
      */
     public function generateRequestXml()
     {
+        $this->messageId = Uuid::uuid4()->toString();
         return view(
             'siri::request.' . strtolower($this->subscription->channel),
             $this->getViewData()
@@ -83,6 +92,12 @@ class RequestBase
         if ($dryRun) {
             return 200;
         }
+        Log::debug(sprintf(
+            "SiriRequest[%s]: Sending request to '%s' with message ID '%s'",
+            $this->subscription->id,
+            $this->subscription->subscription_url,
+            $this->messageId
+        ));
         $response = Http::withBody($dom->saveXML(), 'text/xml')->post($this->subscription->subscription_url);
         if (!$response->ok()) {
             Log::warning(sprintf(
@@ -101,10 +116,12 @@ class RequestBase
     {
         // @var \SimpleXMLElement $xml
         $xml = simplexml_load_string($xmlStr, SimpleXMLElement::class, 0, self::NAMESPACE_SIRI);
+        $status = ((string) $xml->SubscriptionResponse->ResponseStatus->Status) ?: 'true';
         if (
             !$xml
             || !$xml->SubscriptionResponse
-            || (string) $xml->SubscriptionResponse->ResponseStatus->Status !== 'true'
+            // || (string) $xml->SubscriptionResponse->RequestMessageRef !== $this->messageId
+            || $status !== 'true'
         ) {
             Log::error(sprintf(
                 "SIRI %s subscription to service '%s' failed. Dumping response XML.",
@@ -131,7 +148,7 @@ class RequestBase
     {
         $filepath = sprintf(
             "siri/Siri-%s-subscription-ERROR-%s.xml",
-            $this->subscription->channel,
+            strtolower($this->subscription->channel),
             date('Y-m-d\TH:i:s')
         );
         $disk = config('siri.disk');

@@ -31,10 +31,13 @@ class SiriDevController extends Controller
     /**
      * Emulate successful subscription request response.
      */
-    public function subscribeOk()
+    public function subscribeOk($version)
     {
         $now = new DateTime();
-        return view('siri::dev.response.subscribe-ok')->with(['timestamp' => $now->format('c')]);
+        return view('siri::dev.response.subscribe-ok')->with([
+            'timestamp' => $now->format('c'),
+            'version' => $version,
+        ]);
     }
 
     /**

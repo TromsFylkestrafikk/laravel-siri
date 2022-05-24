@@ -4,6 +4,7 @@ namespace TromsFylkestrafikk\Siri\Console;
 
 use Closure;
 use DateInterval;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
@@ -22,6 +23,7 @@ class CreateSubscription extends Command
                            { url : SIRI service subscription URL }
                            { channel : SIRI functional service. E.g. \'SX\' or \'VM\' }
                            { name : Internal name of subscription. This is not exposed to service. }
+                           { --s|siri-version= : SIRI version for this subscription (Default 2.0) }
                            { --H|heartbeat-interval= : Period (ISO 8601) between heartbeats from service }
                            { --r|requestor-ref= : Identifies client consuming siri data }
                            { --f|force : Create new subscription even if it exists for given channel and service }';
@@ -73,6 +75,7 @@ class CreateSubscription extends Command
             'channel' => $channel,
             'active' => true,
             'name' => $this->argument('name'),
+            'version' => $this->getOptionOrDefault('siri-version', '2.0', Siri::VERSIONS),
             'subscription_url' => $this->argument('url'),
             'subscription_ref' => Uuid::uuid4(),
             'heartbeat_interval' => $this->getHeartbeatInterval(),
@@ -141,6 +144,29 @@ class CreateSubscription extends Command
             $value = config('siri.subscription.' . Str::snake($camelKey));
         } elseif ($validate) {
             $validate($value);
+        }
+        return $value;
+    }
+
+    /**
+     * Get option from cli or use provided default.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @param array|null $haystack The provided value must be one of these.
+     *
+     * @return string
+     */
+    protected function getOptionOrDefault($key, $default = null, $haystack = null)
+    {
+        $value = $this->option($key) ?: $default;
+        if ($haystack && array_search($value, $haystack) === false) {
+            throw new Exception(sprintf(
+                "Illegal value for option '%s' (%s). Must be one of: %s",
+                $key,
+                $value,
+                implode(', ', $haystack)
+            ));
         }
         return $value;
     }
