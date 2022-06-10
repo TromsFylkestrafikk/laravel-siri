@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.1]
 ### Added
 - Support for SIRI 2.0 in VM and ET.
 
