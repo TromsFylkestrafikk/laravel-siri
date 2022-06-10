@@ -3,6 +3,7 @@
 namespace TromsFylkestrafikk\Siri\Services;
 
 use Illuminate\Config\Repository;
+use Illuminate\Support\Facades\Log;
 use SimpleXMLElement;
 use TromsFylkestrafikk\Siri\Siri;
 
@@ -149,6 +150,8 @@ class XmlMapper
                 continue;
             }
             $elementVal = $this->getXmlElement($element, $schema, $xml, $namespace);
+            Log::debug(sprintf("Parsing element %s", $element));
+
             if ($elementVal !== null) {
                 $ret[$caseStyler->style($element)] = $elementVal;
             }
