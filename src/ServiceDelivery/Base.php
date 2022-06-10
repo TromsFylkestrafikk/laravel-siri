@@ -261,8 +261,11 @@ abstract class Base
             $schema = app(Pipeline::class)
                 ->send([
                     'schema' => $this->getTargetSchema($elName),
-                    'channel' => $this->subscription->channel,
                     'elementName' => $elName,
+                    'channel' => $this->subscription->channel,
+                    'siriVersion' => $this->subscription->version,
+                    'subscriptionId' => $this->subscription->id,
+                    'subscriptionName' => $this->subscription->name,
                 ])
                 ->through(config('siri.schema_pipeline', []))
                 ->then(function ($processed) {
