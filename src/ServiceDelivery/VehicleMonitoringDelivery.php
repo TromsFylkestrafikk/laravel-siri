@@ -108,7 +108,7 @@ class VehicleMonitoringDelivery extends Base
             ],
         ];
 
-        if (version_compare($this->subscription->version, '2.0', 'gte')) {
+        if (version_compare($this->subscription->version, '2.0', '>=')) {
             $schema['MonitoredVehicleJourney']['VehicleMode'] = 'string';
             $schema['MonitoredVehicleJourney']['VehicleStatus'] = 'string';
         }
