@@ -1,6 +1,11 @@
 # Changelog
 
-## [0.1.1]
+## [Unreleased]
+### Added
+- Siri events now contain more meta about subscription, including siri
+  version.
+
+## [0.2.0]
 ### Added
 - Support for SIRI 2.0 in VM and ET.
 
