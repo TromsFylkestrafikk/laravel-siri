@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+### Changed
+- Added support for Laravel 9.x
+
 ## [0.2.1] – 2022-06-14
 ### Added
 - Siri events now contain more meta about subscription, including siri
