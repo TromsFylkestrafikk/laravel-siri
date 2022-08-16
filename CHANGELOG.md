@@ -3,6 +3,8 @@
 ## [Unreleased]
 ### Changed
 - Added support for Laravel 9.x
+- Code for actually dispatching service deliveries is now extracted to
+  a proper service.
 
 ## [0.2.1] – 2022-06-14
 ### Added

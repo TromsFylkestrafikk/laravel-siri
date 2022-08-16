@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 use TromsFylkestrafikk\Siri\Helpers\XmlFile;
-use TromsFylkestrafikk\Siri\Traits\ServiceDeliveryDispatch;
+use TromsFylkestrafikk\Siri\Services\ServiceDeliveryDispatcher;
 
 class BackgroundXmlHandler implements ShouldQueue
 {
@@ -18,7 +18,6 @@ class BackgroundXmlHandler implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
-    use ServiceDeliveryDispatch;
 
     /**
      * @var int
@@ -26,15 +25,19 @@ class BackgroundXmlHandler implements ShouldQueue
     protected $subscriptionId;
 
     /**
+     * @var string
+     */
+    protected $xmlFilename;
+
+    /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($subscriptionId, XmlFile $xmlFile, $channel)
+    public function __construct($subscriptionId, $xmlFilename)
     {
         $this->subscriptionId = $subscriptionId;
-        $this->channel = $channel;
-        $this->xmlFile = $xmlFile;
+        $this->xmlFilename = $xmlFilename;
     }
 
     /**
@@ -44,8 +47,10 @@ class BackgroundXmlHandler implements ShouldQueue
      */
     public function handle()
     {
-        $this->subscription = SiriSubscription::find($this->subscriptionId);
+        $xmlFile = new XmlFile($this->xmlFilename);
+        $subscription = SiriSubscription::find($this->subscriptionId);
+        $courier = new ServiceDeliveryDispatcher($subscription, $xmlFile);
         Log::debug('Background service delivery handler');
-        $this->dispatchServiceDelivery();
+        $courier->dispatch();
     }
 }

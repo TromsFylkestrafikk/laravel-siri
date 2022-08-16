@@ -12,13 +12,17 @@ use TromsFylkestrafikk\Siri\Jobs\BackgroundXmlHandler;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
 use TromsFylkestrafikk\Siri\Siri;
 use TromsFylkestrafikk\Siri\Traits\LogPrefix;
-use TromsFylkestrafikk\Siri\Traits\ServiceDeliveryDispatch;
+use TromsFylkestrafikk\Siri\Services\ServiceDeliveryDispatcher;
 use TromsFylkestrafikk\Xml\ChristmasTreeParser;
 
 class SiriClientController extends Controller
 {
     use LogPrefix;
-    use ServiceDeliveryDispatch;
+
+    /**
+     * @var SiriSubscription
+     */
+    protected $subscription;
 
     /**
      * @var ChristmasTreeParser
@@ -36,20 +40,25 @@ class SiriClientController extends Controller
     protected $xmlType;
 
     /**
+     * @var ServiceDeliveryDispatcher
+     */
+    protected $courier;
+
+    /**
      * Use queued handling of SIRI XML consumtion.
      *
      * @var bool
      */
     protected $queued = false;
 
-    public function consume(Request $request, $channel, SiriSubscription $subscription)
+    public function consume(Request $request, string $channel, SiriSubscription $subscription)
     {
         $this->setLogPrefix('Siri-%s[%d]: ', $channel, $subscription->id);
-        $this->channel = $channel;
         $this->subscription = $subscription;
-        $this->xmlFile = XmlFile::create($this->channel);
-        $this->xmlFile->put($request->getContent(true));
-        $this->queued = filesize($this->xmlFile->getPath()) > config("siri.queue_pivot.{$this->channel}");
+        $xmlFile = XmlFile::create($channel);
+        $xmlFile->put($request->getContent(true));
+        $this->courier = new ServiceDeliveryDispatcher($subscription, $xmlFile);
+        $this->queued = filesize($xmlFile->getPath()) > config("siri.queue_pivot.{$channel}");
         $this->validXml = false;
         try {
             $this->handleXml();
@@ -67,7 +76,7 @@ class SiriClientController extends Controller
     protected function handleXml()
     {
         $this->reader = new ChristmasTreeParser();
-        $this->reader->open($this->xmlFile->getPath());
+        $this->reader->open($this->courier->xmlFile->getPath());
         // We set number of read elements to something very low in this initial
         // peek phase.
         $this->reader->setElementLimit(50)
@@ -81,7 +90,7 @@ class SiriClientController extends Controller
         if ($this->xmlType !== 'ServiceDelivery') {
             $this->logDebug("NOT service delivery. Touching subscription");
             $this->subscription->touch();
-            $this->maybeDeleteXml();
+            $this->courier->maybeDeleteXml();
             return;
         }
         $this->subscription->received++;
@@ -90,7 +99,7 @@ class SiriClientController extends Controller
             $this->logDebug("Using queued processing");
             return $this->handleQueued();
         }
-        $this->dispatchServiceDelivery();
+        $this->courier->dispatch();
     }
 
     /**
@@ -99,7 +108,7 @@ class SiriClientController extends Controller
     protected function handleQueued()
     {
         $this->logDebug("Sending processing of XML to background queue.");
-        BackgroundXmlHandler::dispatch($this->subscription->id, $this->xmlFile, $this->channel);
+        BackgroundXmlHandler::dispatch($this->subscription->id, $this->courier->xmlFile->getFilename());
     }
 
     /**

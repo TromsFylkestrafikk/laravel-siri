@@ -74,6 +74,14 @@ class XmlFile
     }
 
     /**
+     * @return string
+     */
+    public function getFilename()
+    {
+        return $this->filename;
+    }
+
+    /**
      * Get the full filesystem (or uri) for this xml file.
      *
      * @return string
