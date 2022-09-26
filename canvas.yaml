@@ -1,0 +1,27 @@
+preset: package
+
+namespace: TromsFylkestrafikk\Siri
+user-auth-provider: App\Models\User
+
+paths:
+  src: src
+  resource: resources
+
+factory:
+  path: database/factories
+
+migration:
+  path: database/migrations
+  prefix: ''
+
+console:
+  namespace: TromsFylkestrafikk\Siri\Console
+
+model:
+  namespace: TromsFylkestrafikk\Siri\Models
+
+provider:
+  namespace: TromsFylkestrafikk\Siri\Providers
+
+testing:
+  namespace: TromsFylkestrafikk\Siri\Tests

@@ -27,17 +27,6 @@ class SituationExchangeDelivery extends Base
         'CreationTime' => 'string',
         'ParticipantRef' => 'string',
         'SituationNumber' => 'string',
-        'Version' => 'string',
-        'References' => [
-            'RelatedToRef' => [
-                '#multiple' => true,
-                'CreationTime' => 'string',
-                'ParticipantRef' => 'string',
-                'SituationNumber' => 'string',
-                'RelatedAs' => 'string',
-                'Version' => 'string',
-            ],
-        ],
         'Source' => [
             'SourceType' => 'string',
             'Name' => 'string',
@@ -45,27 +34,47 @@ class SituationExchangeDelivery extends Base
             'AgentReference' => 'string',
             'TimeOfCommunication' => 'string',
         ],
-        'Verification' => 'string',
+        'VersionedAtTime' => 'timestamp',
         'Progress' => 'string',
-        'QualityIndex' => 'string',
         'ValidityPeriod' => [
             'StartTime' => 'string',
             'EndTime' => 'string',
         ],
-        'MiscellaneousReason' => 'string',
         'UndefinedReason' => 'string',
         'Severity' => 'string',
-        'Audience' => 'string',
+        'Priority' => 'int',
         'ReportType' => 'string',
+        'Planned' => 'bool',
         'Summary' => 'string',
         'Description' => 'string',
+        'Advice' => 'string',
+        'InfoLinks' => [
+            'InfoLink' => [
+                '#multiple' => true,
+                'Uri' => 'string',
+                'Label' => 'string',
+            ],
+        ],
         'Affects' => [
             'Networks' => [
                 'AffectedNetwork' => [
-                    '#multiple',
+                    '#multiple' => true,
+                    'NetworkRef' => 'string',
                     'VehicleMode' => 'string',
                     'AffectedLine' => [
                         'LineRef' => 'string',
+                        'Routes' => [
+                            'AffectedRoute' => [
+                                '#multiple' => true,
+                                'StopPoints' => [
+                                    'AffectedOnly' => 'bool',
+                                    'AffectedStopPoint' => [
+                                        '#multiple' => true,
+                                        'StopPointRef' => 'string',
+                                    ],
+                                ],
+                            ],
+                        ],
                     ],
                 ],
             ],
@@ -100,50 +109,11 @@ class SituationExchangeDelivery extends Base
                     '#multiple' => true,
                     'VehicleJourneyRef' => 'string',
                     'Route' => 'string',
+                    'FramedVehicleJourneyRef' => [
+                        'DataFrameRef' => 'string',
+                        'DatedVehicleJourneyRef' => 'string',
+                    ],
                 ],
-            ],
-        ],
-        'Consequences' => [
-            'Consequence' => [
-                '#multiple' => true,
-                'Period' => [
-                    'StartTime' => 'string',
-                    'EndTime' => 'string',
-                ],
-                'Condition' => 'string',
-                'Severity' => 'string',
-                'Blocking' => [
-                    'JourneyPlanner' => 'bool',
-                    'RealTime' => 'bool',
-                ],
-                'Boarding' => [
-                    'ArrivalBoardingActivity' => 'string',
-                    'DepartureBoardingActivity' => 'string',
-                ],
-            ],
-        ],
-        'PublishingActions' => [
-            'PublishToWebAction' => [
-                'Incidents' => 'bool',
-                'HomePage' => 'bool',
-                'Ticker' => 'bool',
-            ],
-            'PublishToMobileAction' => [
-                'Incidents' => 'bool',
-                'HomePage' => 'bool',
-            ],
-            'PublishToDisplayAction' => [
-                'OnPlace' => 'bool',
-                'OnBoard' => 'bool',
-            ],
-            'PublishToTvAction' => [
-                'Ceefax' => 'bool',
-                'Teletext' => 'bool',
-            ],
-            'PublishToAlertsAction' => [
-                'ClearNotice' => 'bool',
-                'ByEmail' => 'bool',
-                'ByMobile' => 'bool',
             ],
         ],
     ];
