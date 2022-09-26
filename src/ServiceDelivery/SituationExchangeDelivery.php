@@ -60,17 +60,30 @@ class SituationExchangeDelivery extends Base
                 'AffectedNetwork' => [
                     '#multiple' => true,
                     'NetworkRef' => 'string',
+                    'AffectedOperator' => [
+                        'OperatorRef' => 'string',
+                    ],
                     'VehicleMode' => 'string',
+                    'AirSubmode' => 'string',
+                    'BusSubmode' => 'string',
+                    'Coach' => 'string',
+                    'MetroSubmode' => 'string',
+                    'RailSubmode' => 'string',
+                    'TramSubmode' => 'string',
+                    'WaterSubmode' => 'string',
+                    'AllLines' => 'string',
                     'AffectedLine' => [
                         'LineRef' => 'string',
                         'Routes' => [
                             'AffectedRoute' => [
                                 '#multiple' => true,
+                                'RouteRef' => 'string',
                                 'StopPoints' => [
                                     'AffectedOnly' => 'bool',
                                     'AffectedStopPoint' => [
                                         '#multiple' => true,
                                         'StopPointRef' => 'string',
+                                        'StopCondition' => 'string',
                                     ],
                                 ],
                             ],
@@ -82,13 +95,7 @@ class SituationExchangeDelivery extends Base
                 'AffectedStopPoint' => [
                     '#multiple' => true,
                     'StopPointRef' => 'string',
-                    'StopPointName' => 'string',
-                    'StopPointType' => 'string',
-                    'Location' => [
-                        'Latitude' => 'float',
-                        'Longitude' => 'float',
-                        'Precision' => 'float',
-                    ],
+                    'StopCondition' => 'string',
                 ],
             ],
             'StopPlaces' => [
@@ -99,7 +106,8 @@ class SituationExchangeDelivery extends Base
                         'AffectedComponent' => [
                             '#multiple' => true,
                             'ComponentRef' => 'string',
-                            'ComponentName' => 'string',
+                            'ComponentType' => 'string',
+                            'AccessFeatureType' => 'string',
                         ],
                     ],
                 ],
@@ -108,11 +116,14 @@ class SituationExchangeDelivery extends Base
                 'AffectedVehicleJourney' => [
                     '#multiple' => true,
                     'VehicleJourneyRef' => 'string',
-                    'Route' => 'string',
+                    'DatedVehicleJourneyRef' => 'string',
                     'FramedVehicleJourneyRef' => [
                         'DataFrameRef' => 'string',
                         'DatedVehicleJourneyRef' => 'string',
                     ],
+                    'LineRef' => 'string',
+                    'Route' => 'string',
+                    'OriginAimedDepartureTime' => 'string',
                 ],
             ],
         ],
