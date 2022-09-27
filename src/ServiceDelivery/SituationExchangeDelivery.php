@@ -5,6 +5,8 @@ namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 use TromsFylkestrafikk\Siri\Events\SxSituations;
 use TromsFylkestrafikk\Siri\Events\SxPtSituation;
 use TromsFylkestrafikk\Siri\Events\SxRoadSituation;
+use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
+use Illuminate\Support\Carbon;
 
 class SituationExchangeDelivery extends Base
 {
@@ -122,7 +124,17 @@ class SituationExchangeDelivery extends Base
                         'DatedVehicleJourneyRef' => 'string',
                     ],
                     'LineRef' => 'string',
-                    'Route' => 'string',
+                    'Route' => [
+                        'RouteRef' => 'string',
+                        'StopPoints' => [
+                            'AffectedOnly' => 'bool',
+                            'AffectedStopPoint' => [
+                                '#multiple' => true,
+                                'StopPointRef' => 'string',
+                                'StopCondition' => 'string',
+                            ],
+                        ],
+                    ],
                     'OriginAimedDepartureTime' => 'string',
                 ],
             ],
@@ -174,6 +186,9 @@ class SituationExchangeDelivery extends Base
         SxRoadSituation::dispatch($this->subscription->id, $this->createPayload('RoadSituationElement', $situation));
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function emitPayload()
     {
         $case = app('siri.case');
@@ -187,5 +202,15 @@ class SituationExchangeDelivery extends Base
         // Reset SX internal harvesters.
         $this->roadSituations = [];
         $this->ptSituations = [];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function postProcess()
+    {
+        foreach ($this->ptSituations as $rawSit) {
+            PtSituationToModel::store($rawSit);
+        }
     }
 }

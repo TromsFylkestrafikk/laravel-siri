@@ -9,4 +9,4 @@ Route::post('consume/{channel}/{subscription:subscription_ref}', [SiriClientCont
     ->where('channel', '(VM|ET|SX)')
     ->middleware('siri.channel');
 
-Route::apiResource('pt-situation/{pt_situation}', PtSituationController::class)->only(['show']);
+Route::apiResource('pt-situation', PtSituationController::class)->only(['show']);

@@ -3,7 +3,6 @@
 namespace TromsFylkestrafikk\Siri\Services;
 
 use Illuminate\Config\Repository;
-use Illuminate\Support\Facades\Log;
 use SimpleXMLElement;
 use TromsFylkestrafikk\Siri\Siri;
 

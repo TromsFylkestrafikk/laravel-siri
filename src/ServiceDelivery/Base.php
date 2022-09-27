@@ -121,9 +121,17 @@ abstract class Base
             })
             ->parse()
             ->close();
-
+        $this->postProcess();
         $this->emitPayload();
         $this->logInfo("Parsed %d items in %.3f seconds", $this->elementCount, microtime(true) - $start);
+    }
+
+    /**
+     * Give SIRI delivery channels a chance to process the finished payload.
+     */
+    protected function postProcess()
+    {
+        return;
     }
 
     /**
