@@ -5,6 +5,7 @@ namespace TromsFylkestrafikk\Siri\Helpers;
 use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
 use Illuminate\Support\Carbon;
 use TromsFylkestrafikk\Siri\Models\Sx\AffectedJourney;
+use TromsFylkestrafikk\Siri\Models\Sx\AffectedLine;
 
 /**
  * Store a single PtSituation to persistent storage.
@@ -54,7 +55,9 @@ class PtSituationToModel
         $this->prepareRawSit();
         $this->situation = PtSituation::updateOrCreate(['situation_number' => $sitNr], $this->rawSit);
         AffectedJourney::where('pt_situation_id', $this->situation->situation_number)->delete();
+        AffectedLine::where('pt_situation_id', $this->situation->situation_number)->delete();
         $this->storeAffectedJourneys();
+        $this->storeAffectedLine();
 
         return $this->situation;
     }
@@ -85,6 +88,30 @@ class PtSituationToModel
             ]);
         }
         return $this;
+    }
+
+    protected function storeAffectedLine()
+    {
+        $networks = $this->rawSit['affects']['networks']['affected_network'];
+        if (!$networks) {
+            return;
+        }
+        foreach ($networks as $network) {
+            if (empty($network['affected_line'])) {
+                continue;
+            }
+            $aLine = AffectedLine::create([
+                'pt_situation_id' => $this->situation->situation_number,
+                'line_ref' => $network['affected_line']['LineRef'],
+            ]);
+            if (!empty($network['affected_line']['Routes'])) {
+                $this->storeAffectedRoutes($network['affected_line']['Routes'], $aLine);
+            }
+        }
+    }
+
+    protected function storeAffectedRoutes($rawRoutes, AffectedLine $aLine = null)
+    {
     }
 
     protected function prepareRawSit()
