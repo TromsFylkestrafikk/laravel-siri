@@ -11,6 +11,12 @@ class AffectedJourney extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'pt_situation_id',
+        'journey_ref',
+        'data_frame_ref',
+    ];
+
     public function ptSituation()
     {
         return $this->belongsTo(PtSituation::class);

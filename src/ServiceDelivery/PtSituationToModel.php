@@ -4,6 +4,7 @@ namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 
 use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
 use Illuminate\Support\Carbon;
+use TromsFylkestrafikk\Siri\Models\Sx\AffectedJourney;
 
 /**
  * Store a single PtSituation to persistent storage.
@@ -52,6 +53,7 @@ class PtSituationToModel
         $sitNr = $this->rawSit['situation_number'];
         $this->prepareRawSit();
         $this->situation = PtSituation::updateOrCreate(['situation_number' => $sitNr], $this->rawSit);
+        AffectedJourney::where('pt_situation_id', $this->situation->situation_number)->delete();
         $this->storeAffectedJourneys();
 
         return $this->situation;
@@ -73,6 +75,14 @@ class PtSituationToModel
             $journeyRef = $rawJourney['framed_vehicle_journey_ref']['dated_vehicle_journey_ref']
                 ?? $rawJourney['dated_vehicle_journey_ref']
                 ?? $rawJourney['vehicle_journey_ref'];
+            $dataFrameRef = !empty($rawJourney['framed_vehicle_journey_ref'])
+                ? $rawJourney['framed_vehicle_journey_ref']['data_frame_ref']
+                : null;
+            $aJourney = AffectedJourney::create([
+                'pt_situation_id' => $this->situation->situation_number,
+                'journey_ref' => $journeyRef,
+                'data_frame_ref' => $dataFrameRef,
+            ]);
         }
         return $this;
     }

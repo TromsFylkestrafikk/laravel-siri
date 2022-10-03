@@ -35,28 +35,28 @@ return new class extends Migration
 
         Schema::create('siri_sx_affected_line', function (Blueprint $table) {
             $table->id('id')->comment("Internal Laravel ID used for eloquent model relationships");
-            $table->char('pt_situation_id', 64)->comment("Reference to situation in question");
-            $table->char('line_ref', 64)->comment("Reference to Line in question (ID to the corresponding object in NeTEx).");
+            $table->char('pt_situation_id', 64)->index()->comment("Reference to situation in question");
+            $table->char('line_ref', 64)->index()->comment("Reference to Line in question (ID to the corresponding object in NeTEx).");
         });
 
         Schema::create('siri_sx_affected_route', function (Blueprint $table) {
             $table->id('id')->comment("Internal Laravel ID used for eloquent model relationships");
             $table->char('pt_situation_id', 64)->comment("Reference to situation in question");
-            $table->char('route_ref', 64)->nullable()->comment("Reference to NeTEx route ID in question.");
+            $table->char('route_ref', 64)->index()->nullable()->comment("Reference to NeTEx route ID in question.");
             $table->char('line_ref', 64)->comment("Reference to Line in question (ID to the corresponding object in NeTEx).");
         });
 
         Schema::create('siri_sx_affected_journey', function (Blueprint $table) {
             $table->id('id')->comment("Internal Laravel ID used for eloquent model relationships");
             $table->char('pt_situation_id', 64)->comment("Reference to situation in question");
+            $table->char('journey_ref', 64)->index()->comment("Reference to affected NeTEx VehicleJourney ID");
             $table->date('data_frame_ref')->nullable()->comment("Journey date, if encapsulated in FramedVehicleJourneyRef");
-            $table->char('journey_ref', 64)->comment("Reference to affected NeTEx VehicleJourney ID");
         });
 
         Schema::create('siri_sx_affected_stop_point', function (Blueprint $table) {
             $table->id('id')->comment("Internal Laravel ID used for eloquent model relationships");
-            $table->char('pt_situation_id', 64)->comment("Reference to situation in question");
-            $table->char('stop_point_ref', 64)->comment("Reference to the Quay in question (ID corresponding to objects in NSR)");
+            $table->char('pt_situation_id', 64)->index()->comment("Reference to situation in question");
+            $table->char('stop_point_ref', 64)->index()->comment("Reference to the Quay in question (ID corresponding to objects in NSR)");
             $table->char('stop_condition', 16)->nullable()->comment("Specifies which passengers the message applies to, for example, people who are disembarking at an affected stop");
             $table->unsignedInteger('affected_route_id')->nullable()->comment("Eloquent model ID reference to affected route");
             $table->unsignedInteger('affected_journey_id')->nullable()->comment("Eloquent model ID reference to affected journey");
