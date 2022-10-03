@@ -1,6 +1,6 @@
 <?php
 
-namespace TromsFylkestrafikk\Siri\ServiceDelivery;
+namespace TromsFylkestrafikk\Siri\Helpers;
 
 use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
 use Illuminate\Support\Carbon;
@@ -71,7 +71,7 @@ class PtSituationToModel
         if (empty($this->rawSit['affects']['vehicle_journeys'])) {
             return $this;
         }
-        foreach ($this->rawSit['affects']['vehicle_journeys'] as $rawJourney) {
+        foreach ($this->rawSit['affects']['vehicle_journeys']['affected_vehicle_journey'] as $rawJourney) {
             $journeyRef = $rawJourney['framed_vehicle_journey_ref']['dated_vehicle_journey_ref']
                 ?? $rawJourney['dated_vehicle_journey_ref']
                 ?? $rawJourney['vehicle_journey_ref'];

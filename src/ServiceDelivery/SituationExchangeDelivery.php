@@ -5,6 +5,7 @@ namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 use TromsFylkestrafikk\Siri\Events\SxSituations;
 use TromsFylkestrafikk\Siri\Events\SxPtSituation;
 use TromsFylkestrafikk\Siri\Events\SxRoadSituation;
+use TromsFylkestrafikk\Siri\Helpers\PtSituationToModel;
 use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
 use Illuminate\Support\Carbon;
 

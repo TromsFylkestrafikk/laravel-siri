@@ -10,7 +10,7 @@ class AffectedJourney extends Model
     use HasFactory;
 
     public $timestamps = false;
-
+    protected $table = 'siri_sx_affected_journey';
     protected $fillable = [
         'pt_situation_id',
         'journey_ref',
