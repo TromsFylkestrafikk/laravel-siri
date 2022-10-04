@@ -82,16 +82,21 @@ class PtSituation extends Model
 
     public function affectedJourneys()
     {
-        return $this->hasMany(AffectedJourney::class, 'pt_situation_id');
+        return $this->hasMany(AffectedJourney::class);
     }
 
     public function affectedLines()
     {
-        return $this->hasMany(AffectedLine::class, 'pt_situation_id');
+        return $this->hasMany(AffectedLine::class);
+    }
+
+    public function affectedRoutes()
+    {
+        return $this->hasMany(AffectedRoute::class);
     }
 
     public function affectedStopPoints()
     {
-        return $this->hasMany(AffectedStopPoint::class, 'pt_situation_id');
+        return $this->hasMany(AffectedStopPoint::class);
     }
 }

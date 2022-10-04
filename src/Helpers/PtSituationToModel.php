@@ -62,6 +62,9 @@ class PtSituationToModel
         AffectedStopPoint::where('pt_situation_id', $this->situation->id)->delete();
         $this->storeAffectedJourneys();
         $this->processAffectedNetworks();
+        if (!empty($this->rawSit['affects']['stop_points']['affected_stop_point'])) {
+            $this->storeAffectedStopPoints($this->rawSit['affects']['stop_points']['affected_stop_point']);
+        }
 
         return $this->situation;
     }
@@ -130,7 +133,6 @@ class PtSituationToModel
                 'affected_line_id' => $aLine->id,
             ]);
             if (!empty($rawRoute['stop_points']['affected_stop_point'])) {
-                dump($rawRoute['stop_points']['affected_stop_point']);
                 $this->storeAffectedStopPoints($rawRoute['stop_points']['affected_stop_point'], $aRoute);
             }
         }
