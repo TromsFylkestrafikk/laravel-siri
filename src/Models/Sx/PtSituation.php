@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * TromsFylkestrafikk\Siri\Models\Sx\PtSituation
  *
- * @property string $situation_number Unique situation-ID for PtSituationElement. Format: CODESPACE:SituationNumber:ID
+ * @property string $id Unique situation-ID for PtSituationElement. Format: CODESPACE:SituationNumber:ID
  * @property string $creation_time Timestamp for when the situation was created
  * @property string $participant_ref Codespace of the data source
- * @property string $progress Status of a situation message. 'open' or 'closed'
  * @property string|null $source_type Information type: Possible values: 'directReport'
  * @property string|null $source_name Who or what is the source of the situation
+ * @property string $progress Status of a situation message. 'open' or 'closed'
  * @property string|null $validity_start Validity period start time
  * @property string|null $validity_end Validity period end time
  * @property string $severity How severely the situation affects public transport services. Enumeration
@@ -25,6 +25,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $advice Textual advice on how a passenger should react/respond to the situation
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedJourney[] $affectedJourneys
+ * @property-read int|null $affected_journeys_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedLine[] $affectedLines
+ * @property-read int|null $affected_lines_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedStopPoint[] $affectedStopPoints
+ * @property-read int|null $affected_stop_points_count
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation query()
@@ -32,13 +38,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereCreationTime($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereParticipantRef($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation wherePlanned($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation wherePriority($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereProgress($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereReportType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereSeverity($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereSituationNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereSourceName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereSourceType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereSummary($value)
@@ -53,10 +59,9 @@ class PtSituation extends Model
 
     public $incrementing = false;
     protected $table = 'siri_sx_pt_situation';
-    protected $primaryKey = 'situation_number';
     protected $keyType = 'string';
     protected $fillable = [
-        'situation_number',
+        'id',
         'creation_time',
         'participant_ref',
         'source_type',
@@ -77,16 +82,16 @@ class PtSituation extends Model
 
     public function affectedJourneys()
     {
-        return $this->hasMany(AffectedJourney::class);
+        return $this->hasMany(AffectedJourney::class, 'pt_situation_id');
     }
 
     public function affectedLines()
     {
-        return $this->hasMany(AffectedLine::class);
+        return $this->hasMany(AffectedLine::class, 'pt_situation_id');
     }
 
     public function affectedStopPoints()
     {
-        return $this->hasMany(AffectedStopPoint::class);
+        return $this->hasMany(AffectedStopPoint::class, 'pt_situation_id');
     }
 }

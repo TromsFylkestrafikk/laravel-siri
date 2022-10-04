@@ -55,11 +55,11 @@ class PtSituationToModel
     {
         $sitNr = $this->rawSit['situation_number'];
         $this->prepareRawSit();
-        $this->situation = PtSituation::updateOrCreate(['situation_number' => $sitNr], $this->rawSit);
-        AffectedJourney::where('pt_situation_id', $this->situation->situation_number)->delete();
-        AffectedLine::where('pt_situation_id', $this->situation->situation_number)->delete();
-        AffectedRoute::where('pt_situation_id', $this->situation->situation_number)->delete();
-        AffectedStopPoint::where('pt_situation_id', $this->situation->situation_number)->delete();
+        $this->situation = PtSituation::updateOrCreate(['id' => $sitNr], $this->rawSit);
+        AffectedJourney::where('pt_situation_id', $this->situation->id)->delete();
+        AffectedLine::where('pt_situation_id', $this->situation->id)->delete();
+        AffectedRoute::where('pt_situation_id', $this->situation->id)->delete();
+        AffectedStopPoint::where('pt_situation_id', $this->situation->id)->delete();
         $this->storeAffectedJourneys();
         $this->processAffectedNetworks();
 
@@ -86,7 +86,7 @@ class PtSituationToModel
                 ? $rawJourney['framed_vehicle_journey_ref']['data_frame_ref']
                 : null;
             $aJourney = AffectedJourney::create([
-                'pt_situation_id' => $this->situation->situation_number,
+                'pt_situation_id' => $this->situation->id,
                 'journey_ref' => $journeyRef,
                 'data_frame_ref' => $dataFrameRef,
             ]);
@@ -112,7 +112,7 @@ class PtSituationToModel
     {
         foreach ($rawLines as $rawLine) {
             $aLine = AffectedLine::create([
-                'pt_situation_id' => $this->situation->situation_number,
+                'pt_situation_id' => $this->situation->id,
                 'line_ref' => $rawLine['line_ref'],
             ]);
             if (!empty($rawLine['routes']['affected_route'])) {
@@ -125,7 +125,7 @@ class PtSituationToModel
     {
         foreach ($rawRoutes as $rawRoute) {
             $aRoute = AffectedRoute::create([
-                'pt_situation_id' => $this->situation->situation_number,
+                'pt_situation_id' => $this->situation->id,
                 'route_ref' => $rawRoute['route_ref'] ?? null,
                 'affected_line_id' => $aLine->id,
             ]);
@@ -140,7 +140,7 @@ class PtSituationToModel
     {
         foreach ($rawStops as $rawStop) {
             $aStop = new AffectedStopPoint();
-            $aStop->pt_situation_id = $this->situation->situation_number;
+            $aStop->pt_situation_id = $this->situation->id;
             $aStop->fill($rawStop);
             if ($aRoute) {
                 $aStop->affected_route_id = $aRoute->id;
