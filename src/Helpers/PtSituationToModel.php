@@ -2,10 +2,12 @@
 
 namespace TromsFylkestrafikk\Siri\Helpers;
 
-use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
 use Illuminate\Support\Carbon;
+use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
 use TromsFylkestrafikk\Siri\Models\Sx\AffectedJourney;
 use TromsFylkestrafikk\Siri\Models\Sx\AffectedLine;
+use TromsFylkestrafikk\Siri\Models\Sx\AffectedRoute;
+use TromsFylkestrafikk\Siri\Models\Sx\AffectedStopPoint;
 
 /**
  * Store a single PtSituation to persistent storage.
@@ -56,8 +58,10 @@ class PtSituationToModel
         $this->situation = PtSituation::updateOrCreate(['situation_number' => $sitNr], $this->rawSit);
         AffectedJourney::where('pt_situation_id', $this->situation->situation_number)->delete();
         AffectedLine::where('pt_situation_id', $this->situation->situation_number)->delete();
+        AffectedRoute::where('pt_situation_id', $this->situation->situation_number)->delete();
+        AffectedStopPoint::where('pt_situation_id', $this->situation->situation_number)->delete();
         $this->storeAffectedJourneys();
-        $this->storeAffectedLine();
+        $this->processAffectedNetworks();
 
         return $this->situation;
     }
@@ -90,9 +94,9 @@ class PtSituationToModel
         return $this;
     }
 
-    protected function storeAffectedLine()
+    protected function processAffectedNetworks()
     {
-        $networks = $this->rawSit['affects']['networks']['affected_network'];
+        $networks = $this->rawSit['affects']['networks']['affected_network'] ?? null;
         if (!$networks) {
             return;
         }
@@ -100,18 +104,49 @@ class PtSituationToModel
             if (empty($network['affected_line'])) {
                 continue;
             }
+            $this->storeAffectedLines($network['affected_line']);
+        }
+    }
+
+    protected function storeAffectedLines($rawLines)
+    {
+        foreach ($rawLines as $rawLine) {
             $aLine = AffectedLine::create([
                 'pt_situation_id' => $this->situation->situation_number,
-                'line_ref' => $network['affected_line']['LineRef'],
+                'line_ref' => $rawLine['line_ref'],
             ]);
-            if (!empty($network['affected_line']['Routes'])) {
-                $this->storeAffectedRoutes($network['affected_line']['Routes'], $aLine);
+            if (!empty($rawLine['routes']['affected_route'])) {
+                $this->storeAffectedRoutes($rawLine['routes']['affected_route'], $aLine);
             }
         }
     }
 
     protected function storeAffectedRoutes($rawRoutes, AffectedLine $aLine = null)
     {
+        foreach ($rawRoutes as $rawRoute) {
+            $aRoute = AffectedRoute::create([
+                'pt_situation_id' => $this->situation->situation_number,
+                'route_ref' => $rawRoute['route_ref'] ?? null,
+                'affected_line_id' => $aLine->id,
+            ]);
+            if (!empty($rawRoute['stop_points']['affected_stop_point'])) {
+                dump($rawRoute['stop_points']['affected_stop_point']);
+                $this->storeAffectedStopPoints($rawRoute['stop_points']['affected_stop_point'], $aRoute);
+            }
+        }
+    }
+
+    protected function storeAffectedStopPoints($rawStops, $aRoute = null)
+    {
+        foreach ($rawStops as $rawStop) {
+            $aStop = new AffectedStopPoint();
+            $aStop->pt_situation_id = $this->situation->situation_number;
+            $aStop->fill($rawStop);
+            if ($aRoute) {
+                $aStop->affected_route_id = $aRoute->id;
+            }
+            $aStop->save();
+        }
     }
 
     protected function prepareRawSit()

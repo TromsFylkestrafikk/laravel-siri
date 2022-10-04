@@ -43,7 +43,8 @@ return new class extends Migration
             $table->id('id')->comment("Internal Laravel ID used for eloquent model relationships");
             $table->char('pt_situation_id', 64)->comment("Reference to situation in question");
             $table->char('route_ref', 64)->index()->nullable()->comment("Reference to NeTEx route ID in question.");
-            $table->char('line_ref', 64)->comment("Reference to Line in question (ID to the corresponding object in NeTEx).");
+            $table->unsignedInteger('affected_line_id')->nullable()->comment("Eloquent model ID reference to affected line");
+            $table->unsignedInteger('affected_journey_id')->nullable()->comment("Eloquent model ID reference to affected line");
         });
 
         Schema::create('siri_sx_affected_journey', function (Blueprint $table) {
@@ -60,7 +61,6 @@ return new class extends Migration
             $table->char('stop_condition', 16)->nullable()->comment("Specifies which passengers the message applies to, for example, people who are disembarking at an affected stop");
             $table->unsignedInteger('affected_route_id')->nullable()->comment("Eloquent model ID reference to affected route");
             $table->unsignedInteger('affected_journey_id')->nullable()->comment("Eloquent model ID reference to affected journey");
-            $table->unsignedInteger('affected_line_id')->nullable()->comment("Eloquent model ID reference to affected line");
         });
     }
 

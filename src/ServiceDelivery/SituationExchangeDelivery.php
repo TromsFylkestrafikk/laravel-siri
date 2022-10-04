@@ -76,6 +76,7 @@ class SituationExchangeDelivery extends Base
                     'WaterSubmode' => 'string',
                     'AllLines' => 'string',
                     'AffectedLine' => [
+                        '#multiple' => true,
                         'LineRef' => 'string',
                         'Routes' => [
                             'AffectedRoute' => [

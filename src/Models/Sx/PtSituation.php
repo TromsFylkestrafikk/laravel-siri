@@ -74,4 +74,19 @@ class PtSituation extends Model
     ];
 
     protected $hidden = ['source_name'];
+
+    public function affectedJourneys()
+    {
+        return $this->hasMany(AffectedJourney::class);
+    }
+
+    public function affectedLines()
+    {
+        return $this->hasMany(AffectedLine::class);
+    }
+
+    public function affectedStopPoints()
+    {
+        return $this->hasMany(AffectedStopPoint::class);
+    }
 }
