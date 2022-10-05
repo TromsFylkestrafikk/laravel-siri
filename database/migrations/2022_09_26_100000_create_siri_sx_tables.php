@@ -33,6 +33,13 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::create('siri_sx_info_link', function (Blueprint $table) {
+            $table->id('id')->comment("Internal Laravel ID used for eloquent model relationships");
+            $table->char('pt_situation_id', 64)->index()->comment("Reference to situation in question");
+            $table->string('url', 256)->comment("Link to a website which has further information on the situation");
+            $table->string('label', 256)->comment("Label for the link.");
+        });
+
         Schema::create('siri_sx_affected_line', function (Blueprint $table) {
             $table->id('id')->comment("Internal Laravel ID used for eloquent model relationships");
             $table->char('pt_situation_id', 64)->index()->comment("Reference to situation in question");

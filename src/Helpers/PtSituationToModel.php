@@ -4,6 +4,7 @@ namespace TromsFylkestrafikk\Siri\Helpers;
 
 use Illuminate\Support\Carbon;
 use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
+use TromsFylkestrafikk\Siri\Models\Sx\InfoLink;
 use TromsFylkestrafikk\Siri\Models\Sx\AffectedJourney;
 use TromsFylkestrafikk\Siri\Models\Sx\AffectedLine;
 use TromsFylkestrafikk\Siri\Models\Sx\AffectedRoute;
@@ -56,10 +57,12 @@ class PtSituationToModel
         $sitNr = $this->rawSit['situation_number'];
         $this->prepareRawSit();
         $this->situation = PtSituation::updateOrCreate(['id' => $sitNr], $this->rawSit);
+        InfoLink::where('pt_situation_id', $this->situation->id)->delete();
         AffectedJourney::where('pt_situation_id', $this->situation->id)->delete();
         AffectedLine::where('pt_situation_id', $this->situation->id)->delete();
         AffectedRoute::where('pt_situation_id', $this->situation->id)->delete();
         AffectedStopPoint::where('pt_situation_id', $this->situation->id)->delete();
+        $this->storeLinks();
         $this->storeAffectedJourneys();
         $this->processAffectedNetworks();
         if (!empty($this->rawSit['affects']['stop_points']['affected_stop_point'])) {
@@ -74,6 +77,16 @@ class PtSituationToModel
         $date = new Carbon($dateStr);
         $date->tz = config('app.timezone');
         return $date->format($format);
+    }
+
+    protected function storeLinks()
+    {
+        if (empty($this->rawSit['info_links']['info_link'])) {
+            return;
+        }
+        foreach ($this->rawSit['info_links']['info_link'] as $rawLink) {
+            InfoLink::create(array_merge($rawLink, ['pt_situation_id' => $this->situation->id]));
+        }
     }
 
     protected function storeAffectedJourneys()
