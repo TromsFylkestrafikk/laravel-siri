@@ -3,6 +3,7 @@
 namespace TromsFylkestrafikk\Siri\Helpers;
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
 use TromsFylkestrafikk\Siri\Models\Sx\InfoLink;
 use TromsFylkestrafikk\Siri\Models\Sx\AffectedJourney;
@@ -20,6 +21,8 @@ class PtSituationToModel
      */
     protected $rawSit;
 
+    protected $startTime = 0;
+
     /**
      * @var PtSituation
      */
@@ -31,6 +34,7 @@ class PtSituationToModel
     final public function __construct(array $rawSit)
     {
         $this->rawSit = $rawSit;
+        $this->startTime = microtime(true);
     }
 
     /**
@@ -57,17 +61,20 @@ class PtSituationToModel
         $sitNr = $this->rawSit['situation_number'];
         $this->prepareRawSit();
         $this->situation = PtSituation::updateOrCreate(['id' => $sitNr], $this->rawSit);
+        $this->time("Situation to Models BEGIN");
         InfoLink::where('pt_situation_id', $this->situation->id)->delete();
         AffectedJourney::where('pt_situation_id', $this->situation->id)->delete();
         AffectedLine::where('pt_situation_id', $this->situation->id)->delete();
         AffectedRoute::where('pt_situation_id', $this->situation->id)->delete();
         AffectedStopPoint::where('pt_situation_id', $this->situation->id)->delete();
+        $this->time("Previous models removed");
         $this->storeLinks();
         $this->storeAffectedJourneys();
         $this->processAffectedNetworks();
         if (!empty($this->rawSit['affects']['stop_points']['affected_stop_point'])) {
             $this->storeAffectedStopPoints($this->rawSit['affects']['stop_points']['affected_stop_point']);
         }
+        $this->time("Situation to Models COMPLETE");
 
         return $this->situation;
     }
@@ -107,6 +114,7 @@ class PtSituationToModel
                 'data_frame_ref' => $dataFrameRef,
             ]);
         }
+        $this->time("Affected journeys stored");
         return $this;
     }
 
@@ -126,6 +134,7 @@ class PtSituationToModel
 
     protected function storeAffectedLines($rawLines)
     {
+        $this->time("Affected lines BEGIN");
         foreach ($rawLines as $rawLine) {
             $aLine = AffectedLine::create([
                 'pt_situation_id' => $this->situation->id,
@@ -135,10 +144,12 @@ class PtSituationToModel
                 $this->storeAffectedRoutes($rawLine['routes']['affected_route'], $aLine);
             }
         }
+        $this->time("Affected lines END");
     }
 
     protected function storeAffectedRoutes($rawRoutes, AffectedLine $aLine = null)
     {
+        $this->time("Affected routes BEGIN");
         foreach ($rawRoutes as $rawRoute) {
             $aRoute = AffectedRoute::create([
                 'pt_situation_id' => $this->situation->id,
@@ -149,10 +160,12 @@ class PtSituationToModel
                 $this->storeAffectedStopPoints($rawRoute['stop_points']['affected_stop_point'], $aRoute);
             }
         }
+        $this->time("Affected routes END");
     }
 
     protected function storeAffectedStopPoints($rawStops, $aRoute = null)
     {
+        $this->time("Affected stop points BEGIN");
         foreach ($rawStops as $rawStop) {
             $aStop = new AffectedStopPoint();
             $aStop->pt_situation_id = $this->situation->id;
@@ -162,6 +175,7 @@ class PtSituationToModel
             }
             $aStop->save();
         }
+        $this->time("Affected stop points END");
     }
 
     protected function prepareRawSit()
@@ -179,5 +193,12 @@ class PtSituationToModel
         if (isset($this->rawSit['validity_period']['end_time'])) {
             $this->rawSit['validity_end'] = self::dbSafeDate($this->rawSit['validity_period']['end_time']);
         }
+    }
+
+    protected function time($msg, ...$args)
+    {
+        $tillNow = microtime(true) - $this->startTime;
+        $printArgs = ["Exec time: %.3f %s", $tillNow, $msg, ...$args];
+        Log::debug(call_user_func_array('sprintf', $printArgs));
     }
 }

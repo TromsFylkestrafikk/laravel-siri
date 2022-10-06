@@ -34,4 +34,9 @@ class AffectedJourney extends Model
     {
         return $this->belongsTo(PtSituation::class);
     }
+
+    public function route()
+    {
+        return $this->hasOne(AffectedRoute::class);
+    }
 }
