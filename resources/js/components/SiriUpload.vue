@@ -3,13 +3,22 @@
     <h2>Simulate SIRI consumer post request</h2>
     <form class="siri-xml-form" @submit.prevent="submitXml">
       <div class="form-input form-file">
-        <label for="siri-xml">Valid SIRI XML file.</label> <br>
+        <label for="siri-xml">Valid SIRI XML files.</label> <br>
         <input
           ref="xmlFile"
           type="file"
+          multiple="multiple"
           class="siri-xml-file"
           name="siri-xml"
         >
+      </div>
+      <div class="form-input form-select">
+        <label for="">Delay between uploads</label>
+        <select v-model="uploadDelay">
+          <option v-for="delay in delayOptions" :key="delay" :value="delay">
+            {{ delay }} seconds
+          </option>
+        </select>
       </div>
       <div class="form-input form-select">
         <label for="siri-select-channel">Use this subscription</label> <br>
@@ -23,8 +32,15 @@
           </option>
         </select>
       </div>
-      <input type="submit" value="Emulate request">
+      <input type="submit" :disabled="uploadInProgress" value="Emulate request">
+      <button v-if="uploadInProgress" @click="cancelUpload = true">
+        Avbryt
+      </button>
     </form>
+    <div v-if="uploadInProgress">
+      Uploading file {{ currentFileIndex }} of {{ fileCount }}:
+      <em>{{ currentFilename }}</em>
+    </div>
     <div v-if="response" class="Result">
       <ul>
         <li>Status: {{ response.status }} ({{ response.statusText }})</li>
