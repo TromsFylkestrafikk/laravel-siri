@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('siri_sx_pt_situation', function (Blueprint $table) {
-            $table->char        ('id', 64)             ->comment("Unique situation-ID for PtSituationElement. Format: CODESPACE:SituationNumber:ID");
+            $table->char        ('id', 64)             ->primary()->comment("Unique situation-ID for PtSituationElement. Format: CODESPACE:SituationNumber:ID");
             $table->timestamp   ('creation_time')      ->comment('Timestamp for when the situation was created');
             $table->char        ('participant_ref', 64)->comment("Codespace of the data source");
             $table->char        ('source_type', 16)    ->nullable()->comment("Information type: Possible values: 'directReport'");
@@ -41,33 +41,36 @@ return new class extends Migration
         });
 
         Schema::create('siri_sx_affected_line', function (Blueprint $table) {
-            $table->id('id')->comment("Internal Laravel ID used for eloquent model relationships");
+            $table->char('id', 64)->primary()->comment("Internal Laravel ID used for eloquent model relationships");
             $table->char('pt_situation_id', 64)->index()->comment("Reference to situation in question");
             $table->char('line_ref', 64)->index()->comment("Reference to Line in question (ID to the corresponding object in NeTEx).");
         });
 
         Schema::create('siri_sx_affected_route', function (Blueprint $table) {
-            $table->id('id')->comment("Internal Laravel ID used for eloquent model relationships");
+            $table->char('id', 64)->primary()->comment("Internal Laravel ID used for eloquent model relationships");
             $table->char('pt_situation_id', 64)->comment("Reference to situation in question");
-            $table->char('route_ref', 64)->index()->nullable()->comment("Reference to NeTEx route ID in question.");
-            $table->unsignedBigInteger('affected_line_id')->nullable()->comment("Eloquent model ID reference to affected line");
-            $table->unsignedBigInteger('affected_journey_id')->nullable()->comment("Eloquent model ID reference to affected line");
+            $table->char('route_ref', 64)->index()->comment("Reference to NeTEx route ID in question.");
         });
 
         Schema::create('siri_sx_affected_journey', function (Blueprint $table) {
-            $table->id('id')->comment("Internal Laravel ID used for eloquent model relationships");
+            $table->char('id', 64)->primary()->comment("Internal Laravel ID used for eloquent model relationships");
             $table->char('pt_situation_id', 64)->comment("Reference to situation in question");
             $table->char('journey_ref', 64)->index()->comment("Reference to affected NeTEx VehicleJourney ID");
             $table->date('data_frame_ref')->nullable()->comment("Journey date, if encapsulated in FramedVehicleJourneyRef");
         });
 
-        Schema::create('siri_sx_affected_stop_point', function (Blueprint $table) {
-            $table->id('id')->comment("Internal Laravel ID used for eloquent model relationships");
-            $table->char('pt_situation_id', 64)->index()->comment("Reference to situation in question");
+        Schema::create('siri_sx_stop_point', function (Blueprint $table) {
+            $table->char('id', 64)->primary()->comment("Internal Laravel ID used for eloquent model relationships");
             $table->char('stop_point_ref', 64)->index()->comment("Reference to the Quay in question (ID corresponding to objects in NSR)");
-            $table->char('stop_condition', 16)->nullable()->comment("Specifies which passengers the message applies to, for example, people who are disembarking at an affected stop");
-            $table->unsignedBigInteger('affected_route_id')->nullable()->comment("Eloquent model ID reference to affected route");
-            $table->unsignedBigInteger('affected_journey_id')->nullable()->comment("Eloquent model ID reference to affected journey");
+            $table->string('stop_point_name', 128)->nullable()->comment("Name of StopPlace (Not used, but may be set to increase human readability)");
+        });
+
+        // Pivot tables
+        Schema::create('siri_sx_affected_stop', function (Blueprint $table) {
+            $table->char('stop_point_id', 64)->index()->comment("Reference to affected stop point.");
+            $table->char('stoppable_type', 128)->comment("Class name of connected type");
+            $table->char('stoppable_id', 64)->comment("ID of connected entity");
+            $table->unique(['stop_point_id', 'stoppable_type', 'stoppable_id'], 'siri_sx_affected_stop__id_type_stoppable');
         });
     }
 
@@ -79,9 +82,11 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('siri_sx_pt_situation');
+        Schema::dropIfExists('siri_sx_info_link');
         Schema::dropIfExists('siri_sx_affected_line');
         Schema::dropIfExists('siri_sx_affected_route');
-        Schema::dropIfExists('siri_sx_affected_stop_point');
         Schema::dropIfExists('siri_sx_affected_journey');
+        Schema::dropIfExists('siri_sx_stop_point');
+        Schema::dropIfExists('siri_sx_affected_stop');
     }
 };

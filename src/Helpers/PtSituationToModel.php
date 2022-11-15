@@ -109,6 +109,7 @@ class PtSituationToModel
                 ? $rawJourney['framed_vehicle_journey_ref']['data_frame_ref']
                 : null;
             $aJourney = AffectedJourney::create([
+                'id' => $this->createId($this->situation->id, $journeyRef, $dataFrameRef),
                 'pt_situation_id' => $this->situation->id,
                 'journey_ref' => $journeyRef,
                 'data_frame_ref' => $dataFrameRef,
@@ -137,6 +138,7 @@ class PtSituationToModel
         $this->time("Affected lines BEGIN");
         foreach ($rawLines as $rawLine) {
             $aLine = AffectedLine::create([
+                'id' => $this->createId($this->situation->id, $rawLine['line_ref']),
                 'pt_situation_id' => $this->situation->id,
                 'line_ref' => $rawLine['line_ref'],
             ]);
@@ -154,7 +156,6 @@ class PtSituationToModel
             $aRoute = AffectedRoute::create([
                 'pt_situation_id' => $this->situation->id,
                 'route_ref' => $rawRoute['route_ref'] ?? null,
-                'affected_line_id' => $aLine->id,
             ]);
             if (!empty($rawRoute['stop_points']['affected_stop_point'])) {
                 $this->storeAffectedStopPoints($rawRoute['stop_points']['affected_stop_point'], $aRoute);
@@ -193,6 +194,15 @@ class PtSituationToModel
         if (isset($this->rawSit['validity_period']['end_time'])) {
             $this->rawSit['validity_end'] = self::dbSafeDate($this->rawSit['validity_period']['end_time']);
         }
+    }
+
+    protected static function createId(...$keys)
+    {
+        $key = implode('.', $keys);
+        if (strlen($key) > 64) {
+            $key = md5($key);
+        }
+        return $key;
     }
 
     protected function time($msg, ...$args)

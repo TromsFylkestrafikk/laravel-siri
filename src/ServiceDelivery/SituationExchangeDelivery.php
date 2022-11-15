@@ -125,6 +125,7 @@ class SituationExchangeDelivery extends Base
                     ],
                     'LineRef' => 'string',
                     'Route' => [
+                        '#multiple' => true,
                         'RouteRef' => 'string',
                         'StopPoints' => [
                             'AffectedOnly' => 'bool',

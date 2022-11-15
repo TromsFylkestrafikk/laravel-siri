@@ -28,14 +28,15 @@ class AffectedLine extends Model
 
     public $timestamps = false;
     protected $table = 'siri_sx_affected_line';
-    protected $fillable = ['pt_situation_id', 'line_ref'];
+    protected $keyType = 'string';
+    protected $fillable = ['id', 'pt_situation_id', 'line_ref'];
 
     public function ptSituation()
     {
         return $this->belongsTo(PtSituation::class);
     }
 
-    public function affectedRoutes()
+    public function routes()
     {
         return $this->hasMany(AffectedRoute::class);
     }

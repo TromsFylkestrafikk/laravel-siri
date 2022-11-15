@@ -34,7 +34,8 @@ class AffectedRoute extends Model
 
     public $timestamps = false;
     protected $table = 'siri_sx_affected_route';
-    protected $fillable = ['pt_situation_id', 'route_ref', 'affected_line_id'];
+    protected $keyType = 'string';
+    protected $fillable = ['id', 'pt_situation_id', 'route_ref', 'affected_line_id'];
 
     public function ptSituation()
     {
