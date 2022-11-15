@@ -59,18 +59,17 @@ return new class extends Migration
             $table->date('data_frame_ref')->nullable()->comment("Journey date, if encapsulated in FramedVehicleJourneyRef");
         });
 
-        Schema::create('siri_sx_stop_point', function (Blueprint $table) {
-            $table->char('id', 64)->primary()->comment("Internal Laravel ID used for eloquent model relationships");
-            $table->char('stop_point_ref', 64)->index()->comment("Reference to the Quay in question (ID corresponding to objects in NSR)");
-            $table->string('stop_point_name', 128)->nullable()->comment("Name of StopPlace (Not used, but may be set to increase human readability)");
-        });
-
-        // Pivot tables
-        Schema::create('siri_sx_affected_stop', function (Blueprint $table) {
+        Schema::create('siri_sx_affected_stop_point', function (Blueprint $table) {
             $table->char('stop_point_id', 64)->index()->comment("Reference to affected stop point.");
-            $table->char('stoppable_type', 128)->comment("Class name of connected type");
-            $table->char('stoppable_id', 64)->comment("ID of connected entity");
-            $table->unique(['stop_point_id', 'stoppable_type', 'stoppable_id'], 'siri_sx_affected_stop__id_type_stoppable');
+            $table->char('pt_situation_id', 64)->comment("Reference to situation in question");
+            $table->enum('StopCondition', [
+                'exceptionalStop',
+                'destination',
+                'notStopping',
+                'requestStop',
+                'startPoint',
+                'stop',
+            ])->nullable()->comment("Specifies which passengers the message applies to, for example, people who are disembarking at an affected stop");
         });
     }
 
@@ -86,7 +85,6 @@ return new class extends Migration
         Schema::dropIfExists('siri_sx_affected_line');
         Schema::dropIfExists('siri_sx_affected_route');
         Schema::dropIfExists('siri_sx_affected_journey');
-        Schema::dropIfExists('siri_sx_stop_point');
-        Schema::dropIfExists('siri_sx_affected_stop');
+        Schema::dropIfExists('siri_sx_affected_stop_point');
     }
 };
