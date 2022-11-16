@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+let inputFiles = null;
+
 export default {
     data() {
         return {
@@ -23,32 +25,48 @@ export default {
     },
 
     methods: {
-        async submitXml() {
-            this.response = null;
+        submitXml() {
+            this.cancelUpload = false;
             const filesInput = this.$refs.xmlFile;
             if (!filesInput.files.length || !this.selectedId) {
                 return;
             }
-            const { files } = filesInput;
+            inputFiles = filesInput.files;
+            this.currentFileIndex = 0;
             this.uploadInProgress = true;
-            this.fileCount = files.length;
-            for (let idx = 0; idx < files.length; idx += 1) {
-                if (idx > 0) {
-                    await this.promiseDelay();
-                }
-                if (this.cancelUpload) {
-                    console.log('Upload was cancelled');
-                    this.cancelUpload = false;
-                    break;
-                }
-                console.log(`Processing file ${files[idx].name}`);
-                /* eslint no-await-in-loop: off */
-                await this.submitFile(files[idx]);
+            this.fileCount = inputFiles.length;
+            this.submitFile(inputFiles[this.currentFileIndex]);
+            this.delayedNextSubmit();
+        },
+
+        delayedNextSubmit() {
+            this.currentFileIndex += 1;
+            if (!inputFiles[this.currentFileIndex]) {
+                this.reset();
+                return;
             }
-            this.uploadInProgress = false;
+            const nextFile = inputFiles[this.currentFileIndex];
+            setTimeout(() => {
+                if (this.cancelUpload) {
+                    this.reset();
+                    return;
+                }
+                this.submitFile(nextFile);
+                this.delayedNextSubmit();
+            }, this.uploadDelay * 1000);
+        },
+
+        delayedSubmit(file) {
+            if (this.cancelUpload) {
+                return;
+            }
+            this.submitFile(file);
+            this.delayedNextSubmit();
         },
 
         async submitFile(file) {
+            this.response = null;
+            this.currentFilename = file.name;
             const data = await file.text();
             const sub = this.subscriptions[this.selectedId];
             return axios({
@@ -63,10 +81,9 @@ export default {
             });
         },
 
-        promiseDelay() {
-            return new Promise((resolve) => {
-                setTimeout(resolve, this.uploadDelay * 1000);
-            });
-        },
+        reset() {
+            this.cancelUpload = false;
+            this.uploadInProgress = false;
+        }
     },
 };
