@@ -28,7 +28,7 @@ class AffectedJourney extends Model
 
     public $timestamps = false;
     protected $table = 'siri_sx_affected_journey';
-    protected $fillable = ['pt_situation_id', 'journey_ref', 'data_frame_ref'];
+    protected $fillable = ['id', 'pt_situation_id', 'journey_ref', 'data_frame_ref'];
 
     public function ptSituation()
     {

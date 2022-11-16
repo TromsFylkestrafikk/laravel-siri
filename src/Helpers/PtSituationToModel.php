@@ -153,7 +153,8 @@ class PtSituationToModel
     {
         $this->time("Affected routes BEGIN");
         foreach ($rawRoutes as $rawRoute) {
-            $aRoute = AffectedRoute::create([
+            $aRoute = empty($rawRoute['route_ref']) ? null : AffectedRoute::create([
+                'id' => $this->createId($this->situation->id, $rawRoute['route_ref']),
                 'pt_situation_id' => $this->situation->id,
                 'route_ref' => $rawRoute['route_ref'] ?? null,
             ]);
@@ -169,6 +170,7 @@ class PtSituationToModel
         $this->time("Affected stop points BEGIN");
         foreach ($rawStops as $rawStop) {
             $aStop = new AffectedStopPoint();
+            $aStop->id = $this->createId($this->situation->id, $rawStop['stop_point_ref']);
             $aStop->pt_situation_id = $this->situation->id;
             $aStop->fill($rawStop);
             if ($aRoute) {

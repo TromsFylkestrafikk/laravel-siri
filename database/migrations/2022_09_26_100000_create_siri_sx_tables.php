@@ -41,28 +41,29 @@ return new class extends Migration
         });
 
         Schema::create('siri_sx_affected_line', function (Blueprint $table) {
-            $table->char('id', 64)->primary()->comment("Internal Laravel ID used for eloquent model relationships");
+            $table->char('id', 64)->primary()->comment("Internal ID used for eloquent model relationships");
             $table->char('pt_situation_id', 64)->index()->comment("Reference to situation in question");
             $table->char('line_ref', 64)->index()->comment("Reference to Line in question (ID to the corresponding object in NeTEx).");
         });
 
         Schema::create('siri_sx_affected_route', function (Blueprint $table) {
-            $table->char('id', 64)->primary()->comment("Internal Laravel ID used for eloquent model relationships");
+            $table->char('id', 64)->primary()->comment("Internal ID used for eloquent model relationships");
             $table->char('pt_situation_id', 64)->comment("Reference to situation in question");
             $table->char('route_ref', 64)->index()->comment("Reference to NeTEx route ID in question.");
         });
 
         Schema::create('siri_sx_affected_journey', function (Blueprint $table) {
-            $table->char('id', 64)->primary()->comment("Internal Laravel ID used for eloquent model relationships");
+            $table->char('id', 64)->primary()->comment("Internal ID used for eloquent model relationships");
             $table->char('pt_situation_id', 64)->comment("Reference to situation in question");
             $table->char('journey_ref', 64)->index()->comment("Reference to affected NeTEx VehicleJourney ID");
             $table->date('data_frame_ref')->nullable()->comment("Journey date, if encapsulated in FramedVehicleJourneyRef");
         });
 
         Schema::create('siri_sx_affected_stop_point', function (Blueprint $table) {
-            $table->char('stop_point_id', 64)->index()->comment("Reference to affected stop point.");
+            $table->char('id', 64)->primary()->comment("Internal ID used for eloquent model relationships");
             $table->char('pt_situation_id', 64)->comment("Reference to situation in question");
-            $table->enum('StopCondition', [
+            $table->char('stop_point_ref', 64)->index()->comment("Reference to affected stop point.");
+            $table->enum('stop_condition', [
                 'exceptionalStop',
                 'destination',
                 'notStopping',

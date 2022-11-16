@@ -33,7 +33,7 @@ class AffectedStopPoint extends Model
 
     public $timestamps = false;
     protected $table = 'siri_sx_affected_stop_point';
-    protected $fillable = ['pt_situation_id', 'stop_point_ref', 'affected_route_id'];
+    protected $fillable = ['id', 'pt_situation_id', 'stop_point_ref', 'affected_route_id', 'stop_condition'];
 
     public function ptSituation()
     {
