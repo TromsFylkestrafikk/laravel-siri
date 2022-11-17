@@ -162,24 +162,23 @@ class PtSituationToModel
                 'route_ref' => $rawRoute['route_ref'] ?? null,
             ]);
             if (!empty($rawRoute['stop_points']['affected_stop_point'])) {
-                $this->storeAffectedStopPoints($rawRoute['stop_points']['affected_stop_point'], $aRoute);
+                $this->storeAffectedStopPoints($rawRoute['stop_points']['affected_stop_point']);
             }
         }
         $this->time("Affected routes END");
     }
 
-    protected function storeAffectedStopPoints($rawStops, $aRoute = null)
+    protected function storeAffectedStopPoints($rawStops)
     {
         $this->time("Affected stop points BEGIN");
         foreach ($rawStops as $rawStop) {
-            $aStop = new AffectedStopPoint();
-            $aStop->id = $this->createId($this->situation->id, $rawStop['stop_point_ref']);
-            $aStop->pt_situation_id = $this->situation->id;
-            $aStop->fill($rawStop);
-            if ($aRoute) {
-                $aStop->affected_route_id = $aRoute->id;
-            }
-            $aStop->save();
+            AffectedStopPoint::updateOrCreate([
+                'id' => $this->createId($this->situation->id, $rawStop['stop_point_ref']),
+            ], [
+                'pt_situation_id' => $this->situation->id,
+                'stop_point_ref' => $rawStop['stop_point_ref'],
+                'stop_condition' => $rawStop['stop_condition'] ?? null,
+            ]);
         }
         $this->time("Affected stop points END");
     }
