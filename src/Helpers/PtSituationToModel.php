@@ -108,12 +108,15 @@ class PtSituationToModel
             $dataFrameRef = !empty($rawJourney['framed_vehicle_journey_ref'])
                 ? $rawJourney['framed_vehicle_journey_ref']['data_frame_ref']
                 : null;
-            $aJourney = AffectedJourney::create([
+            AffectedJourney::create([
                 'id' => $this->createId($this->situation->id, $journeyRef, $dataFrameRef),
                 'pt_situation_id' => $this->situation->id,
                 'journey_ref' => $journeyRef,
                 'data_frame_ref' => $dataFrameRef,
             ]);
+            if (!empty($rawJourney['route']['stop_points']['affected_stop_point'])) {
+                $this->storeAffectedStopPoints($rawJourney['route']['stop_points']['affected_stop_point']);
+            }
         }
         $this->time("Affected journeys stored");
         return $this;
