@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * TromsFylkestrafikk\Siri\Models\Sx\AffectedJourney
  *
- * @property int $id Internal Laravel ID used for eloquent model relationships
+ * @property int $id Internal ID used for eloquent model relationships
  * @property string $pt_situation_id Reference to situation in question
  * @property string $journey_ref Reference to affected NeTEx VehicleJourney ID
  * @property string|null $data_frame_ref Journey date, if encapsulated in FramedVehicleJourneyRef
@@ -33,10 +33,5 @@ class AffectedJourney extends Model
     public function ptSituation()
     {
         return $this->belongsTo(PtSituation::class);
-    }
-
-    public function route()
-    {
-        return $this->hasOne(AffectedRoute::class);
     }
 }

@@ -8,11 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * TromsFylkestrafikk\Siri\Models\Sx\AffectedLine
  *
- * @property int $id Internal Laravel ID used for eloquent model relationships
+ * @property string $id Internal ID used for eloquent model relationships
  * @property string $pt_situation_id Reference to situation in question
  * @property string $line_ref Reference to Line in question (ID to the corresponding object in NeTEx).
- * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedRoute[] $affectedRoutes
- * @property-read int|null $affected_routes_count
  * @property-read \TromsFylkestrafikk\Siri\Models\Sx\PtSituation|null $ptSituation
  * @method static \Illuminate\Database\Eloquent\Builder|AffectedLine newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AffectedLine newQuery()
@@ -34,10 +32,5 @@ class AffectedLine extends Model
     public function ptSituation()
     {
         return $this->belongsTo(PtSituation::class);
-    }
-
-    public function routes()
-    {
-        return $this->hasMany(AffectedRoute::class);
     }
 }

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property string $id Unique situation-ID for PtSituationElement. Format: CODESPACE:SituationNumber:ID
  * @property string $creation_time Timestamp for when the situation was created
+ * @property string $response_timestamp Timestamp of ServiceDelivery
  * @property string $participant_ref Codespace of the data source
  * @property string|null $source_type Information type: Possible values: 'directReport'
  * @property string|null $source_name Who or what is the source of the situation
@@ -29,6 +30,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read int|null $affected_journeys_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedLine[] $affectedLines
  * @property-read int|null $affected_lines_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedRoute[] $affectedRoutes
+ * @property-read int|null $affected_routes_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedStopPoint[] $affectedStopPoints
  * @property-read int|null $affected_stop_points_count
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation newModelQuery()
@@ -44,6 +47,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation wherePriority($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereProgress($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereReportType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereResponseTimestamp($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereSeverity($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereSourceName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation whereSourceType($value)
@@ -63,6 +67,7 @@ class PtSituation extends Model
     protected $fillable = [
         'id',
         'creation_time',
+        'response_timestamp',
         'participant_ref',
         'source_type',
         'source_name',

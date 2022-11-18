@@ -19,9 +19,17 @@ class PtSituationToModel
     /**
      * @var mixed[]
      */
-    protected $rawSit;
+    protected $rawSit = [];
 
-    protected $startTime = 0;
+    /**
+     * @var string
+     */
+    protected $responseTimestamp;
+
+    /**
+     * @var float
+     */
+    protected $startTime;
 
     /**
      * @var PtSituation
@@ -31,9 +39,10 @@ class PtSituationToModel
     /**
      * @param array $rawSit
      */
-    final public function __construct(array $rawSit)
+    final public function __construct(array $rawSit, $responseTimestamp)
     {
         $this->rawSit = $rawSit;
+        $this->responseTimestamp = $responseTimestamp;
         $this->startTime = microtime(true);
     }
 
@@ -44,9 +53,9 @@ class PtSituationToModel
      *
      * @return PtSituationToModel
      */
-    public static function store(array $rawSit)
+    public static function store(array $rawSit, $responseTimestamp)
     {
-        $instance = new static($rawSit);
+        $instance = new static($rawSit, $responseTimestamp);
         $instance->toModels();
         return $instance;
     }
@@ -54,13 +63,13 @@ class PtSituationToModel
     /**
      * Store situation to respective models.
      *
-     * @return PtSituation
+     * @return null|PtSituation
      */
     public function toModels()
     {
-        $sitNr = $this->rawSit['situation_number'];
-        $this->prepareRawSit();
-        $this->situation = PtSituation::updateOrCreate(['id' => $sitNr], $this->rawSit);
+        if (!$this->prepareSituation()) {
+            return null;
+        }
         $this->time("Situation to Models BEGIN");
         InfoLink::where('pt_situation_id', $this->situation->id)->delete();
         AffectedJourney::where('pt_situation_id', $this->situation->id)->delete();
@@ -84,6 +93,28 @@ class PtSituationToModel
         $date = new Carbon($dateStr);
         $date->tz = config('app.timezone');
         return $date->format($format);
+    }
+
+    /**
+     * Get an updated situation based on raw data or null if raw data is old.
+     *
+     * @return bool
+     */
+    protected function prepareSituation()
+    {
+        $this->prepareRawSit();
+        $this->situation = PtSituation::find($this->rawSit['situation_number']);
+        if (!$this->situation) {
+            $this->situation = PtSituation::create($this->rawSit);
+            return true;
+        }
+        if ((new Carbon($this->responseTimestamp))->isBefore(new Carbon($this->situation->response_timestamp))) {
+            Log::notice("[PtSituationToModel]: Existing situation is more recent than incoming data. Not updating.");
+            return false;
+        }
+        $this->situation->fill($this->rawSit);
+        $this->situation->save();
+        return true;
     }
 
     protected function storeLinks()
@@ -140,19 +171,19 @@ class PtSituationToModel
     {
         $this->time("Affected lines BEGIN");
         foreach ($rawLines as $rawLine) {
-            $aLine = AffectedLine::create([
+            AffectedLine::create([
                 'id' => $this->createId($this->situation->id, $rawLine['line_ref']),
                 'pt_situation_id' => $this->situation->id,
                 'line_ref' => $rawLine['line_ref'],
             ]);
             if (!empty($rawLine['routes']['affected_route'])) {
-                $this->storeAffectedRoutes($rawLine['routes']['affected_route'], $aLine);
+                $this->storeAffectedRoutes($rawLine['routes']['affected_route']);
             }
         }
         $this->time("Affected lines END");
     }
 
-    protected function storeAffectedRoutes($rawRoutes, AffectedLine $aLine = null)
+    protected function storeAffectedRoutes($rawRoutes)
     {
         $this->time("Affected routes BEGIN");
         foreach ($rawRoutes as $rawRoute) {
@@ -185,7 +216,9 @@ class PtSituationToModel
 
     protected function prepareRawSit()
     {
+        $this->rawSit['id'] = $this->rawSit['situation_number'];
         $this->rawSit['creation_time'] = self::dbSafeDate($this->rawSit['creation_time']);
+        $this->rawSit['response_timestamp'] = self::dbSafeDate($this->responseTimestamp);
         if (isset($this->rawSit['source']['source_type'])) {
             $this->rawSit['source_type'] = $this->rawSit['source']['source_type'];
         }

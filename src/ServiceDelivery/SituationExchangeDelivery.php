@@ -211,7 +211,7 @@ class SituationExchangeDelivery extends Base
     protected function postProcess()
     {
         foreach ($this->ptSituations as $rawSit) {
-            PtSituationToModel::store($rawSit);
+            PtSituationToModel::store($rawSit, $this->responseTimestamp);
         }
     }
 }
