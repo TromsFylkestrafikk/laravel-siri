@@ -4,6 +4,8 @@ namespace TromsFylkestrafikk\Siri\Models\Sx;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use TromsFylkestrafikk\Siri\Models\Scopes\SituationOpen;
+use TromsFylkestrafikk\Siri\Models\Scopes\SituationValid;
 
 /**
  * TromsFylkestrafikk\Siri\Models\Sx\PtSituation
@@ -103,5 +105,11 @@ class PtSituation extends Model
     public function affectedStopPoints()
     {
         return $this->hasMany(AffectedStopPoint::class);
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new SituationOpen());
+        static::addGlobalScope(new SituationValid());
     }
 }
