@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -16,7 +17,7 @@ return new class extends Migration
         Schema::create('siri_sx_pt_situation', function (Blueprint $table) {
             $table->char        ('id', 64)             ->primary()->comment("Unique situation-ID for PtSituationElement. Format: CODESPACE:SituationNumber:ID");
             $table->timestamp   ('creation_time')      ->comment('Timestamp for when the situation was created');
-            $table->timestamp   ('response_timestamp') ->comment('Timestamp of ServiceDelivery');
+            $table->timestamp   ('response_timestamp') ->default(DB::raw('now()'))->comment('Timestamp of ServiceDelivery');
             $table->char        ('participant_ref', 64)->comment("Codespace of the data source");
             $table->char        ('source_type', 16)    ->nullable()->comment("Information type: Possible values: 'directReport'");
             $table->string      ('source_name', 128)   ->nullable()->comment("Who or what is the source of the situation");
