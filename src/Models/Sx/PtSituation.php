@@ -109,7 +109,7 @@ class PtSituation extends Model
 
     protected static function booted()
     {
-        static::addGlobalScope(new SituationOpen());
         static::addGlobalScope(new SituationValid());
+        static::addGlobalScope(new SituationOpen());
     }
 }

@@ -17,6 +17,13 @@ use TromsFylkestrafikk\Siri\Models\Sx\AffectedStopPoint;
 class PtSituationToModel
 {
     /**
+     * True if incoming situation is newer than existing in DB.
+     *
+     * @var bool
+     */
+    public $valid = true;
+
+    /**
      * @var mixed[]
      */
     protected $rawSit = [];
@@ -68,6 +75,7 @@ class PtSituationToModel
     public function toModels()
     {
         if (!$this->prepareSituation()) {
+            $this->valid = false;
             return null;
         }
         $this->time("Situation to Models BEGIN");

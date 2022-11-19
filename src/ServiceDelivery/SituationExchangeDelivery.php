@@ -146,6 +146,8 @@ class SituationExchangeDelivery extends Base
         //
     ];
 
+    protected $willEmitPayload = true;
+
     /**
      * @inheritdoc
      */
@@ -190,8 +192,25 @@ class SituationExchangeDelivery extends Base
     /**
      * @inheritdoc
      */
+    protected function postProcess()
+    {
+        $this->willEmitPayload = true;
+        foreach ($this->ptSituations as $rawSit) {
+            $archiver = PtSituationToModel::store($rawSit, $this->responseTimestamp);
+            if (!$archiver->valid) {
+                $this->willEmitPayload = false;
+            }
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function emitPayload()
     {
+        if (!$this->willEmitPayload) {
+            return false;
+        }
         $case = app('siri.case');
         SxSituations::dispatch(
             $this->subscription->id,
@@ -203,15 +222,5 @@ class SituationExchangeDelivery extends Base
         // Reset SX internal harvesters.
         $this->roadSituations = [];
         $this->ptSituations = [];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function postProcess()
-    {
-        foreach ($this->ptSituations as $rawSit) {
-            PtSituationToModel::store($rawSit, $this->responseTimestamp);
-        }
     }
 }
