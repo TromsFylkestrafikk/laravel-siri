@@ -10,3 +10,5 @@ Route::post('consume/{channel}/{subscription:subscription_ref}', [SiriClientCont
     ->middleware('siri.channel');
 
 Route::apiResource('pt-situation', PtSituationController::class)->only(['index', 'show']);
+
+Route::get('pt-situation/quay/{quayId}', [PtSituationController::class, 'quaySituations']);
