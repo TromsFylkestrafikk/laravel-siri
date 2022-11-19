@@ -32,6 +32,7 @@ return new class extends Migration
             $table->text        ('description')        ->nullable()->comment("Expanded textual description of the situation");
             $table->tinyText    ('advice')             ->nullable()->comment("Textual advice on how a passenger should react/respond to the situation");
 
+            $table->index(['validity_start', 'validity_end'], 'siri_sx_pt_situation__validity_period');
             $table->timestamps();
         });
 

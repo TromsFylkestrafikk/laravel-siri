@@ -8,7 +8,7 @@ export default {
             cancelUpload: false,
             currentFilename: null,
             currentFileIndex: 0,
-            delayOptions: [0, 1, 2, 5, 10, 30, 60, 120],
+            delayOptions: [0, 0.2, 0.3, 0.5, 1, 2, 5, 10, 30, 60, 120],
             fileCount: 0,
             response: null,
             selectedId: null,

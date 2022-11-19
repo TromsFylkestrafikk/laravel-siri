@@ -103,7 +103,7 @@ class PtSituationToModel
     protected function prepareSituation()
     {
         $this->prepareRawSit();
-        $this->situation = PtSituation::find($this->rawSit['situation_number']);
+        $this->situation = PtSituation::withoutGlobalScopes()->find($this->rawSit['situation_number']);
         if (!$this->situation) {
             $this->situation = PtSituation::create($this->rawSit);
             return true;
