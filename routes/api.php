@@ -11,4 +11,6 @@ Route::post('consume/{channel}/{subscription:subscription_ref}', [SiriClientCont
 
 Route::apiResource('pt-situation', PtSituationController::class)->only(['index', 'show']);
 
-Route::get('pt-situation/quay/{quayId}', [PtSituationController::class, 'quaySituations']);
+Route::get('pt-situation/quay/{quayId}', [PtSituationController::class, 'situationsQuay']);
+Route::get('pt-situation/line/{lineId}', [PtSituationController::class, 'situationsLine']);
+Route::get('pt-situation/journey/{journeyId}', [PtSituationController::class, 'situationsJourney']);

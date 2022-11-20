@@ -37,13 +37,27 @@ class PtSituationController extends Controller
      *
      * @return \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\PtSituation[]
      */
-    public function quaySituations($quayId)
+    public function situationsQuay($quayId)
     {
         // @phpstan-ignore-next-line
         return PtSituation::with(['affectedJourneys', 'affectedLines', 'affectedStopPoints'])
-            ->whereHas('affectedStopPoints', function (Builder $query) use ($quayId) {
-                $query->where('stop_point_ref', $quayId);
-            })
+            ->whereHas('affectedStopPoints', fn (Builder $query) => $query->where('stop_point_ref', $quayId))
+            ->get();
+    }
+
+    public function situationsLine($lineId)
+    {
+        // @phpstan-ignore-next-line
+        return PtSituation::with(['affectedJourneys', 'affectedLines', 'affectedStopPoints'])
+            ->whereHas('affectedLines', fn (Builder $query) => $query->where('line_ref', $lineId))
+            ->get();
+    }
+
+    public function situationsJourney($journeyId)
+    {
+        // @phpstan-ignore-next-line
+        return PtSituation::with(['affectedJourneys', 'affectedLines', 'affectedStopPoints'])
+            ->whereHas('affectedJourneys', fn (Builder $query) => $query->where('journey_ref', $journeyId))
             ->get();
     }
 }
