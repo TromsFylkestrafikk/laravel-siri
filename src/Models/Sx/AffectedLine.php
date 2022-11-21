@@ -11,7 +11,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $id Internal ID used for eloquent model relationships
  * @property string $pt_situation_id Reference to situation in question
  * @property string $line_ref Reference to Line in question (ID to the corresponding object in NeTEx).
- * @property-read \TromsFylkestrafikk\Siri\Models\Sx\PtSituation|null $ptSituation
+ * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedStopPoint[] $affectedStopPoints
+ * @property-read int|null $affected_stop_points_count
+ * @property-read \TromsFylkestrafikk\Siri\Models\Sx\PtSituation $ptSituation
  * @method static \Illuminate\Database\Eloquent\Builder|AffectedLine newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AffectedLine newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AffectedLine query()
@@ -29,8 +31,19 @@ class AffectedLine extends Model
     protected $keyType = 'string';
     protected $fillable = ['id', 'pt_situation_id', 'line_ref'];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function ptSituation()
     {
         return $this->belongsTo(PtSituation::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function affectedStopPoints()
+    {
+        return $this->hasMany(AffectedStopPoint::class);
     }
 }

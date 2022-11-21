@@ -89,7 +89,10 @@ class PtSituationToModel
         $this->storeAffectedJourneys();
         $this->processAffectedNetworks();
         if (!empty($this->rawSit['affects']['stop_points']['affected_stop_point'])) {
-            $this->storeAffectedStopPoints($this->rawSit['affects']['stop_points']['affected_stop_point']);
+            $this->storeAffectedStopPoints(
+                $this->rawSit['affects']['stop_points']['affected_stop_point'],
+                $this->situation
+            );
         }
         $this->time("Situation to Models COMPLETE");
 
@@ -147,14 +150,14 @@ class PtSituationToModel
             $dataFrameRef = !empty($rawJourney['framed_vehicle_journey_ref'])
                 ? $rawJourney['framed_vehicle_journey_ref']['data_frame_ref']
                 : null;
-            AffectedJourney::create([
+            $aJourney = AffectedJourney::create([
                 'id' => $this->createId($this->situation->id, $journeyRef, $dataFrameRef),
                 'pt_situation_id' => $this->situation->id,
                 'journey_ref' => $journeyRef,
                 'data_frame_ref' => $dataFrameRef,
             ]);
             if (!empty($rawJourney['route']['stop_points']['affected_stop_point'])) {
-                $this->storeAffectedStopPoints($rawJourney['route']['stop_points']['affected_stop_point']);
+                $this->storeAffectedStopPoints($rawJourney['route']['stop_points']['affected_stop_point'], $aJourney);
             }
         }
         $this->time("Affected journeys stored");
@@ -179,19 +182,19 @@ class PtSituationToModel
     {
         $this->time("Affected lines BEGIN");
         foreach ($rawLines as $rawLine) {
-            AffectedLine::create([
+            $aLine = AffectedLine::create([
                 'id' => $this->createId($this->situation->id, $rawLine['line_ref']),
                 'pt_situation_id' => $this->situation->id,
                 'line_ref' => $rawLine['line_ref'],
             ]);
             if (!empty($rawLine['routes']['affected_route'])) {
-                $this->storeAffectedRoutes($rawLine['routes']['affected_route']);
+                $this->storeAffectedRoutes($rawLine['routes']['affected_route'], $aLine);
             }
         }
         $this->time("Affected lines END");
     }
 
-    protected function storeAffectedRoutes($rawRoutes)
+    protected function storeAffectedRoutes($rawRoutes, $parent)
     {
         $this->time("Affected routes BEGIN");
         foreach ($rawRoutes as $rawRoute) {
@@ -201,17 +204,21 @@ class PtSituationToModel
                 'route_ref' => $rawRoute['route_ref'] ?? null,
             ]);
             if (!empty($rawRoute['stop_points']['affected_stop_point'])) {
-                $this->storeAffectedStopPoints($rawRoute['stop_points']['affected_stop_point']);
+                $this->storeAffectedStopPoints($rawRoute['stop_points']['affected_stop_point'], $parent);
             }
         }
         $this->time("Affected routes END");
     }
 
-    protected function storeAffectedStopPoints($rawStops)
+    /**
+     * @param mixed[] $rawStops
+     * @param \Illuminate\Database\Eloquent\Model $parent
+     */
+    protected function storeAffectedStopPoints($rawStops, $parent)
     {
         $this->time("Affected stop points BEGIN");
         foreach ($rawStops as $rawStop) {
-            AffectedStopPoint::updateOrCreate([
+            $aStop = AffectedStopPoint::updateOrCreate([
                 'id' => $this->createId($this->situation->id, $rawStop['stop_point_ref']),
             ], [
                 'pt_situation_id' => $this->situation->id,

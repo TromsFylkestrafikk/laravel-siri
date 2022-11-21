@@ -12,7 +12,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $pt_situation_id Reference to situation in question
  * @property string $journey_ref Reference to affected NeTEx VehicleJourney ID
  * @property string|null $data_frame_ref Journey date, if encapsulated in FramedVehicleJourneyRef
- * @property-read \TromsFylkestrafikk\Siri\Models\Sx\PtSituation|null $ptSituation
+ * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedStopPoint[] $affectedStopPoints
+ * @property-read int|null $affected_stop_points_count
+ * @property-read \TromsFylkestrafikk\Siri\Models\Sx\PtSituation $ptSituation
  * @method static \Illuminate\Database\Eloquent\Builder|AffectedJourney newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AffectedJourney newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AffectedJourney query()
@@ -30,8 +32,19 @@ class AffectedJourney extends Model
     protected $table = 'siri_sx_affected_journey';
     protected $fillable = ['id', 'pt_situation_id', 'journey_ref', 'data_frame_ref'];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function ptSituation()
     {
         return $this->belongsTo(PtSituation::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function affectedStopPoints()
+    {
+        return $this->hasMany(AffectedStopPoint::class);
     }
 }

@@ -79,7 +79,10 @@ return new class extends Migration
 
         Schema::create('siri_sx_affected_stop_point', function (Blueprint $table) {
             $table->char('id', 64)->primary()->comment("Internal ID used for eloquent model relationships");
-            $table->char('pt_situation_id', 64)->comment("Reference to situation in question");
+            $table->char('pt_situation_id', 64)->comment("Reference to situation this stop point is part of");
+            $table->char('parent_situation_id', 64)->nullable()->comment("Situation this stop point is a direct affected child of");
+            $table->char('affected_line_id', 64)->nullable()->index()->comment("Reference to affected line this stop point is child");
+            $table->char('affected_journey_id', 64)->nullable()->index()->comment("Reference to affected journey this stop point is child of");
             $table->char('stop_point_ref', 64)->index()->comment("Reference to affected stop point.");
             $table->enum('stop_condition', [
                 'exceptionalStop',
@@ -89,8 +92,6 @@ return new class extends Migration
                 'startPoint',
                 'stop',
             ])->nullable()->comment("Specifies which passengers the message applies to, for example, people who are disembarking at an affected stop");
-            $table->string('parent_type', 128)->comment("Affected type this stop is a child of. Situation, Line or Journey.");
-            $table->char('parent_id', 64)->comment("Parent ID of affected type");
 
             $table->foreign('pt_situation_id')->references('id')->on('siri_sx_pt_situation')->onDelete('cascade');
         });

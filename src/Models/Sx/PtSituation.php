@@ -16,10 +16,10 @@ use TromsFylkestrafikk\Siri\Models\Scopes\SituationValid;
  * @property string $participant_ref Codespace of the data source
  * @property string|null $source_type Information type: Possible values: 'directReport'
  * @property string|null $source_name Who or what is the source of the situation
- * @property string $progress Status of a situation message. 'open' or 'closed'
+ * @property string $progress Status of a situation message
  * @property string|null $validity_start Validity period start time
  * @property string|null $validity_end Validity period end time
- * @property string $severity How severely the situation affects public transport services. Enumeration
+ * @property string $severity How severely the situation affects public transport services
  * @property int|null $priority Number value from 1 to 10 indicating the priority (urgency) of the situation message
  * @property string $report_type Type of situation report. 'general' or 'incident'
  * @property int|null $planned Whether the situation in question is due to planned events, or an unexpected incident
@@ -36,6 +36,8 @@ use TromsFylkestrafikk\Siri\Models\Scopes\SituationValid;
  * @property-read int|null $affected_routes_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedStopPoint[] $affectedStopPoints
  * @property-read int|null $affected_stop_points_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedStopPoint[] $stopPoints
+ * @property-read int|null $stop_points_count
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation query()
@@ -87,29 +89,48 @@ class PtSituation extends Model
 
     protected $hidden = ['source_name'];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function affectedJourneys()
     {
         return $this->hasMany(AffectedJourney::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function affectedLines()
     {
         return $this->hasMany(AffectedLine::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function affectedRoutes()
     {
         return $this->hasMany(AffectedRoute::class);
     }
 
-    public function allStopPoints()
+    /**
+     * All stop points related to this situations.
+     *
+     * This includes all recursively referenced stop points.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function stopPoints()
     {
         return $this->hasMany(AffectedStopPoint::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function affectedStopPoints()
     {
-        return $this->morphMany(AffectedStopPoint::class, 'parent');
+        return $this->hasMany(AffectedStopPoint::class, 'parent_situation_id');
     }
 
     protected static function booted()

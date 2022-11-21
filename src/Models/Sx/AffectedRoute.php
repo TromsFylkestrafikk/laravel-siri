@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $id Internal ID used for eloquent model relationships
  * @property string $pt_situation_id Reference to situation in question
  * @property string $route_ref Reference to NeTEx route ID in question.
- * @property-read \TromsFylkestrafikk\Siri\Models\Sx\PtSituation|null $ptSituation
  * @method static \Illuminate\Database\Eloquent\Builder|AffectedRoute newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AffectedRoute newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AffectedRoute query()
@@ -28,9 +27,4 @@ class AffectedRoute extends Model
     protected $table = 'siri_sx_affected_route';
     protected $keyType = 'string';
     protected $fillable = ['id', 'pt_situation_id', 'route_ref', 'affected_line_id'];
-
-    public function ptSituation()
-    {
-        return $this->belongsTo(PtSituation::class);
-    }
 }
