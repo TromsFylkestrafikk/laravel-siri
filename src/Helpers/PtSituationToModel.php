@@ -3,6 +3,7 @@
 namespace TromsFylkestrafikk\Siri\Helpers;
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
 use TromsFylkestrafikk\Siri\Models\Sx\InfoLink;
@@ -84,6 +85,8 @@ class PtSituationToModel
         AffectedLine::where('pt_situation_id', $this->situation->id)->delete();
         AffectedRoute::where('pt_situation_id', $this->situation->id)->delete();
         AffectedStopPoint::where('pt_situation_id', $this->situation->id)->delete();
+        DB::table('siri_sx_stoppable')->where('pt_situation_id', $this->situation->id)->delete();
+
         $this->time("Previous models removed");
         $this->storeLinks();
         $this->storeAffectedJourneys();
@@ -198,11 +201,13 @@ class PtSituationToModel
     {
         $this->time("Affected routes BEGIN");
         foreach ($rawRoutes as $rawRoute) {
-            $aRoute = empty($rawRoute['route_ref']) ? null : AffectedRoute::create([
-                'id' => $this->createId($this->situation->id, $rawRoute['route_ref']),
-                'pt_situation_id' => $this->situation->id,
-                'route_ref' => $rawRoute['route_ref'] ?? null,
-            ]);
+            if (!empty($rawRoute['route_ref'])) {
+                AffectedRoute::create([
+                    'id' => $this->createId($this->situation->id, $rawRoute['route_ref']),
+                    'pt_situation_id' => $this->situation->id,
+                    'route_ref' => $rawRoute['route_ref'] ?? null,
+                ]);
+            }
             if (!empty($rawRoute['stop_points']['affected_stop_point'])) {
                 $this->storeAffectedStopPoints($rawRoute['stop_points']['affected_stop_point'], $parent);
             }
@@ -221,14 +226,10 @@ class PtSituationToModel
             $aStop = AffectedStopPoint::updateOrCreate([
                 'id' => $this->createId($this->situation->id, $rawStop['stop_point_ref']),
             ], [
-                'pt_situation_id' => $this->situation->id, [
-                    PtSituation::class => 'parent_situation_id',
-                    AffectedLine::class => 'affected_line_id',
-                    AffectedJourney::class => 'affected_journey_id'
-                ][get_class($parent)] => $parent->id,
+                'pt_situation_id' => $this->situation->id,
                 'stop_point_ref' => $rawStop['stop_point_ref'],
-                'stop_condition' => $rawStop['stop_condition'] ?? null,
             ]);
+            $parent->affectedStopPoints()->attach($aStop->id, ['pt_situation_id' => $this->situation->id]);
         }
         $this->time("Affected stop points END");
     }

@@ -79,11 +79,17 @@ return new class extends Migration
 
         Schema::create('siri_sx_affected_stop_point', function (Blueprint $table) {
             $table->char('id', 64)->primary()->comment("Internal ID used for eloquent model relationships");
-            $table->char('pt_situation_id', 64)->comment("Reference to situation this stop point is part of");
-            $table->char('parent_situation_id', 64)->nullable()->comment("Situation this stop point is a direct affected child of");
-            $table->char('affected_line_id', 64)->nullable()->index()->comment("Reference to affected line this stop point is child");
-            $table->char('affected_journey_id', 64)->nullable()->index()->comment("Reference to affected journey this stop point is child of");
+            $table->char('pt_situation_id', 64)->index()->comment("Reference to situation this stop point is part of");
             $table->char('stop_point_ref', 64)->index()->comment("Reference to affected stop point.");
+
+            $table->foreign('pt_situation_id')->references('id')->on('siri_sx_pt_situation')->onDelete('cascade');
+        });
+
+        Schema::create('siri_sx_stoppable', function (Blueprint $table) {
+            $table->char('pt_situation_id', 64)->index()->comment("Reference to situation this relation is part of");
+            $table->char('affected_stop_point_id', 64)->index()->comment("Reference to affected stop point in situation");
+            $table->char('stoppable_type', 128)->comment("Model class name the stop relation belongs to");
+            $table->char('stoppable_id', 64)->comment("Model ID the stop belongs to.");
             $table->enum('stop_condition', [
                 'exceptionalStop',
                 'destination',
@@ -93,6 +99,7 @@ return new class extends Migration
                 'stop',
             ])->nullable()->comment("Specifies which passengers the message applies to, for example, people who are disembarking at an affected stop");
 
+            $table->index(['stoppable_type', 'stoppable_id'], 'siri_sx_stoppable__model_id');
             $table->foreign('pt_situation_id')->references('id')->on('siri_sx_pt_situation')->onDelete('cascade');
         });
     }
@@ -109,6 +116,7 @@ return new class extends Migration
         Schema::dropIfExists('siri_sx_affected_route');
         Schema::dropIfExists('siri_sx_affected_journey');
         Schema::dropIfExists('siri_sx_affected_stop_point');
+        Schema::dropIfExists('siri_sx_stoppable');
         Schema::dropIfExists('siri_sx_pt_situation');
     }
 };

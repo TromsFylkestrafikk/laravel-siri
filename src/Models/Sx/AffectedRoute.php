@@ -23,8 +23,9 @@ class AffectedRoute extends Model
 {
     use HasFactory;
 
+    public $incrementing = false;
     public $timestamps = false;
-    protected $table = 'siri_sx_affected_route';
-    protected $keyType = 'string';
     protected $fillable = ['id', 'pt_situation_id', 'route_ref', 'affected_line_id'];
+    protected $keyType = 'string';
+    protected $table = 'siri_sx_affected_route';
 }

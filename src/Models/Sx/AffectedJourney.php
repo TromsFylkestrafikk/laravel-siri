@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * TromsFylkestrafikk\Siri\Models\Sx\AffectedJourney
  *
- * @property int $id Internal ID used for eloquent model relationships
+ * @property string $id Internal ID used for eloquent model relationships
  * @property string $pt_situation_id Reference to situation in question
  * @property string $journey_ref Reference to affected NeTEx VehicleJourney ID
  * @property string|null $data_frame_ref Journey date, if encapsulated in FramedVehicleJourneyRef
@@ -28,9 +28,11 @@ class AffectedJourney extends Model
 {
     use HasFactory;
 
+    public $incrementing = false;
     public $timestamps = false;
-    protected $table = 'siri_sx_affected_journey';
+    protected $keyType = 'string';
     protected $fillable = ['id', 'pt_situation_id', 'journey_ref', 'data_frame_ref'];
+    protected $table = 'siri_sx_affected_journey';
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -41,10 +43,10 @@ class AffectedJourney extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
      */
     public function affectedStopPoints()
     {
-        return $this->hasMany(AffectedStopPoint::class);
+        return $this->morphToMany(AffectedStopPoint::class, 'stoppable', 'siri_sx_stoppable');
     }
 }

@@ -26,6 +26,7 @@ class AffectedLine extends Model
 {
     use HasFactory;
 
+    public $incrementing = false;
     public $timestamps = false;
     protected $table = 'siri_sx_affected_line';
     protected $keyType = 'string';
@@ -40,10 +41,10 @@ class AffectedLine extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
      */
     public function affectedStopPoints()
     {
-        return $this->hasMany(AffectedStopPoint::class);
+        return $this->morphToMany(AffectedStopPoint::class, 'stoppable', 'siri_sx_stoppable');
     }
 }

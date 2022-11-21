@@ -66,8 +66,6 @@ class PtSituation extends Model
     use HasFactory;
 
     public $incrementing = false;
-    protected $table = 'siri_sx_pt_situation';
-    protected $keyType = 'string';
     protected $fillable = [
         'id',
         'creation_time',
@@ -86,8 +84,10 @@ class PtSituation extends Model
         'description',
         'advice',
     ];
-
     protected $hidden = ['source_name'];
+    protected $keyType = 'string';
+    protected $table = 'siri_sx_pt_situation';
+
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -126,11 +126,11 @@ class PtSituation extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
      */
     public function affectedStopPoints()
     {
-        return $this->hasMany(AffectedStopPoint::class, 'parent_situation_id');
+        return $this->morphToMany(AffectedStopPoint::class, 'stoppable', 'siri_sx_stoppable');
     }
 
     protected static function booted()
