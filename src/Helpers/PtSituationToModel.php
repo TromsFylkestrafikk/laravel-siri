@@ -212,7 +212,7 @@ class PtSituationToModel
 
     /**
      * @param mixed[] $rawStops
-     * @param \Illuminate\Database\Eloquent\Model $parent
+     * @param PtSituation|AffectedLine|AffectedJourney $parent
      */
     protected function storeAffectedStopPoints($rawStops, $parent)
     {
@@ -221,7 +221,11 @@ class PtSituationToModel
             $aStop = AffectedStopPoint::updateOrCreate([
                 'id' => $this->createId($this->situation->id, $rawStop['stop_point_ref']),
             ], [
-                'pt_situation_id' => $this->situation->id,
+                'pt_situation_id' => $this->situation->id, [
+                    PtSituation::class => 'parent_situation_id',
+                    AffectedLine::class => 'affected_line_id',
+                    AffectedJourney::class => 'affected_journey_id'
+                ][get_class($parent)] => $parent->id,
                 'stop_point_ref' => $rawStop['stop_point_ref'],
                 'stop_condition' => $rawStop['stop_condition'] ?? null,
             ]);
