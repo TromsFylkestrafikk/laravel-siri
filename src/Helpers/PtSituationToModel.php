@@ -159,8 +159,8 @@ class PtSituationToModel
                 'journey_ref' => $journeyRef,
                 'data_frame_ref' => $dataFrameRef,
             ]);
-            if (!empty($rawJourney['route']['stop_points']['affected_stop_point'])) {
-                $this->storeAffectedStopPoints($rawJourney['route']['stop_points']['affected_stop_point'], $aJourney);
+            if (!empty($rawJourney['route'])) {
+                $this->storeAffectedRoutes($rawJourney['route'], $aJourney);
             }
         }
         $this->time("Affected journeys stored");
