@@ -34,4 +34,9 @@ class AffectedStopPoint extends Model
     {
         return $this->belongsTo(PtSituation::class);
     }
+
+    public function parent()
+    {
+        return $this->morphTo();
+    }
 }

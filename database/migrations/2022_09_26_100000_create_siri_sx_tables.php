@@ -21,10 +21,17 @@ return new class extends Migration
             $table->char        ('participant_ref', 64)->comment("Codespace of the data source");
             $table->char        ('source_type', 16)    ->nullable()->comment("Information type: Possible values: 'directReport'");
             $table->string      ('source_name', 128)   ->nullable()->comment("Who or what is the source of the situation");
-            $table->char        ('progress', 8)        ->comment("Status of a situation message. 'open' or 'closed'");
+            $table->enum        ('progress', ['open', 'closed'])->comment("Status of a situation message");
             $table->timestamp   ('validity_start')     ->nullable()->comment("Validity period start time");
             $table->timestamp   ('validity_end')       ->nullable()->comment("Validity period end time");
-            $table->char        ('severity')           ->default('normal')->comment("How severely the situation affects public transport services. Enumeration");
+            $table->enum        ('severity', [
+                'noImpact',
+                'verySlight',
+                'slight',
+                'normal',
+                'severe',
+                'verySevere',
+            ])->default('normal')                      ->comment("How severely the situation affects public transport services");
             $table->smallInteger('priority')           ->nullable()->comment("Number value from 1 to 10 indicating the priority (urgency) of the situation message");
             $table->char        ('report_type', 12)    ->comment("Type of situation report. 'general' or 'incident'");
             $table->boolean     ('planned')            ->nullable()->comment("Whether the situation in question is due to planned events, or an unexpected incident");
@@ -82,6 +89,8 @@ return new class extends Migration
                 'startPoint',
                 'stop',
             ])->nullable()->comment("Specifies which passengers the message applies to, for example, people who are disembarking at an affected stop");
+            $table->string('parent_type', 128)->comment("Affected type this stop is a child of. Situation, Line or Journey.");
+            $table->char('parent_id', 64)->comment("Parent ID of affected type");
 
             $table->foreign('pt_situation_id')->references('id')->on('siri_sx_pt_situation')->onDelete('cascade');
         });
@@ -94,11 +103,11 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('siri_sx_pt_situation');
         Schema::dropIfExists('siri_sx_info_link');
         Schema::dropIfExists('siri_sx_affected_line');
         Schema::dropIfExists('siri_sx_affected_route');
         Schema::dropIfExists('siri_sx_affected_journey');
         Schema::dropIfExists('siri_sx_affected_stop_point');
+        Schema::dropIfExists('siri_sx_pt_situation');
     }
 };

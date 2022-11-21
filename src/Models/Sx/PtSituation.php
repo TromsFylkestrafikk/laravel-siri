@@ -102,9 +102,14 @@ class PtSituation extends Model
         return $this->hasMany(AffectedRoute::class);
     }
 
-    public function affectedStopPoints()
+    public function allStopPoints()
     {
         return $this->hasMany(AffectedStopPoint::class);
+    }
+
+    public function affectedStopPoints()
+    {
+        return $this->morphMany(AffectedStopPoint::class, 'parent');
     }
 
     protected static function booted()
