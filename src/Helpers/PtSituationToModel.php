@@ -79,7 +79,6 @@ class PtSituationToModel
             $this->valid = false;
             return null;
         }
-        $this->time("Situation to Models BEGIN");
         InfoLink::where('pt_situation_id', $this->situation->id)->delete();
         AffectedJourney::where('pt_situation_id', $this->situation->id)->delete();
         AffectedLine::where('pt_situation_id', $this->situation->id)->delete();
@@ -87,7 +86,6 @@ class PtSituationToModel
         AffectedStopPoint::where('pt_situation_id', $this->situation->id)->delete();
         DB::table('siri_sx_stoppable')->where('pt_situation_id', $this->situation->id)->delete();
 
-        $this->time("Previous models removed");
         $this->storeLinks();
         $this->storeAffectedJourneys();
         $this->processAffectedNetworks();
@@ -97,7 +95,6 @@ class PtSituationToModel
                 $this->situation
             );
         }
-        $this->time("Situation to Models COMPLETE");
 
         return $this->situation;
     }
@@ -124,7 +121,7 @@ class PtSituationToModel
         }
         if ((new Carbon($this->responseTimestamp))->isBefore(new Carbon($this->situation->response_timestamp))) {
             Log::notice("[PtSituationToModel]: Existing situation is more recent than incoming data. Not updating.");
-            return false;
+            // return false;
         }
         $this->situation->fill($this->rawSit);
         $this->situation->save();
@@ -163,7 +160,6 @@ class PtSituationToModel
                 $this->storeAffectedRoutes($rawJourney['route'], $aJourney);
             }
         }
-        $this->time("Affected journeys stored");
         return $this;
     }
 
@@ -183,7 +179,6 @@ class PtSituationToModel
 
     protected function storeAffectedLines($rawLines)
     {
-        $this->time("Affected lines BEGIN");
         foreach ($rawLines as $rawLine) {
             $aId = $this->createId($this->situation->id, $rawLine['line_ref']);
             $aLine = AffectedLine::firstOrCreate(['id' => $aId], [
@@ -195,12 +190,10 @@ class PtSituationToModel
                 $this->storeAffectedRoutes($rawLine['routes']['affected_route'], $aLine);
             }
         }
-        $this->time("Affected lines END");
     }
 
     protected function storeAffectedRoutes($rawRoutes, $parent)
     {
-        $this->time("Affected routes BEGIN");
         foreach ($rawRoutes as $rawRoute) {
             if (!empty($rawRoute['route_ref'])) {
                 AffectedRoute::create([
@@ -213,7 +206,6 @@ class PtSituationToModel
                 $this->storeAffectedStopPoints($rawRoute['stop_points']['affected_stop_point'], $parent);
             }
         }
-        $this->time("Affected routes END");
     }
 
     /**
@@ -222,7 +214,6 @@ class PtSituationToModel
      */
     protected function storeAffectedStopPoints($rawStops, $parent)
     {
-        $this->time("Affected stop points BEGIN");
         foreach ($rawStops as $rawStop) {
             $aStop = AffectedStopPoint::updateOrCreate([
                 'id' => $this->createId($this->situation->id, $rawStop['stop_point_ref']),
@@ -235,7 +226,6 @@ class PtSituationToModel
                 'stop_condition' => $rawStop['stop_condition'] ?? null,
             ]);
         }
-        $this->time("Affected stop points END");
     }
 
     protected function prepareRawSit()
@@ -264,12 +254,5 @@ class PtSituationToModel
             $key = md5($key);
         }
         return $key;
-    }
-
-    protected function time($msg, ...$args)
-    {
-        $tillNow = microtime(true) - $this->startTime;
-        $printArgs = ["Exec time: %.3f %s", $tillNow, $msg, ...$args];
-        Log::debug(call_user_func_array('sprintf', $printArgs));
     }
 }
