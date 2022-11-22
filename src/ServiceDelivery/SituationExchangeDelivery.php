@@ -5,6 +5,7 @@ namespace TromsFylkestrafikk\Siri\ServiceDelivery;
 use TromsFylkestrafikk\Siri\Events\SxSituations;
 use TromsFylkestrafikk\Siri\Events\SxPtSituation;
 use TromsFylkestrafikk\Siri\Events\SxRoadSituation;
+use TromsFylkestrafikk\Siri\Helpers\PtSituationToModel;
 
 class SituationExchangeDelivery extends Base
 {
@@ -27,17 +28,6 @@ class SituationExchangeDelivery extends Base
         'CreationTime' => 'string',
         'ParticipantRef' => 'string',
         'SituationNumber' => 'string',
-        'Version' => 'string',
-        'References' => [
-            'RelatedToRef' => [
-                '#multiple' => true,
-                'CreationTime' => 'string',
-                'ParticipantRef' => 'string',
-                'SituationNumber' => 'string',
-                'RelatedAs' => 'string',
-                'Version' => 'string',
-            ],
-        ],
         'Source' => [
             'SourceType' => 'string',
             'Name' => 'string',
@@ -45,27 +35,61 @@ class SituationExchangeDelivery extends Base
             'AgentReference' => 'string',
             'TimeOfCommunication' => 'string',
         ],
-        'Verification' => 'string',
+        'VersionedAtTime' => 'timestamp',
         'Progress' => 'string',
-        'QualityIndex' => 'string',
         'ValidityPeriod' => [
             'StartTime' => 'string',
             'EndTime' => 'string',
         ],
-        'MiscellaneousReason' => 'string',
         'UndefinedReason' => 'string',
         'Severity' => 'string',
-        'Audience' => 'string',
+        'Priority' => 'int',
         'ReportType' => 'string',
+        'Planned' => 'bool',
         'Summary' => 'string',
         'Description' => 'string',
+        'Advice' => 'string',
+        'InfoLinks' => [
+            'InfoLink' => [
+                '#multiple' => true,
+                'Uri' => 'string',
+                'Label' => 'string',
+            ],
+        ],
         'Affects' => [
             'Networks' => [
                 'AffectedNetwork' => [
-                    '#multiple',
+                    '#multiple' => true,
+                    'NetworkRef' => 'string',
+                    'AffectedOperator' => [
+                        'OperatorRef' => 'string',
+                    ],
                     'VehicleMode' => 'string',
+                    'AirSubmode' => 'string',
+                    'BusSubmode' => 'string',
+                    'Coach' => 'string',
+                    'MetroSubmode' => 'string',
+                    'RailSubmode' => 'string',
+                    'TramSubmode' => 'string',
+                    'WaterSubmode' => 'string',
+                    'AllLines' => 'string',
                     'AffectedLine' => [
+                        '#multiple' => true,
                         'LineRef' => 'string',
+                        'Routes' => [
+                            'AffectedRoute' => [
+                                '#multiple' => true,
+                                'RouteRef' => 'string',
+                                'StopPoints' => [
+                                    'AffectedOnly' => 'bool',
+                                    'AffectedStopPoint' => [
+                                        '#multiple' => true,
+                                        'StopPointRef' => 'string',
+                                        'StopCondition' => 'string',
+                                    ],
+                                ],
+                            ],
+                        ],
                     ],
                 ],
             ],
@@ -73,13 +97,7 @@ class SituationExchangeDelivery extends Base
                 'AffectedStopPoint' => [
                     '#multiple' => true,
                     'StopPointRef' => 'string',
-                    'StopPointName' => 'string',
-                    'StopPointType' => 'string',
-                    'Location' => [
-                        'Latitude' => 'float',
-                        'Longitude' => 'float',
-                        'Precision' => 'float',
-                    ],
+                    'StopCondition' => 'string',
                 ],
             ],
             'StopPlaces' => [
@@ -90,7 +108,8 @@ class SituationExchangeDelivery extends Base
                         'AffectedComponent' => [
                             '#multiple' => true,
                             'ComponentRef' => 'string',
-                            'ComponentName' => 'string',
+                            'ComponentType' => 'string',
+                            'AccessFeatureType' => 'string',
                         ],
                     ],
                 ],
@@ -99,51 +118,26 @@ class SituationExchangeDelivery extends Base
                 'AffectedVehicleJourney' => [
                     '#multiple' => true,
                     'VehicleJourneyRef' => 'string',
-                    'Route' => 'string',
+                    'DatedVehicleJourneyRef' => 'string',
+                    'FramedVehicleJourneyRef' => [
+                        'DataFrameRef' => 'string',
+                        'DatedVehicleJourneyRef' => 'string',
+                    ],
+                    'LineRef' => 'string',
+                    'Route' => [
+                        '#multiple' => true,
+                        'RouteRef' => 'string',
+                        'StopPoints' => [
+                            'AffectedOnly' => 'bool',
+                            'AffectedStopPoint' => [
+                                '#multiple' => true,
+                                'StopPointRef' => 'string',
+                                'StopCondition' => 'string',
+                            ],
+                        ],
+                    ],
+                    'OriginAimedDepartureTime' => 'string',
                 ],
-            ],
-        ],
-        'Consequences' => [
-            'Consequence' => [
-                '#multiple' => true,
-                'Period' => [
-                    'StartTime' => 'string',
-                    'EndTime' => 'string',
-                ],
-                'Condition' => 'string',
-                'Severity' => 'string',
-                'Blocking' => [
-                    'JourneyPlanner' => 'bool',
-                    'RealTime' => 'bool',
-                ],
-                'Boarding' => [
-                    'ArrivalBoardingActivity' => 'string',
-                    'DepartureBoardingActivity' => 'string',
-                ],
-            ],
-        ],
-        'PublishingActions' => [
-            'PublishToWebAction' => [
-                'Incidents' => 'bool',
-                'HomePage' => 'bool',
-                'Ticker' => 'bool',
-            ],
-            'PublishToMobileAction' => [
-                'Incidents' => 'bool',
-                'HomePage' => 'bool',
-            ],
-            'PublishToDisplayAction' => [
-                'OnPlace' => 'bool',
-                'OnBoard' => 'bool',
-            ],
-            'PublishToTvAction' => [
-                'Ceefax' => 'bool',
-                'Teletext' => 'bool',
-            ],
-            'PublishToAlertsAction' => [
-                'ClearNotice' => 'bool',
-                'ByEmail' => 'bool',
-                'ByMobile' => 'bool',
             ],
         ],
     ];
@@ -151,6 +145,8 @@ class SituationExchangeDelivery extends Base
     public static $roadSituationSchema = [
         //
     ];
+
+    protected $willEmitPayload = true;
 
     /**
      * @inheritdoc
@@ -193,8 +189,28 @@ class SituationExchangeDelivery extends Base
         SxRoadSituation::dispatch($this->subscription->id, $this->createPayload('RoadSituationElement', $situation));
     }
 
+    /**
+     * @inheritdoc
+     */
+    protected function postProcess()
+    {
+        $this->willEmitPayload = true;
+        foreach ($this->ptSituations as $rawSit) {
+            $archiver = PtSituationToModel::store($rawSit, $this->responseTimestamp);
+            if (!$archiver->valid) {
+                $this->willEmitPayload = false;
+            }
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function emitPayload()
     {
+        if (!$this->willEmitPayload) {
+            return false;
+        }
         $case = app('siri.case');
         SxSituations::dispatch(
             $this->subscription->id,

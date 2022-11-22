@@ -1,6 +1,10 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Siri SX `PtSituation`s are now saved to DB, available as Eloquent
+  models.
+
 ### Changed
 - Added support for Laravel 9.x
 - Code for actually dispatching service deliveries is now extracted to
