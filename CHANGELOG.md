@@ -5,6 +5,10 @@
 - Added support for Laravel 9.x
 - Code for actually dispatching service deliveries is now extracted to
   a proper service.
+  
+### Fixed
+- XmlMapper::castValue() for 'bool' type now allows 'true', 'yes', and
+  '1' as `true` value.
 
 ## [0.2.1] – 2022-06-14
 ### Added

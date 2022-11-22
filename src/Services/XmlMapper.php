@@ -126,7 +126,7 @@ class XmlMapper
             case 'string':
                 return $value;
             case 'bool':
-                return strtolower($value) === 'yes';
+                return in_array(strtolower($value), ['yes', 'true', '1']);
         }
     }
 
