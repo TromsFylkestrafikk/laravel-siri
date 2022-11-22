@@ -39,7 +39,6 @@ class PtSituationController extends Controller
      */
     public function situationsQuay($quayId)
     {
-        // @phpstan-ignore-next-line
         return PtSituation::with(['affectedJourneys', 'affectedLines', 'affectedStopPoints'])
             ->whereHas('affectedStopPoints', fn (Builder $query) => $query->where('stop_point_ref', $quayId))
             ->get();
@@ -47,7 +46,6 @@ class PtSituationController extends Controller
 
     public function situationsLine($lineId)
     {
-        // @phpstan-ignore-next-line
         return PtSituation::with(['affectedJourneys', 'affectedLines', 'affectedStopPoints'])
             ->whereHas('affectedLines', fn (Builder $query) => $query->where('line_ref', $lineId))
             ->get();
@@ -55,7 +53,6 @@ class PtSituationController extends Controller
 
     public function situationsJourney($journeyId)
     {
-        // @phpstan-ignore-next-line
         return PtSituation::with(['affectedJourneys', 'affectedLines', 'affectedStopPoints'])
             ->whereHas('affectedJourneys', fn (Builder $query) => $query->where('journey_ref', $journeyId))
             ->get();
