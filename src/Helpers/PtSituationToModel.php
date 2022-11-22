@@ -185,7 +185,8 @@ class PtSituationToModel
     {
         $this->time("Affected lines BEGIN");
         foreach ($rawLines as $rawLine) {
-            $aLine = AffectedLine::create([
+            $aId = $this->createId($this->situation->id, $rawLine['line_ref']);
+            $aLine = AffectedLine::firstOrCreate(['id' => $aId], [
                 'id' => $this->createId($this->situation->id, $rawLine['line_ref']),
                 'pt_situation_id' => $this->situation->id,
                 'line_ref' => $rawLine['line_ref'],
@@ -229,7 +230,10 @@ class PtSituationToModel
                 'pt_situation_id' => $this->situation->id,
                 'stop_point_ref' => $rawStop['stop_point_ref'],
             ]);
-            $parent->affectedStopPoints()->attach($aStop->id, ['pt_situation_id' => $this->situation->id]);
+            $parent->affectedStopPoints()->attach($aStop->id, [
+                'pt_situation_id' => $this->situation->id,
+                'stop_condition' => $rawStop['stop_condition'] ?? null,
+            ]);
         }
         $this->time("Affected stop points END");
     }
