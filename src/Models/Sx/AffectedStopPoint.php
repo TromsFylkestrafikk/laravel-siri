@@ -11,10 +11,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $id Internal ID used for eloquent model relationships
  * @property string $pt_situation_id Reference to situation this stop point is part of
  * @property string $stop_point_ref Reference to affected stop point.
- * @property-read \TromsFylkestrafikk\Siri\Models\Sx\AffectedJourney|null $affectedJourney
- * @property-read \TromsFylkestrafikk\Siri\Models\Sx\AffectedLine|null $affectedLine
- * @property-read \TromsFylkestrafikk\Siri\Models\Sx\PtSituation|null $parentSituation
+ * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedJourney[] $affectedJourneys
+ * @property-read int|null $affected_journeys_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedLine[] $affectedLines
+ * @property-read int|null $affected_lines_count
  * @property-read \TromsFylkestrafikk\Siri\Models\Sx\PtSituation $ptSituation
+ * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\PtSituation[] $ptSituations
+ * @property-read int|null $pt_situations_count
  * @method static \Illuminate\Database\Eloquent\Builder|AffectedStopPoint newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AffectedStopPoint newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AffectedStopPoint query()
