@@ -12,12 +12,12 @@ class SituationExchangeDelivery extends Base
     /**
      * @var mixed[]
      */
-    protected $ptSituations;
+    protected $ptSituations = [];
 
     /**
      * @var mixed[]
      */
-    protected $roadSituations;
+    protected $roadSituations = [];
 
     /**
      * Tree of XML elements to harvest for PtSituationElement
