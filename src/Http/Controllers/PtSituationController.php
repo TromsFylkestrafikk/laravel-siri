@@ -11,11 +11,14 @@ class PtSituationController extends Controller
     /**
      * List all open, valid SIRI SX Situations.
      *
-     * @return \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\PtSituation[]
+     * @return mixed[]
      */
     public function index()
     {
-        return PtSituation::with(['affectedJourneys', 'affectedLines', 'affectedStopPoints'])->get();
+        return [
+            'status' => 'ok',
+            'situations' => PtSituation::with(['affectedJourneys', 'affectedLines', 'affectedStopPoints', 'stopPoints'])->get(),
+        ];
     }
 
     /**

@@ -12,12 +12,12 @@ class SituationExchangeDelivery extends Base
     /**
      * @var mixed[]
      */
-    protected $ptSituations;
+    protected $ptSituations = [];
 
     /**
      * @var mixed[]
      */
-    protected $roadSituations;
+    protected $roadSituations = [];
 
     /**
      * Tree of XML elements to harvest for PtSituationElement
@@ -146,8 +146,6 @@ class SituationExchangeDelivery extends Base
         //
     ];
 
-    protected $willEmitPayload = true;
-
     /**
      * @inheritdoc
      */
@@ -175,8 +173,11 @@ class SituationExchangeDelivery extends Base
     public function parsePtSituation()
     {
         $situation = $this->processChannelPayloadElement();
-        $this->ptSituations[] = $situation;
-        SxPtSituation::dispatch($this->subscription->id, $this->createPayload('PtSituationElement', $situation));
+        $archiver = PtSituationToModel::store($situation, $this->responseTimestamp);
+        if ($archiver->valid) {
+            $this->ptSituations[] = $situation;
+            SxPtSituation::dispatch($this->subscription->id, $this->createPayload('PtSituationElement', $situation));
+        }
     }
 
     /**
@@ -192,25 +193,12 @@ class SituationExchangeDelivery extends Base
     /**
      * @inheritdoc
      */
-    protected function postProcess()
-    {
-        $this->willEmitPayload = true;
-        foreach ($this->ptSituations as $rawSit) {
-            $archiver = PtSituationToModel::store($rawSit, $this->responseTimestamp);
-            if (!$archiver->valid) {
-                $this->willEmitPayload = false;
-            }
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
     protected function emitPayload()
     {
-        if (!$this->willEmitPayload) {
-            return false;
+        if (!count($this->ptSituations) && !count($this->roadSituations)) {
+            return;
         }
+        /** @var \TromsFylkestrafikk\Siri\Services\CaseStyler $case */
         $case = app('siri.case');
         SxSituations::dispatch(
             $this->subscription->id,

@@ -121,7 +121,7 @@ class PtSituationToModel
         }
         if ((new Carbon($this->responseTimestamp))->isBefore(new Carbon($this->situation->response_timestamp))) {
             Log::notice("[PtSituationToModel]: Existing situation is more recent than incoming data. Not updating.");
-            // return false;
+            return false;
         }
         $this->situation->fill($this->rawSit);
         $this->situation->save();
