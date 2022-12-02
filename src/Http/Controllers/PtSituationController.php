@@ -17,7 +17,11 @@ class PtSituationController extends Controller
     {
         return [
             'status' => 'ok',
-            'situations' => PtSituation::with(['affectedJourneys', 'affectedLines', 'affectedStopPoints', 'stopPoints'])->get(),
+            'situations' => PtSituation::with([
+                'affectedJourneys.affectedStopPoints',
+                'affectedLines.affectedStopPoints',
+                'affectedStopPoints',
+            ])->get(),
         ];
     }
 
