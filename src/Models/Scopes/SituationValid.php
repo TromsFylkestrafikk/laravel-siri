@@ -16,7 +16,7 @@ class SituationValid implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $now = today();
-        $builder->whereDate('validity_start', '<', $now)->whereDate('validity_end', '>', $now);
+        $now = now();
+        $builder->where('validity_start', '<', $now)->where('validity_end', '>', $now);
     }
 }
