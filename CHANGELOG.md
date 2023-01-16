@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.3.0] – 2022-01-16
 ### Added
 - Siri SX `PtSituation`s are now saved to DB, available as Eloquent
   models.
