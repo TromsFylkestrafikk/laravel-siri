@@ -4,6 +4,7 @@ namespace TromsFylkestrafikk\Siri\Console;
 
 use Illuminate\Console\Command;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
+use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
 use TromsFylkestrafikk\Siri\Subscription\Subscriber;
 
 class ReSubscribe extends Command
@@ -14,6 +15,7 @@ class ReSubscribe extends Command
      * @var string
      */
     protected $signature = 'siri:resubscribe
+                           { --c|close : SX only: close all existing situations prior to subscribe }
                            { id : SIRI channel to re-subscribe. See \'siri:list\'}';
 
     /**
@@ -45,6 +47,11 @@ class ReSubscribe extends Command
         if (!$subscription) {
             $this->warn("Subscription not found. See 'siri:list' for a list of current subscriptions.");
             return static::FAILURE;
+        }
+        if ($subscription->channel === 'SX' && $this->option('close')) {
+            PtSituation::withoutGlobalScopes()
+                ->where('progress', '<>', 'closed')
+                ->update(['progress' => 'closed']);
         }
         $success = Subscriber::subscribe($subscription);
         if (!$success) {
