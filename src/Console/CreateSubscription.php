@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 use TromsFylkestrafikk\Siri\Models\SiriSubscription;
+use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
 use TromsFylkestrafikk\Siri\Siri;
 use TromsFylkestrafikk\Siri\Subscription\Subscriber;
 
@@ -23,6 +24,7 @@ class CreateSubscription extends Command
                            { url : SIRI service subscription URL }
                            { channel : SIRI functional service. E.g. \'SX\' or \'VM\' }
                            { name : Internal name of subscription. This is not exposed to service. }
+                           { --c|close : SX only: close all existing situations prior to subscribe }
                            { --s|siri-version= : SIRI version for this subscription (Default 2.0) }
                            { --H|heartbeat-interval= : Period (ISO 8601) between heartbeats from service }
                            { --r|requestor-ref= : Identifies client consuming siri data }
@@ -81,6 +83,7 @@ class CreateSubscription extends Command
             'heartbeat_interval' => $this->getHeartbeatInterval(),
             'requestor_ref' => $this->getOptionOrConfig('requestor_ref'),
         ]);
+        $this->preSubscribe($subscription);
         $success = Subscriber::subscribe($subscription);
         if ($success) {
             $subscription->save();
@@ -97,6 +100,20 @@ class CreateSubscription extends Command
             ));
         }
         return static::SUCCESS;
+    }
+
+    /**
+     * Tasks to do before performing actual remote subscription
+     *
+     * @param SiriSubscription $subscription
+     */
+    protected function preSubscribe($subscription)
+    {
+        if ($subscription->channel === 'SX' && $this->option('close')) {
+            PtSituation::withoutGlobalScopes()
+                ->where('progress', '<>', 'closed')
+                ->update(['progress' => 'closed']);
+        }
     }
 
     /**

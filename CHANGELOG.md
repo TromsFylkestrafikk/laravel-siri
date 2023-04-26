@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Option to close all situations prior to SX subscription. Useful when
+  SX state differ between publisher and subscriber.
+
+## Changed
+- Query scope for `PtSituation`s now include future situations too.
+
 ## [0.3.0] – 2022-01-16
 ### Added
 - Siri SX `PtSituation`s are now saved to DB, available as Eloquent
