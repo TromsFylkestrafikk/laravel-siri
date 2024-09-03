@@ -119,12 +119,12 @@ The following artisan commands manages SIRI subscriptions:
 
 ## Development
 
-**In laravel-siri**
-Run `npx mix`
-copy public/siri/js folder to destination project public/siri/js
+**In laravel-siri**  
+- Run `npx mix`
+- copy public/siri/js folder to destination project public/siri/js
 
-**In destination project**
-make test subscription with artisan
+**In destination project**  
+- make test subscription with artisan
 
 ## Copying
 
