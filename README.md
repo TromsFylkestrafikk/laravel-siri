@@ -119,20 +119,12 @@ The following artisan commands manages SIRI subscriptions:
 
 ## Development
 
-Add the following lines in your laravel installation's webpack.mix.js
-during development of this package:
+**In laravel-siri**
+Run `npx mix`
+copy public/siri/js folder to destination project public/siri/js
 
-```javascript
-/**
- * TromsFylkestrafikk/laravel-siri stuff
- */
-mix.js('vendor/tromsfylkestrafikk/laravel-siri/resources/js/app.js', 'public/siri/js')
-    .vue()
-    .extract([
-        'axios',
-        'vue',
-    ]);
-```
+**In destination project**
+make test subscription with artisan
 
 ## Copying
 
