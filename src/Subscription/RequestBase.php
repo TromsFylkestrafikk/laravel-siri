@@ -120,7 +120,7 @@ class RequestBase
         if (
             !$xml
             || !$xml->SubscriptionResponse
-            //|| (string) $xml->SubscriptionResponse->RequestMessageRef !== $this->messageId
+            || (string) $xml->SubscriptionResponse->RequestMessageRef !== $this->messageId
             || $status !== 'true'
         ) {
             Log::error(sprintf(
