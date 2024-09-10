@@ -121,7 +121,7 @@ class VehicleMonitoringDelivery extends Base
      */
     public function setupHandlers()
     {
-        $this->reader->addNestedCallback(['VehicleActivity'], [$this, 'vehicleActivity']);
+        $this->reader->addCallback(['VehicleActivity'], [$this, 'vehicleActivity']);
     }
 
     /**

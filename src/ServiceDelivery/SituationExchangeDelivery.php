@@ -163,8 +163,8 @@ class SituationExchangeDelivery extends Base
     public function setupHandlers()
     {
         $this->reader
-            ->addNestedCallback(['Situations', 'PtSituationElement'], [$this, 'parsePtSituation'])
-            ->addNestedCallback(['Situations', 'RoadSituationElement'], [$this, 'parseRoadSituation']);
+            ->addCallback(['Situations', 'PtSituationElement'], [$this, 'parsePtSituation'])
+            ->addCallback(['Situations', 'RoadSituationElement'], [$this, 'parseRoadSituation']);
     }
 
     /**
