@@ -117,7 +117,7 @@ class EstimatedTimetableDelivery extends Base
      */
     public function setupHandlers()
     {
-        $this->reader->addNestedCallback(
+        $this->reader->addCallback(
             ['EstimatedJourneyVersionFrame', 'EstimatedVehicleJourney'],
             [$this, 'estimatedVehicleJourney']
         );

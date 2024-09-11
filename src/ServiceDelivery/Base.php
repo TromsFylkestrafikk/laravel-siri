@@ -115,9 +115,20 @@ abstract class Base
         $this->reader = new ChristmasTreeParser();
 
         $this->reader->open($this->xmlFile->getPath());
-        $this->reader->addCallback(['Siri', 'ServiceDelivery', $chanElement], [$this, 'setupChannelCallbacks'])
-            ->addCallback(['Siri', 'ServiceDelivery', 'ProducerRef'], function ($reader) {
+        $this->reader
+            ->addCallback(['Siri', 'ServiceDelivery', 'ProducerRef'], function (ChristmasTreeParser $reader) {
                 $this->producerRef = trim($reader->readString());
+            })
+            ->addCallback(['Siri', 'ServiceDelivery', $chanElement], function () {
+                $this->chunkCount = 0;
+                $this->elementCount = 0;
+                $this->payload = [];
+            })
+            ->withParents(['Siri', 'ServiceDelivery', $chanElement], function (ChristmasTreeParser $reader) {
+                $reader->addCallback(['ResponseTimestamp'], [$this, 'readResponseTimestamp'])
+                    ->addCallback(['SubscriberRef'], [$this, 'readSubscriberRef'])
+                    ->addCallback(['SubscriptionRef'], [$this, 'verifySubscriptionRef']);
+                $this->setupHandlers();
             })
             ->parse()
             ->close();
@@ -140,30 +151,12 @@ abstract class Base
     abstract protected function emitPayload();
 
     /**
-     * ChristmasTreeParser callback for 'Siri/ServiceDelivery/[<CHANNEL>]'.
+     * Setup callback handlers under 'Siri/ServiceDelivery/[<CHANNEL>]'.
      *
      * Channels must implement this and set up their own mapping/parsing of
      * content.
      */
     abstract public function setupHandlers();
-
-    /**
-     * ChristmasTreeParser callback for 'Siri/ServiceDelivery/[<CHANNEL>]'.
-     *
-     * Read common elements in service delivery channels.
-     */
-    public function setupChannelCallbacks()
-    {
-        $this->chunkCount = 0;
-        $this->elementCount = 0;
-        $this->payload = [];
-
-        $this->reader->addNestedCallback(['ResponseTimestamp'], [$this, 'readResponseTimestamp'])
-            ->addNestedCallback(['SubscriberRef'], [$this, 'readSubscriberRef'])
-            ->addNestedCallback(['SubscriptionRef'], [$this, 'verifySubscriptionRef']);
-        // Time to let channels implement their own mappings.
-        $this->setupHandlers();
-    }
 
     /**
      * ChristmasTreeParser callback for setting responseTimestamp
