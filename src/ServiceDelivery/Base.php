@@ -116,7 +116,7 @@ abstract class Base
 
         $this->reader->open($this->xmlFile->getPath());
         $this->reader
-            ->addCallback(['Siri', 'ServiceDelivery', 'ProducerRef'], function ($reader) {
+            ->addCallback(['Siri', 'ServiceDelivery', 'ProducerRef'], function (ChristmasTreeParser $reader) {
                 $this->producerRef = trim($reader->readString());
             })
             ->addCallback(['Siri', 'ServiceDelivery', $chanElement], function () {
@@ -124,7 +124,12 @@ abstract class Base
                 $this->elementCount = 0;
                 $this->payload = [];
             })
-            ->withParents(['Siri', 'ServiceDelivery', $chanElement], [$this, 'setupHandlers'])
+            ->withParents(['Siri', 'ServiceDelivery', $chanElement], function (ChristmasTreeParser $reader) {
+                $reader->addCallback(['ResponseTimestamp'], [$this, 'readResponseTimestamp'])
+                    ->addCallback(['SubscriberRef'], [$this, 'readSubscriberRef'])
+                    ->addCallback(['SubscriptionRef'], [$this, 'verifySubscriptionRef']);
+                $this->setupHandlers();
+            })
             ->parse()
             ->close();
         $this->emitPayload();
