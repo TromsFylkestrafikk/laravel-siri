@@ -1,12 +1,13 @@
 # Changelog
 
-## [Unreleased]
+## [0.3.1]
 ### Added
 - Option to close all situations prior to SX subscription. Useful when
   SX state differ between publisher and subscriber.
 
 ## Changed
 - Query scope for `PtSituation`s now include future situations too.
+- Updated ChristmasTreeParser and adjusted callback handling for it.
 
 ## [0.3.0] – 2022-01-16
 ### Added
