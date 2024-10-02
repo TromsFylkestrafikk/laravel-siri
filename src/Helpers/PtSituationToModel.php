@@ -170,10 +170,9 @@ class PtSituationToModel
             return;
         }
         foreach ($networks as $network) {
-            if (empty($network['affected_line'])) {
-                continue;
+            if (!empty($network['affected_line'])) {
+                $this->storeAffectedLines($network['affected_line']);
             }
-            $this->storeAffectedLines($network['affected_line']);
         }
     }
 

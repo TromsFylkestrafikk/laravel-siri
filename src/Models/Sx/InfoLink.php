@@ -25,8 +25,8 @@ class InfoLink extends Model
     use HasFactory;
 
     public $timestamps = false;
-    protected $table = 'siri_sx_affected_line';
-    protected $fillable = ['pt_situation_id', 'url', 'label'];
+    protected $table = 'siri_sx_info_link';
+    protected $fillable = ['pt_situation_id', 'uri', 'label'];
 
     public function ptSituation()
     {
