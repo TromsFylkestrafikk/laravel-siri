@@ -119,11 +119,8 @@ class RequestBase
         $message = null;
         if (!$xml) {
             $message = "Invalid XML.";
-        } else {
-            $status = ((string) $xml->SubscriptionResponse->ResponseStatus->Status) ?: 'true';
-            if ($status !== 'true') {
-                $message = "Response XML dumped to disk.";
-            }
+        } elseif (((string) $xml->SubscriptionResponse->ResponseStatus->Status) !== 'true') {
+            $message = "Invalid SubscriptionResponse status.";
         }
         if ($message) {
             Log::error(sprintf(
