@@ -1,15 +1,18 @@
 composer.lock
-/vendor/
 /node_modules
-/package-lock.json
+/public
+/vendor
 
 # Code indexing and editor tools
-/.ac-php-conf.json
-/.tern-port
+.ac-php-conf.json
+.tern-port
 .php_cs.cache
-/.eslintcache
-/_ide_helper*
+.phpactor.json
+.eslintcache
+_ide_helper*
 
 # Auto-generated files
 .log/
+package-lock.json
+mix-manifest.json
 npm-debug.log

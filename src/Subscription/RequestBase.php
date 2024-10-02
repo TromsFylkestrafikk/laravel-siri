@@ -117,16 +117,9 @@ class RequestBase
         // @var \SimpleXMLElement $xml
         $xml = simplexml_load_string($xmlStr, SimpleXMLElement::class, 0, self::NAMESPACE_SIRI);
         $status = ((string) $xml->SubscriptionResponse->ResponseStatus->Status) ?: 'true';
-        $requestMessageRef = (string) $xml->SubscriptionResponse->RequestMessageRef;
-        Log::debug(sprintf(
-            "Comparing reponse RequestMessageRef (%s) with our own messageId (%s)",
-            $requestMessageRef,
-            $this->messageId
-        ));
         if (
             !$xml
             || !$xml->SubscriptionResponse
-            || $requestMessageRef !== $this->messageId
             || $status !== 'true'
         ) {
             Log::error(sprintf(
