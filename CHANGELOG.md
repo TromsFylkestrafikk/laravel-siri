@@ -1,10 +1,14 @@
 # Changelog
 
+## [Unreleased]
+### Fixed
+- Include situations with no validity_end column.
+
 ## [0.3.2] – 2024-10-03
-## Added
+### Added
 - Client now compatible with Enturs SIRI service.
 
-## Fixed
+### Fixed
 - Info links are properly parsed and added to DB
 
 ## [0.3.1] – 2024-09-18
@@ -12,7 +16,7 @@
 - Option to close all situations prior to SX subscription. Useful when
   SX state differ between publisher and subscriber.
 
-## Changed
+### Changed
 - Query scope for `PtSituation`s now include future situations too.
 - Updated ChristmasTreeParser and adjusted callback handling for it.
 
