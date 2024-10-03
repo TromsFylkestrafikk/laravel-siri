@@ -1,6 +1,13 @@
 # Changelog
 
-## [0.3.1]
+## [Unreleased]
+## Added
+- Client now compatible with Enturs SIRI service.
+
+## Fixed
+- Info links are properly parsed and added to DB
+
+## [0.3.1] – 2024-09-18
 ### Added
 - Option to close all situations prior to SX subscription. Useful when
   SX state differ between publisher and subscriber.

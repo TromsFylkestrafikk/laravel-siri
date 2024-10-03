@@ -116,17 +116,18 @@ class RequestBase
     {
         // @var \SimpleXMLElement $xml
         $xml = simplexml_load_string($xmlStr, SimpleXMLElement::class, 0, self::NAMESPACE_SIRI);
-        $status = ((string) $xml->SubscriptionResponse->ResponseStatus->Status) ?: 'true';
-        if (
-            !$xml
-            || !$xml->SubscriptionResponse
-            || (string) $xml->SubscriptionResponse->RequestMessageRef !== $this->messageId
-            || $status !== 'true'
-        ) {
+        $message = null;
+        if (!$xml) {
+            $message = "Invalid XML.";
+        } elseif (((string) $xml->SubscriptionResponse->ResponseStatus->Status) !== 'true') {
+            $message = "Invalid SubscriptionResponse status.";
+        }
+        if ($message) {
             Log::error(sprintf(
-                "SIRI %s subscription to service '%s' failed. Dumping response XML.",
+                "SIRI %s subscription to service '%s' failed: %s",
                 $this->subscription->channel,
-                $this->subscription->subscription_url
+                $this->subscription->subscription_url,
+                $message
             ));
             $this->dumpResponseXml($xmlStr);
             return false;
