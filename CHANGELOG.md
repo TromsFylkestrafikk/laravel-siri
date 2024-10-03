@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.3.2] – 2024-10-03
 ## Added
 - Client now compatible with Enturs SIRI service.
 
