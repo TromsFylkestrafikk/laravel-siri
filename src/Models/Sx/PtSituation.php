@@ -28,15 +28,17 @@ use TromsFylkestrafikk\Siri\Models\Scopes\SituationValid;
  * @property string|null $advice Textual advice on how a passenger should react/respond to the situation
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedJourney[] $affectedJourneys
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \TromsFylkestrafikk\Siri\Models\Sx\AffectedJourney> $affectedJourneys
  * @property-read int|null $affected_journeys_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedLine[] $affectedLines
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \TromsFylkestrafikk\Siri\Models\Sx\AffectedLine> $affectedLines
  * @property-read int|null $affected_lines_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedRoute[] $affectedRoutes
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \TromsFylkestrafikk\Siri\Models\Sx\AffectedRoute> $affectedRoutes
  * @property-read int|null $affected_routes_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedStopPoint[] $affectedStopPoints
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \TromsFylkestrafikk\Siri\Models\Sx\AffectedStopPoint> $affectedStopPoints
  * @property-read int|null $affected_stop_points_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\TromsFylkestrafikk\Siri\Models\Sx\AffectedStopPoint[] $stopPoints
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \TromsFylkestrafikk\Siri\Models\Sx\InfoLink> $infoLinks
+ * @property-read int|null $info_links_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \TromsFylkestrafikk\Siri\Models\Sx\AffectedStopPoint> $stopPoints
  * @property-read int|null $stop_points_count
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PtSituation newQuery()
@@ -131,6 +133,16 @@ class PtSituation extends Model
     public function affectedStopPoints()
     {
         return $this->morphToMany(AffectedStopPoint::class, 'stoppable', 'siri_sx_stoppable');
+    }
+
+    /**
+     * All URLs with labels associated with this situation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function infoLinks()
+    {
+        return $this->hasMany(InfoLink::class);
     }
 
     protected static function booted()

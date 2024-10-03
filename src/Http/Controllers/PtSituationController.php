@@ -21,6 +21,7 @@ class PtSituationController extends Controller
                 'affectedJourneys.affectedStopPoints',
                 'affectedLines.affectedStopPoints',
                 'affectedStopPoints',
+                'infoLinks',
             ])->get(),
         ];
     }
