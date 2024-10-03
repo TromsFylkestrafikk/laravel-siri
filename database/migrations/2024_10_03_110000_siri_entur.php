@@ -16,6 +16,10 @@ return new class extends Migration
         Schema::table('siri_sx_info_link', function (Blueprint $table) {
             $table->renameColumn('url', 'uri');
         });
+
+        Schema::table('siri_sx_pt_situation', function (Blueprint $table) {
+            $table->text('advice')->nullable()->comment("Textual advice on how a passenger should react/respond to the situation")->change();
+        });
     }
 
     /**
