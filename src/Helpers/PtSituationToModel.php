@@ -5,6 +5,7 @@ namespace TromsFylkestrafikk\Siri\Helpers;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use TromsFylkestrafikk\Netex\Models\StopQuay;
 use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
 use TromsFylkestrafikk\Siri\Models\Sx\InfoLink;
 use TromsFylkestrafikk\Siri\Models\Sx\AffectedJourney;
@@ -93,6 +94,14 @@ class PtSituationToModel
             $this->storeAffectedStopPoints(
                 $this->rawSit['affects']['stop_points']['affected_stop_point'],
                 $this->situation
+            );
+        }
+
+        if (!empty($this->rawSit['affects']['stop_places']['affected_stop_place'])) {
+            $this->storeAffectedStopPoints(
+                $this->rawSit['affects']['stop_place']['affected_stop_place'],
+                $this->situation,
+                'stop_place_ref'
             );
         }
 
@@ -208,23 +217,66 @@ class PtSituationToModel
     }
 
     /**
+     * Combined parser for AffectedStopPoint and AffectedStopPlace
+     *
+     * Due to clumsy definition in the nordic profile of the SIRI SX standard,
+     * the Stop place ID and Quay IDs belonging to the stop can be used in both
+     * StopPointRef and StopPlaceRef. It really doesn't matter what you use
+     * where; we have to consider both.
+     *
      * @param mixed[] $rawStops
      * @param PtSituation|AffectedLine|AffectedJourney $parent
+     * @param string $refKey 'stop_point_ref' or 'stop_place_ref'
      */
-    protected function storeAffectedStopPoints($rawStops, $parent)
+    protected function storeAffectedStopPoints($rawStops, $parent, $refKey = 'stop_point_ref')
     {
         foreach ($rawStops as $rawStop) {
-            $aStop = AffectedStopPoint::updateOrCreate([
-                'id' => $this->createId($this->situation->id, $rawStop['stop_point_ref']),
-            ], [
-                'pt_situation_id' => $this->situation->id,
-                'stop_point_ref' => $rawStop['stop_point_ref'],
-            ]);
-            $parent->affectedStopPoints()->attach($aStop->id, [
-                'pt_situation_id' => $this->situation->id,
-                'stop_condition' => $rawStop['stop_condition'] ?? null,
-            ]);
+            $ref = $rawStop[$refKey];
+            $refType = explode(':', $ref)[1];
+            if ($refType === 'Quay') {
+                $this->storeAffectedStopPoint($ref, $parent, $rawStop['stop_condition'] ?? null);
+            } elseif ($refType === 'StopPlace') {
+                $this->storeAffectedStopPlace($rawStop, $ref, $parent);
+            }
         }
+    }
+
+    /**
+     * @param mixed[] $rawStop
+     * @param string $stopPlaceId
+     * @param PtSituation|AffectedLine|AffectedJourney $parent
+     */
+    protected function storeAffectedStopPlace($rawStop, $stopPlaceId, $parent): void
+    {
+        // Find all quays associated with this place and treat them as
+        // individual affected stop points.
+        /** @var \Illuminate\Database\Eloquent\Collection<StopQuay> $quays */
+        $quays = StopQuay::select('id')->where('stop_place_id', $stopPlaceId)->get();
+        if (!$quays->count()) {
+            Log::warning(sprintf("[SIRI SX]: No quays associated with stop place '%s'.", $stopPlaceId));
+        }
+        foreach ($quays as $quay) {
+            $this->storeAffectedStopPoint($quay->id, $parent, $rawStop['stop_condition'] ?? null);
+        }
+    }
+
+    /**
+     * @param string $stopPoint
+     * @param PtSituation|AffectedLine|AffectedJourney $parent
+     * @param string|null $stopCondition
+     */
+    protected function storeAffectedStopPoint($stopPoint, $parent, $stopCondition = null): void
+    {
+        $aStop = AffectedStopPoint::updateOrCreate([
+            'id' => $this->createId($this->situation->id, $stopPoint),
+        ], [
+            'pt_situation_id' => $this->situation->id,
+            'stop_point_ref' => $stopPoint,
+        ]);
+        $parent->affectedStopPoints()->attach($aStop->id, [
+            'pt_situation_id' => $this->situation->id,
+            'stop_condition' => $stopCondition,
+        ]);
     }
 
     protected function prepareRawSit()

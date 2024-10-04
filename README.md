@@ -77,6 +77,10 @@ project. Add something like this in composer.json:
         },
         {
             "type": "vcs",
+            "url": "https://github.com/TromsFylkestrafikk/laravel-netex"
+        },
+        {
+            "type": "vcs",
             "url": "https://github.com/TromsFylkestrafikk/laravel-siri"
         }
     ]
