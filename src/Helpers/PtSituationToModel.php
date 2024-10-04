@@ -97,6 +97,14 @@ class PtSituationToModel
             );
         }
 
+        if (!empty($this->rawSit['affects']['stop_places']['affected_stop_place'])) {
+            $this->storeAffectedStopPoints(
+                $this->rawSit['affects']['stop_place']['affected_stop_place'],
+                $this->situation,
+                'stop_place_ref'
+            );
+        }
+
         return $this->situation;
     }
 
@@ -209,13 +217,21 @@ class PtSituationToModel
     }
 
     /**
+     * Combined parser for AffectedStopPoint and AffectedStopPlace
+     *
+     * Due to clumsy definition in the nordic profile of the SIRI SX standard,
+     * the Stop place ID and Quay IDs belonging to the stop can be used in both
+     * StopPointRef and StopPlaceRef. It really doesn't matter what you use
+     * where; we have to consider both.
+     *
      * @param mixed[] $rawStops
      * @param PtSituation|AffectedLine|AffectedJourney $parent
+     * @param string $refKey 'stop_point_ref' or 'stop_place_ref'
      */
-    protected function storeAffectedStopPoints($rawStops, $parent)
+    protected function storeAffectedStopPoints($rawStops, $parent, $refKey = 'stop_point_ref')
     {
         foreach ($rawStops as $rawStop) {
-            $ref = $rawStop['stop_point_ref'];
+            $ref = $rawStop[$refKey];
             $refType = explode(':', $ref)[1];
             if ($refType === 'Quay') {
                 $this->storeAffectedStopPoint($ref, $parent, $rawStop['stop_condition'] ?? null);
