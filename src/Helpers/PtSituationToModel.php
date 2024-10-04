@@ -259,7 +259,7 @@ class PtSituationToModel
         ]);
         $parent->affectedStopPoints()->attach($aStop->id, [
             'pt_situation_id' => $this->situation->id,
-            'stop_condition' => $stopCondition ?? null,
+            'stop_condition' => $stopCondition,
         ]);
     }
 

@@ -1,8 +1,14 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Dependency to TromsFylkestrafikk/laravel-netex.
+
 ### Fixed
 - Include situations with no validity_end column.
+- SX AffectedStopPoints may now use StopPlace IDs. They are unrolled
+  to quay IDs, and this is the reason for the laravel-netex
+  requirement.
 
 ## [0.3.2] – 2024-10-03
 ### Added
