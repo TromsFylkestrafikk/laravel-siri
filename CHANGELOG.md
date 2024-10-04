@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.3.3] – 2024-10-04
 ### Added
 - Dependency to TromsFylkestrafikk/laravel-netex.
 
