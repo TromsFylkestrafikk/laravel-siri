@@ -5,7 +5,6 @@ namespace TromsFylkestrafikk\Siri\Helpers;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Database\Eloquent\Collection;
 use TromsFylkestrafikk\Netex\Models\StopQuay;
 use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
 use TromsFylkestrafikk\Siri\Models\Sx\InfoLink;
@@ -217,22 +216,31 @@ class PtSituationToModel
     {
         foreach ($rawStops as $rawStop) {
             $ref = $rawStop['stop_point_ref'];
-            list($codeSpace, $refType, $id) = explode(':', $ref);
+            $refType = explode(':', $ref)[1];
             if ($refType === 'Quay') {
                 $this->storeAffectedStopPoint($ref, $parent, $rawStop['stop_condition'] ?? null);
             } elseif ($refType === 'StopPlace') {
-                // Find all quays associated with this place and treat them as
-                // individual affected stop points.
-                /** @var Collection<StopQuay> $quays */
-                $quays = StopQuay::where('stop_place_id', $ref)->get();
-                if (!$quays->count()) {
-                    Log::warning(sprintf("[SIRI SX]: No quays associated with stop place '%s'.", $ref));
-                }
-                foreach ($quays as $quay) {
-                    Log::debug(sprintf("Storing affected stop quay %s", $quay->id));
-                    $this->storeAffectedStopPoint($quay->id, $parent, $rawStop['stop_condition'] ?? null);
-                }
+                $this->storeAffectedStopPlace($rawStop, $ref, $parent);
             }
+        }
+    }
+
+    /**
+     * @param mixed[] $rawStop
+     * @param string $stopPlaceId
+     * @param PtSituation|AffectedLine|AffectedJourney $parent
+     */
+    protected function storeAffectedStopPlace($rawStop, $stopPlaceId, $parent): void
+    {
+        // Find all quays associated with this place and treat them as
+        // individual affected stop points.
+        /** @var \Illuminate\Database\Eloquent\Collection<StopQuay> $quays */
+        $quays = StopQuay::select('id')->where('stop_place_id', $stopPlaceId)->get();
+        if (!$quays->count()) {
+            Log::warning(sprintf("[SIRI SX]: No quays associated with stop place '%s'.", $stopPlaceId));
+        }
+        foreach ($quays as $quay) {
+            $this->storeAffectedStopPoint($quay->id, $parent, $rawStop['stop_condition'] ?? null);
         }
     }
 
