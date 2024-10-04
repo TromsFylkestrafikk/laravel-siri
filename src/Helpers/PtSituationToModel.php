@@ -5,6 +5,8 @@ namespace TromsFylkestrafikk\Siri\Helpers;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Collection;
+use TromsFylkestrafikk\Netex\Models\StopQuay;
 use TromsFylkestrafikk\Siri\Models\Sx\PtSituation;
 use TromsFylkestrafikk\Siri\Models\Sx\InfoLink;
 use TromsFylkestrafikk\Siri\Models\Sx\AffectedJourney;
@@ -214,17 +216,43 @@ class PtSituationToModel
     protected function storeAffectedStopPoints($rawStops, $parent)
     {
         foreach ($rawStops as $rawStop) {
-            $aStop = AffectedStopPoint::updateOrCreate([
-                'id' => $this->createId($this->situation->id, $rawStop['stop_point_ref']),
-            ], [
-                'pt_situation_id' => $this->situation->id,
-                'stop_point_ref' => $rawStop['stop_point_ref'],
-            ]);
-            $parent->affectedStopPoints()->attach($aStop->id, [
-                'pt_situation_id' => $this->situation->id,
-                'stop_condition' => $rawStop['stop_condition'] ?? null,
-            ]);
+            $ref = $rawStop['stop_point_ref'];
+            list($codeSpace, $refType, $id) = explode(':', $ref);
+            if ($refType === 'Quay') {
+                $this->storeAffectedStopPoint($ref, $parent, $rawStop['stop_condition'] ?? null);
+            } elseif ($refType === 'StopPlace') {
+                // Find all quays associated with this place and treat them as
+                // individual affected stop points.
+                /** @var Collection<StopQuay> $quays */
+                $quays = StopQuay::where('stop_place_id', $ref)->get();
+                if (!$quays->count()) {
+                    Log::warning(sprintf("[SIRI SX]: No quays associated with stop place '%s'.", $ref));
+                }
+                foreach ($quays as $quay) {
+                    Log::debug(sprintf("Storing affected stop quay %s", $quay->id));
+                    $this->storeAffectedStopPoint($quay->id, $parent, $rawStop['stop_condition'] ?? null);
+                }
+            }
         }
+    }
+
+    /**
+     * @param string $stopPoint
+     * @param PtSituation|AffectedLine|AffectedJourney $parent
+     * @param string|null $stopCondition
+     */
+    protected function storeAffectedStopPoint($stopPoint, $parent, $stopCondition = null): void
+    {
+        $aStop = AffectedStopPoint::updateOrCreate([
+            'id' => $this->createId($this->situation->id, $stopPoint),
+        ], [
+            'pt_situation_id' => $this->situation->id,
+            'stop_point_ref' => $stopPoint,
+        ]);
+        $parent->affectedStopPoints()->attach($aStop->id, [
+            'pt_situation_id' => $this->situation->id,
+            'stop_condition' => $stopCondition ?? null,
+        ]);
     }
 
     protected function prepareRawSit()
