@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.4] – 2024-10-25
+### Fixed
+- Loosened dependency constrain to `laravel-netex` package.
+
 ## [0.3.3] – 2024-10-04
 ### Added
 - Dependency to TromsFylkestrafikk/laravel-netex.

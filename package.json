@@ -1,6 +1,6 @@
 {
     "name": "laravel-siri",
-    "version": "0.3.3",
+    "version": "0.3.4",
     "description": "Laravel SIRI consumer",
     "author": "Kåre Slettnes <kaare.slettnes@tffk.no>",
     "license": "GPL-3.0-or-later",
