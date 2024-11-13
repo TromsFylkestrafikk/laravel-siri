@@ -103,16 +103,6 @@ SIRI_SUB_HEARTBEAT_INTERVAL=PT1M
 SIRI_SUB_REQUESTOR_REF="Unicorn and rainbows"
 ```
 
-### Emulate published siri updates.
-
-This tool uses a simple upload form to emulate post request from siri
-services.  This uses Vue and Axios to perform the actual request, but
-this has to be mix'ed using Laravel Mix.
-
-```shell
-npx mix --mix-config ./vendor/tromsfylkestrafikk/laravel-siri/webpack.mix.js
-```
-
 ## Usage
 
 The following artisan commands manages SIRI subscriptions:
@@ -123,12 +113,26 @@ The following artisan commands manages SIRI subscriptions:
 
 ## Development
 
+This tool uses a simple upload form to emulate post request from siri
+services.  This uses Vue and Axios to perform the actual request, but
+this has to be mix'ed using Laravel Mix.
+
 **In laravel-siri**  
 - Run `npx mix`
 - copy public/siri/js folder to destination project public/siri/js
 
 **In destination project**  
 - make test subscription with artisan
+
+There is also a siri request response route that always returns
+success available at
+
+`http://<DEV_SITE>.local/api/siri/dev/subscribe/<SIRI_VERSION>/ok`
+
+Use this for creating local siri subscriptions:
+```shell
+./artisan siri:subscribe http://siri.local/api/siri/dev/subscribe/2.0/ok SX siri-sx-local
+```
 
 ## Copying
 
