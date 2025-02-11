@@ -17,10 +17,8 @@ class SituationValid implements Scope
     public function apply(Builder $builder, Model $model)
     {
         $builder->where(function (Builder $query) {
-            $now = now();
             $query->whereNull('validity_end')
-                ->orWhereNot('validity_end')
-                ->orWhere('validity_end', '>', $now);
+                ->orWhere('validity_end', '>', now());
         });
     }
 }
