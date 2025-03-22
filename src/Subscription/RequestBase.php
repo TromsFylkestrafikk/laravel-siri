@@ -119,7 +119,10 @@ class RequestBase
         $message = null;
         if (!$xml) {
             $message = "Invalid XML.";
-        } elseif (((string) $xml->SubscriptionResponse->ResponseStatus->Status) !== 'true') {
+        } elseif (
+            isset($xml->SubscriptionResponse->ResponseStatus->Status) &&
+            ((string) $xml->SubscriptionResponse->ResponseStatus->Status) !== 'true'
+        ) {
             $message = "Invalid SubscriptionResponse status.";
         }
         if ($message) {

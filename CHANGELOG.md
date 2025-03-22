@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Check existence of XML response status before checking its value.
+
 ## [0.3.5] – 2025-02-13
 
 ### Fixed
