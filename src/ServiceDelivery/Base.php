@@ -99,7 +99,7 @@ abstract class Base
     {
         $this->subscription = $subscription;
         $this->xmlFile = $xmlFile;
-        $this->subscriptionVerified = false;
+        $this->subscriptionVerified = true;
         $this->setLogPrefix('Siri-%s[%d]: ', $subscription->channel, $subscription->id);
         $this->haltOnSubscription = env('APP_ENV' !== 'local') || request()->root() !== env('APP_URL');
         $this->maxChunkSize = config('siri.event_chunk_size.' . $subscription->channel);

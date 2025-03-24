@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- SubscriptionRef in incoming dumps are optional.
+
 ## [0.3.6] → 2025-04-22
 
 ### Fixed
