@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.8] – 2025-05-15
+
+### Fixed
+
+- Upgrade `laravel-netex` with proper active ID handling
+
 ## [0.3.7] – 2025-03-24
 
 ### Fixed
